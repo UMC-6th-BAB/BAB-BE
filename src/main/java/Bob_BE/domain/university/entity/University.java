@@ -2,7 +2,6 @@ package Bob_BE.domain.university.entity;
 
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.student.entity.Student;
-import Bob_BE.global.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

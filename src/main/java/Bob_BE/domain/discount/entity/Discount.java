@@ -1,7 +1,6 @@
 package Bob_BE.domain.discount.entity;
 
 import Bob_BE.domain.menu.entity.Menu;
-import Bob_BE.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

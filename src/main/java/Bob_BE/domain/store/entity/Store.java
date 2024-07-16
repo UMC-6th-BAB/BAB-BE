@@ -1,12 +1,10 @@
 package Bob_BE.domain.store.entity;
 
 import Bob_BE.domain.banner.entity.Banner;
-import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
-import Bob_BE.domain.student.entity.Student;
 import Bob_BE.global.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

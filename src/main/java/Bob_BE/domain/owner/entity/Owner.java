@@ -1,7 +1,6 @@
 package Bob_BE.domain.owner.entity;
 
 import Bob_BE.domain.store.entity.Store;
-import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.global.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
