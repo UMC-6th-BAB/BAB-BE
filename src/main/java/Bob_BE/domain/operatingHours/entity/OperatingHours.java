@@ -6,19 +6,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Time;
 
 @Entity
-@Table(name = "operation_hours")
+@Table(name = "operating_hours")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicInsert
+@DynamicUpdate
 public class OperatingHours {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name="operating_hours_id")
     private Long id;
 
     @Column(nullable = false)
