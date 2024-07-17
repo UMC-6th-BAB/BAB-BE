@@ -24,10 +24,10 @@ public class Banner {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String bannerName;
 
     @Column(nullable = false)
-    private String type;
+    private String bannerType;
 
     @Column(nullable = false)
     private String bannerUrl;
