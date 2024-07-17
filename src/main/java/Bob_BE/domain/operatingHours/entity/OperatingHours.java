@@ -26,13 +26,14 @@ public class OperatingHours {
     private Long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private DayOfWeek day;
 
     @Column(nullable = false)
     private Time openTime;
 
     @Column(nullable = false)
-    private Time endTime;
+    private Time closeTime;
 
     private Time breakStartTime;
 
