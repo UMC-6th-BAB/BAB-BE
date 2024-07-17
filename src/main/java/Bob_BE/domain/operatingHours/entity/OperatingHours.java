@@ -25,14 +25,14 @@ public class OperatingHours {
     private DayOfWeek day;
 
     @Column(nullable = false)
-    private Time open_time;
+    private Time openTime;
 
     @Column(nullable = false)
-    private Time end_time;
+    private Time endTime;
 
-    private Time break_start_time;
+    private Time breakStartTime;
 
-    private Time break_end_time;
+    private Time breakEndTime;
 
     private boolean holiday;
 

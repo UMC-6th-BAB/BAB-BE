@@ -22,13 +22,13 @@ public class Discount {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDate start_time;
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDate end_time;
+    private LocalDate endDate;
 
     @Column(nullable = false)
-    private Integer discount_price;
+    private Integer discountPrice;
 
     private String title;
 

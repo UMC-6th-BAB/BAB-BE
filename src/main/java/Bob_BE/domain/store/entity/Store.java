@@ -28,19 +28,19 @@ public class Store extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String latitude;
+    private Double latitude;
 
     @Column(nullable = false)
-    private String longitude;
+    private Double longitude;
 
     @Column(nullable = false)
     private String name;
 
     private String address;
 
-    private String street_address;
+    private String streetAddress;
 
-    private String store_link;
+    private String storeLink;
 
     private String registration;
 
