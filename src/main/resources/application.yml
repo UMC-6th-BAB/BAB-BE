@@ -17,3 +17,15 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
+security:
+  jwt:
+    token:
+      secret-key: ${SECURITY_JWT_TOKEN_SECRET_KEY}
+      expire-length: ${SECURITY_JWT_TOKEN_EXPIRE_LENGTH}
+  oauth2:
+    client:
+      registration:
+        kakao:
+          client-id: ${OAUTH2_KAKAO_CLIENT_ID}
+          redirect-uri: ${OAUTH2_KAKAO_REDIRECT_URI}
+          authorization-grant-type: ${OAUTH2_KAKAO_AUTH_GRANT_TYPE}
