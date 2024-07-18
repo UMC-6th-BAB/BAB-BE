@@ -31,7 +31,7 @@ public class Menu {
     private String menuName;
 
     @Column(nullable = false)
-    private String price;
+    private Integer price;
 
     @Column(nullable = false)
     private String menuUrl;
