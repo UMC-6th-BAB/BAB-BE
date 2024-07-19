@@ -6,39 +6,29 @@ import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.student.util.JwtTokenProvider;
 import Bob_BE.global.external.KakaoResponseDto;
-import Bob_BE.global.external.KakaoTokenClient;
 import Bob_BE.global.external.KakaoUserClient;
 import Bob_BE.global.response.code.resultCode.SuccessStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StudentService {
-    @Value("${security.oauth2.client.registration.kakao.client-id}")
-    private String clientId;
-    @Value("${security.oauth2.client.registration.kakao.redirect-uri}")
-    private String redirectUri;
-    @Value("${security.oauth2.client.registration.kakao.authorization-grant-type}")
-    private String grandType;
-
     private final StudentRepository studentRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final KakaoTokenClient kakaoTokenClient;
     private final KakaoUserClient kakaoUserClient;
 
     public StudentResponseDto.LoginOrRegisterDto registerOrLogin(StudentRequestDto.LoginOrRegisterDto request) {
-        String token = request.getToken();
-        String authorization = "Bearer " + kakaoTokenClient.getAccessToken(grandType, clientId ,redirectUri ,token)
-                .getAccess_token();
+        String authorization = "Bearer " + request.getToken();
         KakaoResponseDto.KakaoUserResponseDto kakaoUserInfo = kakaoUserClient.getUserInfo(authorization);
 
-        String socialId = kakaoUserInfo.getSocialId();
-        String email = kakaoUserInfo.getEmail();
-        String nickname = kakaoUserInfo.getNickname();
+        Long socialId = kakaoUserInfo.getId();
+        String email = kakaoUserInfo.getKakao_account().getEmail();
+        String nickname = kakaoUserInfo.getProperties().getNickname();
 
         Optional<Student> existingStudent = studentRepository.findBySocialId(socialId);
 

@@ -10,5 +10,9 @@ public class StudentResponseDto {
     public static class LoginOrRegisterDto{
         SuccessStatus successStatus;
         String jwt;
+
+        public SuccessStatus getSuccessStatus() {
+            return successStatus;
+        }
     }
 }
