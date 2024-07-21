@@ -1,4 +1,4 @@
-package practiceProject.cmap.config.swagger;
+package Bob_BE.global.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
