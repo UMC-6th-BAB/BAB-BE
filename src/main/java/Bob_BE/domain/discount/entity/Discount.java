@@ -1,6 +1,7 @@
 package Bob_BE.domain.discount.entity;
 
-import Bob_BE.domain.menu.entity.Menu;
+import Bob_BE.domain.DiscountMenu.entity.DiscountMenu;
+import Bob_BE.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,14 +32,16 @@ public class Discount {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column(nullable = false)
-    private Integer discountPrice;
-
     private String title;
 
-    private String body;
+    private boolean inProgress;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+    @OneToOne(mappedBy = "discount", cascade = CascadeType.ALL)
+    private DiscountMenu discountMenu;
+
+
 }
