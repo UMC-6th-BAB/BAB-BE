@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI CmapAPI() {
+    public OpenAPI BabAPI() {
         Info info = new Info()
                 .title("BAB API")
                 .description("BAB API 명세서")
