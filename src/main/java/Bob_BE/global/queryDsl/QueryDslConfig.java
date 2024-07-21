@@ -1,4 +1,4 @@
-package practiceProject.cmap.config;
+package Bob_BE.global.queryDsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
