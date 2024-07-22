@@ -1,13 +1,10 @@
 package Bob_BE.domain.menu.controller;
 
-import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuCreateRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuDeleteRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuUpdateRequestDTO;
 import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
-import Bob_BE.domain.menu.dto.response.MenuResponseDTO.CreateMenuResponseDTO;
+import Bob_BE.domain.menu.dto.response.MenuResponseDTO.DeleteMenuResponseDTO;
 import Bob_BE.domain.menu.service.MenuService;
-import Bob_BE.domain.store.dto.response.StoreResponseDTO.DeleteMenuResponseDTO;
-import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -14,13 +14,4 @@ public class StoreResponseDTO {
         private Long id;
         private String name;
     }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class DeleteMenuResponseDTO {
-        private Long id;
-        private String message;
-    }
 }

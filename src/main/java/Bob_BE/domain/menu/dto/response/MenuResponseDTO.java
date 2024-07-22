@@ -7,16 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class MenuResponseDTO {
-    private Long id;
-    private String menuName;
-    private Integer price;
-    private String menuUrl;
 
+public class MenuResponseDTO {
     @Builder
     @Getter
     @NoArgsConstructor
@@ -27,5 +19,14 @@ public class MenuResponseDTO {
         private Integer price;
         private String menuUrl;
         private StoreResponseDTO.MenuCreateResultDTO store;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class DeleteMenuResponseDTO {
+        private Long id;
+        private String message;
     }
 }
