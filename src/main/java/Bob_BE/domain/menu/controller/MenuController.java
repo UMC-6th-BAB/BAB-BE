@@ -3,6 +3,7 @@ package Bob_BE.domain.menu.controller;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuCreateRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuDeleteRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuUpdateRequestDTO;
+import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
 import Bob_BE.domain.menu.service.MenuService;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
@@ -13,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/v1/menus") // 클래스 레벨에서 RequestMapping 사용
+@RequestMapping("/v1/menus")
 @RequiredArgsConstructor
 public class MenuController {
     private final MenuService menuService;
     private final StoreService storeService;
 
-    @PostMapping("/stores/{storeId}/menus") // StoreController로 이동 필요
+    @PostMapping("/stores/{storeId}/menus")
     public ResponseEntity<ApiResponse<?>> createMenus(
             @PathVariable Long storeId,
             @RequestBody MenuCreateRequestDTO requestDTO
@@ -28,16 +29,16 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{menuId}") // 중복된 경로 수정
+    @PatchMapping("/{menuId}")
     public ResponseEntity<ApiResponse<?>> updateMenu(
             @PathVariable Long menuId,
             @RequestBody MenuUpdateRequestDTO requestDTO
     ){
-        ApiResponse<?> response = menuService.updateMenu(menuId, requestDTO);
-        return ResponseEntity.ok(response);
+        MenuResponseDTO.CreateMenuResponseDTO response = menuService.updateMenu(menuId, requestDTO);
+        return ResponseEntity.ok(ApiResponse.onSuccess(response));
     }
 
-    @DeleteMapping // 중복된 경로 수정
+    @DeleteMapping
     public ResponseEntity<ApiResponse<?>> deleteMenus(
             @RequestBody MenuDeleteRequestDTO requestDTO
     ){
@@ -45,12 +46,12 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{menuId}/upload-image") // 중복된 경로 수정
+    @PostMapping("/{menuId}/upload-image")
     public ResponseEntity<ApiResponse<?>> uploadMenuImage(
             @PathVariable Long menuId,
             @RequestParam("imageFile") MultipartFile imageFile
     ){
-        ApiResponse<?> response = menuService.uploadMenuImage(menuId, imageFile);
-        return ResponseEntity.ok(response);
+        MenuResponseDTO.CreateMenuResponseDTO response = menuService.uploadMenuImage(menuId, imageFile);
+        return ResponseEntity.ok(ApiResponse.onSuccess(response));
     }
 }

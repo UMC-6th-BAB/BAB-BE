@@ -19,7 +19,7 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
 
-    public ApiResponse<?> updateMenu(Long menuId, MenuUpdateRequestDTO requestDTO) {
+    public MenuResponseDTO.CreateMenuResponseDTO updateMenu(Long menuId, MenuUpdateRequestDTO requestDTO) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.MENU_NOT_FOUND));
         menu.setMenuName(requestDTO.getMenuName());
@@ -27,14 +27,12 @@ public class MenuService {
         menu.setMenuUrl(requestDTO.getMenuUrl());
         menuRepository.save(menu);
 
-        MenuResponseDTO.CreateMenuResponseDTO response = MenuResponseDTO.CreateMenuResponseDTO.builder()
+        return MenuResponseDTO.CreateMenuResponseDTO.builder()
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
                 .menuUrl(menu.getMenuUrl())
                 .build();
-
-        return ApiResponse.onSuccess(response);
     }
 
     public ApiResponse<?> deleteMenus(MenuDeleteRequestDTO requestDTO) {
@@ -48,7 +46,7 @@ public class MenuService {
         return ApiResponse.onSuccess("메뉴가 성공적으로 삭제되었습니다.");
     }
 
-    public ApiResponse<?> uploadMenuImage(Long menuId, MultipartFile imageFile) {
+    public MenuResponseDTO.CreateMenuResponseDTO uploadMenuImage(Long menuId, MultipartFile imageFile) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.MENU_NOT_FOUND));
 
@@ -56,14 +54,12 @@ public class MenuService {
         menu.setMenuUrl(imageUrl);
         menuRepository.save(menu);
 
-        MenuResponseDTO.CreateMenuResponseDTO response = MenuResponseDTO.CreateMenuResponseDTO.builder()
+        return MenuResponseDTO.CreateMenuResponseDTO.builder()
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
                 .menuUrl(menu.getMenuUrl())
                 .build();
-
-        return ApiResponse.onSuccess(response);
     }
 
     private String saveImageFile(MultipartFile imageFile) {
