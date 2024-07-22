@@ -12,6 +12,6 @@ public class StudentRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginOrRegisterDto{
-        @NotNull String token;
+        @NotNull private String token;
     }
 }

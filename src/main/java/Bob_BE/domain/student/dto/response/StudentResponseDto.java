@@ -8,8 +8,8 @@ public class StudentResponseDto {
     @Getter
     @Builder
     public static class LoginOrRegisterDto{
-        SuccessStatus successStatus;
-        String jwt;
+        private SuccessStatus successStatus;
+        private String jwt;
 
         public SuccessStatus getSuccessStatus() {
             return successStatus;
