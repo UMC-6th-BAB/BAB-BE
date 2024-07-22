@@ -27,7 +27,7 @@ public class DiscountMenu {
     @Column(nullable = false)
     private Integer discountPrice;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
     private Discount discount;
 

@@ -11,6 +11,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "discount")
@@ -40,8 +42,8 @@ public class Discount {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @OneToOne(mappedBy = "discount", cascade = CascadeType.ALL)
-    private DiscountMenu discountMenu;
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL)
+    private List<DiscountMenu> discountMenuList = new ArrayList<>();
 
 
 }
