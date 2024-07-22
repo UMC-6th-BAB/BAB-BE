@@ -5,10 +5,11 @@ import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuUpdateRequestDTO;
 import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
-import Bob_BE.global.response.ApiResponse;
+import Bob_BE.domain.store.dto.response.StoreResponseDTO.DeleteMenuResponseDTO;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.UserHandler;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,15 +36,14 @@ public class MenuService {
                 .build();
     }
 
-    public ApiResponse<?> deleteMenus(MenuDeleteRequestDTO requestDTO) {
+    public List<DeleteMenuResponseDTO> deleteMenus(MenuDeleteRequestDTO requestDTO) {
         List<Long> menuIds = requestDTO.getMenuIds();
-        menuIds.forEach(menuId -> {
+        return menuIds.stream().map(menuId -> {
             Menu menu = menuRepository.findById(menuId)
                     .orElseThrow(() -> new UserHandler(ErrorStatus.MENU_NOT_FOUND));
             menuRepository.delete(menu);
-        });
-
-        return ApiResponse.onSuccess("메뉴가 성공적으로 삭제되었습니다.");
+            return new DeleteMenuResponseDTO(menuId, "삭제되었습니다.");
+        }).collect(Collectors.toList());
     }
 
     public MenuResponseDTO.CreateMenuResponseDTO uploadMenuImage(Long menuId, MultipartFile imageFile) {
