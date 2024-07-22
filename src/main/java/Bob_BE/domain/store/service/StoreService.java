@@ -9,8 +9,9 @@ import Bob_BE.domain.store.dto.response.StoreResponseDTO.MenuCreateResultDTO;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.response.ApiResponse;
+import Bob_BE.global.response.code.resultCode.ErrorStatus;
+import Bob_BE.global.response.exception.handler.UserHandler;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +22,11 @@ public class StoreService {
     private final MenuRepository menuRepository;
 
     public ApiResponse<?> createMenus(Long storeId, MenuCreateRequestDTO requestDTO) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDTO> menus = requestDTO.getMenus();
-        Optional<Store> storeOptional = storeRepository.findById(storeId);
-        Store store = storeOptional.get();
 
-        MenuResponseDTO.CreateMenuResponseDTO responseResult = null;
-        for (MenuCreateRequestDTO.CreateMenuDTO menu : menus) {
+        List<MenuResponseDTO.CreateMenuResponseDTO> responseResults = menus.stream().map(menu -> {
             Menu newMenu = Menu.builder()
                     .menuName(menu.getName())
                     .price(menu.getPrice())
@@ -34,7 +34,7 @@ public class StoreService {
                     .store(store)
                     .build();
             newMenu = menuRepository.save(newMenu);
-            responseResult = MenuResponseDTO.CreateMenuResponseDTO.builder()
+            return MenuResponseDTO.CreateMenuResponseDTO.builder()
                     .id(newMenu.getId())
                     .menuName(newMenu.getMenuName())
                     .price(newMenu.getPrice())
@@ -44,7 +44,8 @@ public class StoreService {
                             .name(store.getName())
                             .build())
                     .build();
-        }
-        return ApiResponse.onSuccess(responseResult);
+        }).toList();
+
+        return ApiResponse.onSuccess(responseResults);
     }
 }
