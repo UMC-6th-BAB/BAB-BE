@@ -7,23 +7,17 @@ import Bob_BE.domain.menu.service.MenuService;
 import Bob_BE.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/menus") // 클래스 레벨에서 RequestMapping 사용
 @RequiredArgsConstructor
 public class MenuController {
     private final MenuService menuService;
 
-    @PostMapping("/stores/{storeId}/menus")
+    @PostMapping("/stores/{storeId}/menus") // StoreController로 이동 필요
     public ResponseEntity<ApiResponse<?>> createMenus(
             @PathVariable Long storeId,
             @RequestBody MenuCreateRequestDTO requestDTO
@@ -32,7 +26,7 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/menus/{menuId}")
+    @PatchMapping("/{menuId}") // 중복된 경로 수정
     public ResponseEntity<ApiResponse<?>> updateMenu(
             @PathVariable Long menuId,
             @RequestBody MenuUpdateRequestDTO requestDTO
@@ -41,7 +35,7 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/menus")
+    @DeleteMapping // 중복된 경로 수정
     public ResponseEntity<ApiResponse<?>> deleteMenus(
             @RequestBody MenuDeleteRequestDTO requestDTO
     ){
@@ -49,7 +43,7 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/menus/{menuId}/upload-image")
+    @PostMapping("/{menuId}/upload-image") // 중복된 경로 수정
     public ResponseEntity<ApiResponse<?>> uploadMenuImage(
             @PathVariable Long menuId,
             @RequestParam("imageFile") MultipartFile imageFile

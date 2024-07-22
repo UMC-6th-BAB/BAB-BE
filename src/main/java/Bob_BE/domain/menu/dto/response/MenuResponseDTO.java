@@ -1,7 +1,6 @@
 
 package Bob_BE.domain.menu.dto.response;
 
-import Bob_BE.domain.menu.dto.response.MenuResponseDTO.Result.StoreDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
