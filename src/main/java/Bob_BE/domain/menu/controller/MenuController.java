@@ -19,9 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/v1")
-@RequiredArgsConstructor // @RequiredArgsConstructor 어노테이션을 추가하여 final 필드인 menuService를 생성자 주입으로 초기화합니다.
+@RequiredArgsConstructor
 public class MenuController {
-    private final MenuService menuService; // final 필드로 선언된 menuService는 생성자에서 초기화됩니다.
+    private final MenuService menuService;
 
     @PostMapping("/stores/{storeId}/menus")
     public ResponseEntity<ApiResponse<?>> createMenus(

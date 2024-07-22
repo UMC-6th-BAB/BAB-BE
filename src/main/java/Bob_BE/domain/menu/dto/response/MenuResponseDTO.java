@@ -37,20 +37,4 @@ public class MenuResponseDTO {
             private String name;
         }
     }
-
-//    // 메뉴 사진 등록을 위한 추가 생성자
-//    public MenuResponseDTO(boolean isSuccess, String code, String message, Long menuId, String menuUrl) {
-//        this.isSuccess = isSuccess;
-//        this.code = code;
-//        this.message = message;
-//        this.result = new Result(menuId, null, null, menuUrl, null);
-//    }
-//
-//    // 메뉴 삭제 응답을 위한 추가 생성자
-//    public MenuResponseDTO(boolean isSuccess, String code, String message) {
-//        this.isSuccess = isSuccess;
-//        this.code = code;
-//        this.message = message;
-//        this.result = null;
-//    }
 }
