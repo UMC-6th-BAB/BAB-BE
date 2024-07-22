@@ -4,6 +4,7 @@ import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuCreateRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuDeleteRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuUpdateRequestDTO;
 import Bob_BE.domain.menu.service.MenuService;
+import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MenuController {
     private final MenuService menuService;
+    private final StoreService storeService;
 
     @PostMapping("/stores/{storeId}/menus") // StoreController로 이동 필요
     public ResponseEntity<ApiResponse<?>> createMenus(
             @PathVariable Long storeId,
             @RequestBody MenuCreateRequestDTO requestDTO
     ){
-        ApiResponse<?> response = menuService.createMenus(storeId, requestDTO);
+        ApiResponse<?> response = storeService.createMenus(storeId, requestDTO);
         return ResponseEntity.ok(response);
     }
 

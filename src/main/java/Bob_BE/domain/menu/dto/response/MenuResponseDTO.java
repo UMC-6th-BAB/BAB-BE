@@ -1,6 +1,7 @@
 
 package Bob_BE.domain.menu.dto.response;
 
+import Bob_BE.domain.store.dto.response.StoreResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,20 +21,11 @@ public class MenuResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Result {
+    public static class CreateMenuResponseDTO {
         private Long id;
         private String menuName;
         private Integer price;
         private String menuUrl;
-        private StoreDTO store;
-
-        @Builder
-        @Getter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class StoreDTO {
-            private Long id;
-            private String name;
-        }
+        private StoreResponseDTO.MenuCreateResultDTO store;
     }
 }
