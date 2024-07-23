@@ -32,7 +32,7 @@ public class Owner extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
-    private String socialId;
+    private Long socialId;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Store> storeList = new ArrayList<>();
