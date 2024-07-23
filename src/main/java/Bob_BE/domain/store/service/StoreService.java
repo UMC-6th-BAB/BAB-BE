@@ -1,5 +1,6 @@
 package Bob_BE.domain.store.service;
 
+import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuCreateRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuCreateRequestDTO.CreateMenuDTO;
 import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
@@ -33,16 +34,7 @@ public class StoreService {
                     .store(store)
                     .build();
             newMenu = menuRepository.save(newMenu);
-            return MenuResponseDTO.CreateMenuResponseDTO.builder()
-                    .id(newMenu.getId())
-                    .menuName(newMenu.getMenuName())
-                    .price(newMenu.getPrice())
-                    .menuUrl(newMenu.getMenuUrl())
-                    .store(MenuCreateResultDTO.builder()
-                            .id(store.getId())
-                            .name(store.getName())
-                            .build())
-                    .build();
+            return MenuConverter.toCreateMenuRegisterResponseDTO(newMenu);
         }).toList();
     }
 }

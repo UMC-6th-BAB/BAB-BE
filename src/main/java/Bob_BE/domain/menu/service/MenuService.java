@@ -1,5 +1,6 @@
 package Bob_BE.domain.menu.service;
 
+import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuDeleteRequestDTO;
 import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuUpdateRequestDTO;
 import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
@@ -9,7 +10,6 @@ import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,12 +28,7 @@ public class MenuService {
         menu.setMenuUrl(requestDTO.getMenuUrl());
         menuRepository.save(menu);
 
-        return MenuResponseDTO.CreateMenuResponseDTO.builder()
-                .id(menu.getId())
-                .menuName(menu.getMenuName())
-                .price(menu.getPrice())
-                .menuUrl(menu.getMenuUrl())
-                .build();
+        return MenuConverter.toCreateMenuResponseDTO(menu);
     }
 
     public List<DeleteMenuResponseDTO> deleteMenus(MenuDeleteRequestDTO requestDTO) {
@@ -42,8 +37,8 @@ public class MenuService {
             Menu menu = menuRepository.findById(menuId)
                     .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
             menuRepository.delete(menu);
-            return new DeleteMenuResponseDTO(menuId, "삭제되었습니다.");
-        }).collect(Collectors.toList());
+            return MenuConverter.toDeleteMenuResponseDTO(menuId);
+        }).toList();
     }
 
     public MenuResponseDTO.CreateMenuResponseDTO uploadMenuImage(Long menuId, MultipartFile imageFile) {
@@ -54,12 +49,7 @@ public class MenuService {
         menu.setMenuUrl(imageUrl);
         menuRepository.save(menu);
 
-        return MenuResponseDTO.CreateMenuResponseDTO.builder()
-                .id(menu.getId())
-                .menuName(menu.getMenuName())
-                .price(menu.getPrice())
-                .menuUrl(menu.getMenuUrl())
-                .build();
+        return MenuConverter.toCreateMenuResponseDTO(menu);
     }
 
     private String saveImageFile(MultipartFile imageFile) {
