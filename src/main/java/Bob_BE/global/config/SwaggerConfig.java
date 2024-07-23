@@ -1,4 +1,4 @@
-package Bob_BE.global.swagger;
+package Bob_BE.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI BabAPI() {
+    public OpenAPI BabAPI() {
         Info info = new Info()
                 .title("BAB API")
                 .description("BAB API 명세서")
