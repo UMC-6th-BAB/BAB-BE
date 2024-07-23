@@ -20,28 +20,28 @@ public class MenuController {
     private final MenuService menuService;
 
     @PatchMapping("/{menuId}")
-    public ResponseEntity<ApiResponse<MenuResponseDTO.CreateMenuResponseDTO>> updateMenu(
+    public ApiResponse<MenuResponseDTO.CreateMenuResponseDTO> updateMenu(
             @PathVariable Long menuId,
             @RequestBody MenuUpdateRequestDTO requestDTO
     ){
         MenuResponseDTO.CreateMenuResponseDTO response = menuService.updateMenu(menuId, requestDTO);
-        return ResponseEntity.ok(ApiResponse.onSuccess(response));
+        return ApiResponse.onSuccess(response);
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<List<DeleteMenuResponseDTO>>> deleteMenus(
+    public ApiResponse<List<DeleteMenuResponseDTO>> deleteMenus(
             @RequestBody MenuDeleteRequestDTO requestDTO
     ){
         List<DeleteMenuResponseDTO> response = menuService.deleteMenus(requestDTO);
-        return ResponseEntity.ok(ApiResponse.onSuccess(response));
+        return ApiResponse.onSuccess(response);
     }
 
     @PostMapping("/{menuId}/upload-image")
-    public ResponseEntity<ApiResponse<?>> uploadMenuImage(
+    public ApiResponse<MenuResponseDTO.CreateMenuResponseDTO> uploadMenuImage(
             @PathVariable Long menuId,
             @RequestParam("imageFile") MultipartFile imageFile
     ){
         MenuResponseDTO.CreateMenuResponseDTO response = menuService.uploadMenuImage(menuId, imageFile);
-        return ResponseEntity.ok(ApiResponse.onSuccess(response));
+        return ApiResponse.onSuccess(response);
     }
 }

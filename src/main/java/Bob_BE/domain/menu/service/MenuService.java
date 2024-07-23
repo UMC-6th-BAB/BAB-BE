@@ -7,7 +7,7 @@ import Bob_BE.domain.menu.dto.response.MenuResponseDTO.DeleteMenuResponseDTO;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
-import Bob_BE.global.response.exception.handler.UserHandler;
+import Bob_BE.global.response.exception.handler.MenuHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class MenuService {
 
     public MenuResponseDTO.CreateMenuResponseDTO updateMenu(Long menuId, MenuUpdateRequestDTO requestDTO) {
         Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MENU_NOT_FOUND));
+                .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
         menu.setMenuName(requestDTO.getMenuName());
         menu.setPrice(requestDTO.getPrice());
         menu.setMenuUrl(requestDTO.getMenuUrl());
@@ -40,7 +40,7 @@ public class MenuService {
         List<Long> menuIds = requestDTO.getMenuIds();
         return menuIds.stream().map(menuId -> {
             Menu menu = menuRepository.findById(menuId)
-                    .orElseThrow(() -> new UserHandler(ErrorStatus.MENU_NOT_FOUND));
+                    .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
             menuRepository.delete(menu);
             return new DeleteMenuResponseDTO(menuId, "삭제되었습니다.");
         }).collect(Collectors.toList());
@@ -48,7 +48,7 @@ public class MenuService {
 
     public MenuResponseDTO.CreateMenuResponseDTO uploadMenuImage(Long menuId, MultipartFile imageFile) {
         Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MENU_NOT_FOUND));
+                .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
 
         String imageUrl = saveImageFile(imageFile);
         menu.setMenuUrl(imageUrl);

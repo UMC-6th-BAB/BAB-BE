@@ -9,7 +9,7 @@ import Bob_BE.domain.store.dto.response.StoreResponseDTO.MenuCreateResultDTO;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
-import Bob_BE.global.response.exception.handler.UserHandler;
+import Bob_BE.global.response.exception.handler.MenuHandler;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class StoreService {
 
     public List<MenuResponseDTO.CreateMenuResponseDTO> createMenus(Long storeId, MenuCreateRequestDTO requestDTO) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.STORE_NOT_FOUND));
+                .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDTO> menus = requestDTO.getMenus();
 
         return menus.stream().map(menu -> {

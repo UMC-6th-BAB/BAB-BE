@@ -20,11 +20,11 @@ public class StoreController {
     private final StoreService storeService;
 
     @PostMapping("/{storeId}/menus")
-    public ResponseEntity<ApiResponse<List<CreateMenuResponseDTO>>> createMenus(
+    public ApiResponse<List<CreateMenuResponseDTO>> createMenus(
             @PathVariable Long storeId,
             @RequestBody MenuCreateRequestDTO requestDTO
     ){
         var response = storeService.createMenus(storeId, requestDTO);
-        return ResponseEntity.ok(ApiResponse.onSuccess(response));
+        return ApiResponse.onSuccess(response);
     }
 }
