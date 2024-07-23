@@ -4,7 +4,7 @@ import Bob_BE.domain.student.dto.request.StudentRequestDto;
 import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
-import Bob_BE.domain.student.util.JwtTokenProvider;
+import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.global.external.KakaoResponseDto;
 import Bob_BE.global.external.KakaoUserClient;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
