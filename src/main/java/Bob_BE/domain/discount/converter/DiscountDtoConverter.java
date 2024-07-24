@@ -11,4 +11,5 @@ public interface DiscountDtoConverter {
     DiscountDtoConverter INSTANCE = Mappers.getMapper(DiscountDtoConverter.class);
 
     DiscountParameterDto.CreateDiscountParamDto toCreateDiscountParamDto(DiscountRequestDto.CreateDiscountRequestDto request, Long storeId);
+    DiscountParameterDto.DeleteDiscountParamDto toDeleteDiscountParamDto(Long storeId, Long discountId);
 }

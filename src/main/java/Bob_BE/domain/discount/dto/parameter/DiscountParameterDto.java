@@ -29,4 +29,14 @@ public class DiscountParameterDto {
         @NotNull
         private Long storeId;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteDiscountParamDto {
+
+        private Long storeId;
+        private Long discountId;
+    }
 }

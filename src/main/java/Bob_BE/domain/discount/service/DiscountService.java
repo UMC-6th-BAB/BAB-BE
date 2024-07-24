@@ -7,4 +7,6 @@ import jakarta.validation.Valid;
 public interface DiscountService {
 
     public Discount CreateDiscount(@Valid DiscountParameterDto.CreateDiscountParamDto param);
+    public void DeleteDiscount(@Valid DiscountParameterDto.DeleteDiscountParamDto param);
+    public void ChangeDiscountProgress();
 }

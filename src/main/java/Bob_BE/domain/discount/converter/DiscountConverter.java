@@ -10,6 +10,14 @@ import java.util.ArrayList;
 
 public class DiscountConverter {
 
+    public static DiscountResponseDto.DeleteDiscountResponseDto toDeleteDiscountResponseDto() {
+
+        return DiscountResponseDto.DeleteDiscountResponseDto.builder()
+                .message("삭제 성공.")
+                .deletedAt(LocalDateTime.now())
+                .build();
+    }
+
     public static DiscountResponseDto.CreateDiscountResponseDto toCreateDiscountResponseDto(Discount discount) {
 
         return DiscountResponseDto.CreateDiscountResponseDto.builder()
