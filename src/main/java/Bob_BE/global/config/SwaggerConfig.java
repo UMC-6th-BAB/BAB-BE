@@ -1,4 +1,4 @@
-package practiceProject.cmap.config.swagger;
+package Bob_BE.global.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI CmapAPI() {
+    public OpenAPI BabAPI() {
         Info info = new Info()
                 .title("BAB API")
                 .description("BAB API 명세서")

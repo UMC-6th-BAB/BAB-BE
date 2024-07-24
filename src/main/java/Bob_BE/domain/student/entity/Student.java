@@ -29,7 +29,7 @@ public class Student extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
-    private String socialId;
+    private Long socialId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id")
