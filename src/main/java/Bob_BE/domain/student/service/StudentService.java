@@ -93,4 +93,14 @@ public class StudentService {
             throw new GeneralException(ErrorStatus.USER_NOT_FOUND);
         }
     }
+
+    public StudentResponseDto.myPageDto getMyPage(Long userId) {
+        Optional<Student> studentOptional = studentRepository.findById(userId);
+        if(studentOptional.isPresent()){
+            Student student = studentOptional.get();
+            return StudentConverter.toMyPageDto(student);
+        } else {
+            throw new GeneralException(ErrorStatus.USER_NOT_FOUND);
+        }
+    }
 }
