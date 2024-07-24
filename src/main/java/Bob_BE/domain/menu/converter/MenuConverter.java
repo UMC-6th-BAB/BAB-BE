@@ -1,21 +1,21 @@
 package Bob_BE.domain.menu.converter;
 
-import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
+import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
-import Bob_BE.domain.store.dto.response.StoreResponseDTO;
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
 
 public class MenuConverter {
 
     private MenuConverter() {}
 
     // Menu Create
-    public static MenuResponseDTO.CreateMenuResponseDTO toCreateMenuRegisterResponseDTO(Menu menu) {
-        return MenuResponseDTO.CreateMenuResponseDTO.builder()
+    public static MenuResponseDto.CreateMenuResponseDto toCreateMenuRegisterResponseDto(Menu menu) {
+        return MenuResponseDto.CreateMenuResponseDto.builder()
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
                 .menuUrl(menu.getMenuUrl())
-                .store(StoreResponseDTO.MenuCreateResultDTO.builder()
+                .store(StoreResponseDto.MenuCreateResultDto.builder()
                         .id(menu.getStore().getId())
                         .name(menu.getStore().getName())
                         .build())
@@ -23,8 +23,8 @@ public class MenuConverter {
     }
 
     // Menu Update, Menu Image Update
-    public static MenuResponseDTO.CreateMenuResponseDTO toCreateMenuResponseDTO(Menu menu) {
-        return MenuResponseDTO.CreateMenuResponseDTO.builder()
+    public static MenuResponseDto.CreateMenuResponseDto toCreateMenuResponseDto(Menu menu) {
+        return MenuResponseDto.CreateMenuResponseDto.builder()
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
@@ -33,8 +33,8 @@ public class MenuConverter {
     }
 
     //Menu Delete
-    public static MenuResponseDTO.DeleteMenuResponseDTO toDeleteMenuResponseDTO(Long menuId) {
-        return MenuResponseDTO.DeleteMenuResponseDTO.builder()
+    public static MenuResponseDto.DeleteMenuResponseDto toDeleteMenuResponseDto(Long menuId) {
+        return MenuResponseDto.DeleteMenuResponseDto.builder()
                 .id(menuId)
                 .message("삭제되었습니다.")
                 .build();

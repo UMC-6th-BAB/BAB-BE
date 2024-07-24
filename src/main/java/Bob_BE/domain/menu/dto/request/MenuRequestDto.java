@@ -9,19 +9,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
-public class MenuRequestDTO {
+public class MenuRequestDto {
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MenuCreateRequestDTO {
-        private List<CreateMenuDTO> menus;
+    public static class MenuCreateRequestDto {
+        private List<CreateMenuDto> menus;
 
         @Builder
         @Getter
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class CreateMenuDTO {
+        public static class CreateMenuDto {
             private String name;
             private Integer price;
             private String menuUrl;
@@ -32,7 +32,7 @@ public class MenuRequestDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MenuUpdateRequestDTO {
+    public static class MenuUpdateRequestDto {
         private String menuName;
         private Integer price;
         private String menuUrl;
@@ -42,7 +42,7 @@ public class MenuRequestDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MenuDeleteRequestDTO {
+    public static class MenuDeleteRequestDto {
         private List<Long> menuIds;
     }
 
@@ -50,7 +50,7 @@ public class MenuRequestDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MenuImageUploadRequestDTO {
+    public static class MenuImageUploadRequestDto {
         private Long menuId;
         private MultipartFile imageFile;
     }

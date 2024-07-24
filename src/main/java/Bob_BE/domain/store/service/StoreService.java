@@ -1,12 +1,11 @@
 package Bob_BE.domain.store.service;
 
 import Bob_BE.domain.menu.converter.MenuConverter;
-import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuCreateRequestDTO;
-import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuCreateRequestDTO.CreateMenuDTO;
-import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
+import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
+import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.CreateMenuDto;
+import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
-import Bob_BE.domain.store.dto.response.StoreResponseDTO.MenuCreateResultDTO;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
@@ -21,10 +20,10 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
 
-    public List<MenuResponseDTO.CreateMenuResponseDTO> createMenus(Long storeId, MenuCreateRequestDTO requestDTO) {
+    public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
-        List<CreateMenuDTO> menus = requestDTO.getMenus();
+        List<CreateMenuDto> menus = requestDto.getMenus();
 
         return menus.stream().map(menu -> {
             Menu newMenu = Menu.builder()
@@ -34,7 +33,7 @@ public class StoreService {
                     .store(store)
                     .build();
             newMenu = menuRepository.save(newMenu);
-            return MenuConverter.toCreateMenuRegisterResponseDTO(newMenu);
+            return MenuConverter.toCreateMenuRegisterResponseDto(newMenu);
         }).toList();
     }
 }

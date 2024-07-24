@@ -1,10 +1,10 @@
 package Bob_BE.domain.menu.service;
 
 import Bob_BE.domain.menu.converter.MenuConverter;
-import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuDeleteRequestDTO;
-import Bob_BE.domain.menu.dto.request.MenuRequestDTO.MenuUpdateRequestDTO;
-import Bob_BE.domain.menu.dto.response.MenuResponseDTO;
-import Bob_BE.domain.menu.dto.response.MenuResponseDTO.DeleteMenuResponseDTO;
+import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuDeleteRequestDto;
+import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuUpdateRequestDto;
+import Bob_BE.domain.menu.dto.response.MenuResponseDto;
+import Bob_BE.domain.menu.dto.response.MenuResponseDto.DeleteMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
@@ -20,7 +20,7 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
 
-    public MenuResponseDTO.CreateMenuResponseDTO updateMenu(Long menuId, MenuUpdateRequestDTO requestDTO) {
+    public MenuResponseDto.CreateMenuResponseDto updateMenu(Long menuId, MenuUpdateRequestDto requestDTO) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
         menu.setMenuName(requestDTO.getMenuName());
@@ -28,20 +28,20 @@ public class MenuService {
         menu.setMenuUrl(requestDTO.getMenuUrl());
         menuRepository.save(menu);
 
-        return MenuConverter.toCreateMenuResponseDTO(menu);
+        return MenuConverter.toCreateMenuResponseDto(menu);
     }
 
-    public List<DeleteMenuResponseDTO> deleteMenus(MenuDeleteRequestDTO requestDTO) {
+    public List<DeleteMenuResponseDto> deleteMenus(MenuDeleteRequestDto requestDTO) {
         List<Long> menuIds = requestDTO.getMenuIds();
         return menuIds.stream().map(menuId -> {
             Menu menu = menuRepository.findById(menuId)
                     .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
             menuRepository.delete(menu);
-            return MenuConverter.toDeleteMenuResponseDTO(menuId);
+            return MenuConverter.toDeleteMenuResponseDto(menuId);
         }).toList();
     }
 
-    public MenuResponseDTO.CreateMenuResponseDTO uploadMenuImage(Long menuId, MultipartFile imageFile) {
+    public MenuResponseDto.CreateMenuResponseDto uploadMenuImage(Long menuId, MultipartFile imageFile) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
 
@@ -49,7 +49,7 @@ public class MenuService {
         menu.setMenuUrl(imageUrl);
         menuRepository.save(menu);
 
-        return MenuConverter.toCreateMenuResponseDTO(menu);
+        return MenuConverter.toCreateMenuResponseDto(menu);
     }
 
     private String saveImageFile(MultipartFile imageFile) {

@@ -1,31 +1,31 @@
 
 package Bob_BE.domain.menu.dto.response;
 
-import Bob_BE.domain.store.dto.response.StoreResponseDTO;
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
-public class MenuResponseDTO {
+public class MenuResponseDto {
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateMenuResponseDTO {
+    public static class CreateMenuResponseDto {
         private Long id;
         private String menuName;
         private Integer price;
         private String menuUrl;
-        private StoreResponseDTO.MenuCreateResultDTO store;
+        private StoreResponseDto.MenuCreateResultDto store;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class DeleteMenuResponseDTO {
+    public static class DeleteMenuResponseDto {
         private Long id;
         private String message;
     }

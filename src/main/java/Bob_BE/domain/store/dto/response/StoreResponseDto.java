@@ -5,12 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class StoreResponseDTO {
+public class StoreResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class MenuCreateResultDTO {
+    public static class MenuCreateResultDto {
         private Long id;
         private String name;
     }
