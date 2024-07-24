@@ -1,4 +1,4 @@
-package Bob_BE.domain.student.util;
+package Bob_BE.global.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,5 +32,27 @@ public class JwtTokenProvider {
                 .expiration(validity)
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public boolean isValidateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Long getId(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("id", Long.class);
     }
 }

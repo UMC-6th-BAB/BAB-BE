@@ -3,10 +3,7 @@ package Bob_BE.domain.student.entity;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.baseEntity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -31,6 +28,7 @@ public class Student extends BaseEntity {
     @Column(nullable = false)
     private Long socialId;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id")
     private University university;

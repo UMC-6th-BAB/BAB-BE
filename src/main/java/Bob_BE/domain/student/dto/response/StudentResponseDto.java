@@ -11,4 +11,10 @@ public class StudentResponseDto {
         private SuccessStatus successStatus;
         private String jwt;
     }
+
+    @Getter
+    @Builder
+    public static class updateUniversityDto {
+        private String message;
+    }
 }
