@@ -39,4 +39,13 @@ public class DiscountParameterDto {
         private Long storeId;
         private Long discountId;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetDiscountedListParamDto {
+
+        private Long storeId;
+    }
 }

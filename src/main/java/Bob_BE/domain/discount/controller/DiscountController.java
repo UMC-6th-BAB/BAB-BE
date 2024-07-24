@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -60,5 +62,22 @@ public class DiscountController {
         DiscountParameterDto.DeleteDiscountParamDto deleteDiscountParamDto = DiscountDtoConverter.INSTANCE.toDeleteDiscountParamDto(storeId, discountId);
         discountService.DeleteDiscount(deleteDiscountParamDto);
         return ApiResponse.onSuccess(DiscountConverter.toDeleteDiscountResponseDto());
+    }
+
+    @GetMapping("/{storeId}/discounts")
+    @Operation(summary = "사장님 과거 할인 목록 가져오기 API", description = "사장님 과거 할인 목록 가져오기 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE401", description = "해당 가게가 존재하지 않습니다.")
+
+    })
+    @Parameters({
+            @Parameter(name = "storeId", description = "가게 식별자, PathVariable")
+    })
+    public ApiResponse<DiscountResponseDto.GetDiscountedListResponseDto> GetDiscountedList(@PathVariable("storeId") Long storeId) {
+
+        DiscountParameterDto.GetDiscountedListParamDto getDiscountedListParamDto = DiscountDtoConverter.INSTANCE.toGetDiscountedListParamDto(storeId);
+        List<Discount> discountedList = discountService.GetDiscountedList(getDiscountedListParamDto);
+        return ApiResponse.onSuccess(DiscountConverter.toGetDiscountedListResponseDto(discountedList));
     }
 }

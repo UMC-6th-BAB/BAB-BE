@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,5 +99,23 @@ public class DiscountServiceImpl implements DiscountService {
         List<Discount> discountList = discountRepository.findAll();
         discountList.stream()
                 .forEach(Discount::setInProgress);
+    }
+
+    /**
+     * 진행했던 할인 행사 목록 가져오기
+     * return : List<Discount>
+     */
+    @Override
+    public List<Discount> GetDiscountedList(@Valid DiscountParameterDto.GetDiscountedListParamDto param) {
+
+        Store findStore = storeRepository.findById(param.getStoreId())
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        List<Discount> discountedList = discountRepository.findAllByStoreAndInProgress(findStore, false)
+                .orElse(new ArrayList<>());
+
+        discountedList.removeIf(discount -> discount.getStartDate().compareTo(LocalDate.now()) > 0);
+
+        return discountedList;
     }
 }

@@ -1,11 +1,14 @@
 package Bob_BE.domain.discount.dto.response;
 
+import Bob_BE.domain.discount.dto.data.DiscountDataDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class DiscountResponseDto {
 
@@ -27,5 +30,15 @@ public class DiscountResponseDto {
 
         private String message;
         private LocalDateTime deletedAt;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetDiscountedListResponseDto {
+
+        private List<DiscountDataDto.GetDiscountDataDto> getDiscountDataDtoList;
+        private Integer totalDataNum;
     }
 }

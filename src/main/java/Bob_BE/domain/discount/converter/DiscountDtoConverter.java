@@ -12,4 +12,5 @@ public interface DiscountDtoConverter {
 
     DiscountParameterDto.CreateDiscountParamDto toCreateDiscountParamDto(DiscountRequestDto.CreateDiscountRequestDto request, Long storeId);
     DiscountParameterDto.DeleteDiscountParamDto toDeleteDiscountParamDto(Long storeId, Long discountId);
+    DiscountParameterDto.GetDiscountedListParamDto toGetDiscountedListParamDto(Long storeId);
 }
