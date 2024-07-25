@@ -1,11 +1,11 @@
 package Bob_BE.domain.discount.service;
 
-import Bob_BE.domain.discountMenu.converter.DiscountMenuConverter;
-import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.discount.converter.DiscountConverter;
 import Bob_BE.domain.discount.dto.parameter.DiscountParameterDto;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discount.repository.DiscountRepository;
+import Bob_BE.domain.discountMenu.converter.DiscountMenuConverter;
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.domain.store.entity.Store;
@@ -20,6 +20,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,5 +94,22 @@ public class DiscountService {
         List<Discount> discountList = discountRepository.findAll();
         discountList.stream()
                 .forEach(Discount::setInProgress);
+    }
+
+    /**
+     * 진행했던 할인 행사 목록 가져오기
+     * return : List<Discount>
+     */
+    public List<Discount> GetDiscountedList(@Valid DiscountParameterDto.GetDiscountedListParamDto param) {
+
+        Store findStore = storeRepository.findById(param.getStoreId())
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        List<Discount> discountedList = discountRepository.findAllByStoreAndInProgress(findStore, false)
+                .orElse(new ArrayList<>());
+
+        discountedList.removeIf(discount -> discount.getStartDate().compareTo(LocalDate.now()) > 0);
+
+        return discountedList;
     }
 }
