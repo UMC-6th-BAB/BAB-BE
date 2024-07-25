@@ -40,4 +40,12 @@ public class StoreResponseDto {
         @NotNull
         private String name;
     }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StoreCreateResultDto {
+        private Long id;
+        private String name;
+    }
 }
