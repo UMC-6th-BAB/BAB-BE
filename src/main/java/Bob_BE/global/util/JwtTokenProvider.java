@@ -1,4 +1,4 @@
-package Bob_BE.domain.student.util;
+package Bob_BE.global.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
