@@ -1,7 +1,7 @@
-package Bob_BE.domain.student.entity;
+package Bob_BE.domain.DiscountMenu.entity;
 
-import Bob_BE.domain.university.entity.University;
-import Bob_BE.global.baseEntity.BaseEntity;
+import Bob_BE.domain.discount.entity.Discount;
+import Bob_BE.domain.menu.entity.Menu;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,27 +11,27 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
-@Table(name = "student")
+@Table(name = "discount_menu")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-public class Student extends BaseEntity {
+public class DiscountMenu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="student_id")
+    @Column(name="discount_menu_id")
     private Long id;
 
-    private String nickname;
-
-    private String email;
-
     @Column(nullable = false)
-    private Long socialId;
+    private Integer discountPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "university_id")
-    private University university;
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
 }
