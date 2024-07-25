@@ -1,6 +1,6 @@
 package Bob_BE.domain.discount.entity;
 
-import Bob_BE.domain.DiscountMenu.entity.DiscountMenu;
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -45,5 +45,15 @@ public class Discount {
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL)
     private List<DiscountMenu> discountMenuList = new ArrayList<>();
 
+    /**
+     * 상태 수정 로직
+     */
+    public void setInProgress() {
 
+        LocalDate nowDate = LocalDate.now();
+        if (nowDate.compareTo(this.startDate) >= 0 && nowDate.compareTo(this.endDate) <= 0) {
+            this.inProgress = true;
+        }
+        else this.inProgress = false;
+    }
 }

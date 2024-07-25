@@ -1,4 +1,4 @@
-package Bob_BE.domain.DiscountMenu.entity;
+package Bob_BE.domain.discountMenu.entity;
 
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.menu.entity.Menu;
@@ -34,4 +34,25 @@ public class DiscountMenu {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private Menu menu;
+
+    /** 연관관계 편의 메서드 **/
+    public void setDiscount(Discount discount) {
+
+        if (this.discount != null) {
+            this.discount.getDiscountMenuList().remove(this);
+        }
+
+        this.discount = discount;
+        this.discount.getDiscountMenuList().add(this);
+    }
+
+    public void setMenu(Menu menu) {
+
+        if (this.menu != null) {
+            this.menu.getDiscountMenuList().remove(this);
+        }
+
+        this.menu = menu;
+        this.menu.getDiscountMenuList().add(this);
+    }
 }
