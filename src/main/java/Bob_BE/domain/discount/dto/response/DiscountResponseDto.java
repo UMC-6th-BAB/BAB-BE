@@ -15,8 +15,8 @@ public class DiscountResponseDto {
     @AllArgsConstructor
     public static class CreateDiscountResponseDto {
 
-        Long discountId;
-        LocalDateTime createdAt;
+        private Long discountId;
+        private LocalDateTime createdAt;
     }
 
     @Getter

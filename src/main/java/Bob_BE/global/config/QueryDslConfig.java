@@ -1,4 +1,4 @@
-package Bob_BE.global.queryDsl;
+package Bob_BE.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
