@@ -13,27 +13,22 @@ import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
-import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
-import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
-import Bob_BE.domain.university.entity.University;
-import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
-
-import java.io.UncheckedIOException;
 import java.util.List;
-
 import Bob_BE.global.response.exception.handler.OwnerHandler;
-import Bob_BE.global.response.exception.handler.UniversityHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StoreService {
+
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OwnerRepository ownerRepository;
@@ -43,6 +38,7 @@ public class StoreService {
 
     @Transactional
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
+
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDto> menus = requestDto.getMenus();
