@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "menu")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
