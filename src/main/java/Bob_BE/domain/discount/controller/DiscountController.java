@@ -68,7 +68,7 @@ public class DiscountController {
     @Operation(summary = "사장님 과거 할인 목록 가져오기 API", description = "사장님 과거 할인 목록 가져오기 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE401", description = "해당 가게가 존재하지 않습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게가 존재하지 않습니다.")
 
     })
     @Parameters({
