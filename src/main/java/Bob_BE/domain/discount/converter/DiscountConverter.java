@@ -1,5 +1,6 @@
 package Bob_BE.domain.discount.converter;
 
+import Bob_BE.domain.discount.dto.data.DiscountDataDto;
 import Bob_BE.domain.discount.dto.parameter.DiscountParameterDto;
 import Bob_BE.domain.discount.dto.response.DiscountResponseDto;
 import Bob_BE.domain.discount.entity.Discount;
@@ -7,8 +8,29 @@ import Bob_BE.domain.store.entity.Store;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DiscountConverter {
+
+    public static DiscountResponseDto.GetDiscountedListResponseDto toGetDiscountedListResponseDto(List<Discount> discountList) {
+
+        List<DiscountDataDto.GetDiscountDataDto> getDiscountDataDtoList = discountList.stream()
+                .map(discount -> {
+                    return DiscountDataDto.GetDiscountDataDto.builder()
+                            .discountId(discount.getId())
+                            .storeName(discount.getStore().getName())
+                            .discountTitle(discount.getTitle())
+                            .startDate(discount.getStartDate())
+                            .endDate(discount.getEndDate())
+                            .build();
+                }).collect(Collectors.toList());
+
+        return DiscountResponseDto.GetDiscountedListResponseDto.builder()
+                .getDiscountDataDtoList(getDiscountDataDtoList)
+                .totalDataNum(getDiscountDataDtoList.size())
+                .build();
+    }
 
     public static DiscountResponseDto.DeleteDiscountResponseDto toDeleteDiscountResponseDto() {
 
