@@ -13,16 +13,6 @@ public class DiscountDataDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateDiscountDataDto {
-
-        Long menuId;
-        Integer discountPrice;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class GetDiscountDataDto {
 
         private Long discountId;

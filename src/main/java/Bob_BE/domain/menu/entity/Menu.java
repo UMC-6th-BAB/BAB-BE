@@ -1,13 +1,13 @@
 package Bob_BE.domain.menu.entity;
 
-import Bob_BE.domain.DiscountMenu.entity.DiscountMenu;
-import Bob_BE.domain.discount.entity.Discount;
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -17,6 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "menu")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

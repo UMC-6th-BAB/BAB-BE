@@ -1,11 +1,11 @@
 package Bob_BE.domain.discount.service;
 
-import Bob_BE.domain.DiscountMenu.converter.DiscountMenuConverter;
-import Bob_BE.domain.DiscountMenu.entity.DiscountMenu;
 import Bob_BE.domain.discount.converter.DiscountConverter;
 import Bob_BE.domain.discount.dto.parameter.DiscountParameterDto;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discount.repository.DiscountRepository;
+import Bob_BE.domain.discountMenu.converter.DiscountMenuConverter;
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.domain.store.entity.Store;

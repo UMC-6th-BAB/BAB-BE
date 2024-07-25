@@ -1,4 +1,4 @@
-package Bob_BE.domain.DiscountMenu.entity;
+package Bob_BE.domain.discountMenu.entity;
 
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.menu.entity.Menu;

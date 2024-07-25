@@ -1,6 +1,7 @@
 package Bob_BE.domain.discount.dto.parameter;
 
 import Bob_BE.domain.discount.dto.data.DiscountDataDto;
+import Bob_BE.domain.discountMenu.dto.data.DiscountMenuDataDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class DiscountParameterDto {
     @AllArgsConstructor
     public static class CreateDiscountParamDto {
 
-        private List<DiscountDataDto.CreateDiscountDataDto> discountMenuDataDtoList;
+        private List<DiscountMenuDataDto.CreateDiscountMenuDataDto> discountMenuDataDtoList;
         @NotNull
         private String title;
         @NotNull
