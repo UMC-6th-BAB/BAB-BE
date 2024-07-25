@@ -11,10 +11,12 @@ import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
+import Bob_BE.global.response.exception.handler.DiscountHandler;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 import Bob_BE.global.response.exception.handler.StoreHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,5 +61,36 @@ public class DiscountService {
         Discount savedDiscount = discountRepository.save(newDiscount);
 
         return savedDiscount;
+    }
+
+    /**
+     * 할인 삭제
+     * return : void
+     */
+    @Transactional
+    public void DeleteDiscount(@Valid DiscountParameterDto.DeleteDiscountParamDto param) {
+
+        Store findStore = storeRepository.findById(param.getStoreId())
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        Discount findDiscount = discountRepository.findById(param.getDiscountId())
+                .orElseThrow(() -> new DiscountHandler(ErrorStatus.DISCOUNT_NOT_FOUND));
+
+        if (!findDiscount.getStore().equals(findStore)) throw new DiscountHandler(ErrorStatus.DISCOUNT_STORE_NOT_MATCH);
+
+        discountRepository.delete(findDiscount);
+    }
+
+    /**
+     * 할인 행사 상태 변경
+     * 매일 자정에 실행
+     */
+    @Transactional
+    @Scheduled(cron = "1 0 0 * * *")
+    public void ChangeDiscountProgress() {
+
+        List<Discount> discountList = discountRepository.findAll();
+        discountList.stream()
+                .forEach(Discount::setInProgress);
     }
 }

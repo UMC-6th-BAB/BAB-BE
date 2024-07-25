@@ -29,8 +29,8 @@ public class DiscountController {
     @Operation(summary = "할인 추가 API", description = "할인 추가 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE401", description = "해당 가게가 존재하지 않습니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MENU401", description = "해당 메뉴가 존재하지 않습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게가 존재하지 않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MENU404", description = "해당 메뉴가 존재하지 않습니다.")
 
     })
     @Parameters({
@@ -41,5 +41,24 @@ public class DiscountController {
         DiscountParameterDto.CreateDiscountParamDto createDiscountParamDto = DiscountDtoConverter.INSTANCE.toCreateDiscountParamDto(request, storeId);
         Discount discount = discountService.CreateDiscount(createDiscountParamDto);
         return ApiResponse.onSuccess(DiscountConverter.toCreateDiscountResponseDto(discount));
+    }
+
+    @DeleteMapping("/{storeId}/menus/discounts/{discountId}")
+    @Operation(summary = "할인 삭제 API", description = "할인 삭제 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게가 존재하지 않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DISCOUNT401", description = "해당 할인 행사가 존재하지 않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "DISCOUNT402", description = "해당 가게의 할인 행사가 아닙니다.")
+    })
+    @Parameters({
+            @Parameter(name = "storeId", description = "가게 식별자, PathVariable"),
+            @Parameter(name = "discountId", description = "할인 식별자, PathVariable")
+    })
+    public ApiResponse<DiscountResponseDto.DeleteDiscountResponseDto> DeleteDiscount(@PathVariable("storeId") Long storeId, @PathVariable("discountId") Long discountId) {
+
+        DiscountParameterDto.DeleteDiscountParamDto deleteDiscountParamDto = DiscountDtoConverter.INSTANCE.toDeleteDiscountParamDto(storeId, discountId);
+        discountService.DeleteDiscount(deleteDiscountParamDto);
+        return ApiResponse.onSuccess(DiscountConverter.toDeleteDiscountResponseDto());
     }
 }

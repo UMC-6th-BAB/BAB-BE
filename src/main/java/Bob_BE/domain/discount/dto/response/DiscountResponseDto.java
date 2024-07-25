@@ -18,4 +18,14 @@ public class DiscountResponseDto {
         private Long discountId;
         private LocalDateTime createdAt;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteDiscountResponseDto {
+
+        private String message;
+        private LocalDateTime deletedAt;
+    }
 }
