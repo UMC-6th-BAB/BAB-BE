@@ -17,11 +17,12 @@ public enum ErrorStatus implements BaseErrorCode {
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER401", "해당 유저가 존재하지 않습니다." ),
 
-    // Store
-    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE401", "해당 가게가 존재하지 않습니다."),
-
     // Menu
-    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU401", "해당 메뉴가 존재하지 않습니다.");
+    MENU_NOT_FOUND(HttpStatus.BAD_REQUEST, "MENU404", "해당하는 메뉴가 존재하지않습니다."),
+
+    // Store
+    STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "STORE404", "해당하는 가게가 존재하지않습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;
