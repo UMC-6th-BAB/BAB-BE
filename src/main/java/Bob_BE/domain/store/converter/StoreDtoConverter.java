@@ -10,4 +10,5 @@ public interface StoreDtoConverter {
     StoreDtoConverter INSTANCE = Mappers.getMapper(StoreDtoConverter.class);
 
     StoreParameterDto.GetMenuNameListParamDto toGetMenuNameListParamDto(Long storeId);
+    StoreParameterDto.GetOnSaleStoreListParamDto toGetOnSaleStoreListParamDto(Long universityId);
 }

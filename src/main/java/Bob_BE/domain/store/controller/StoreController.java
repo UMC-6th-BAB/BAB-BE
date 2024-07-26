@@ -65,4 +65,19 @@ public class StoreController {
         List<Menu> menuList = menuService.GetMenuListByStore(getMenuNameListParamDto);
         return ApiResponse.onSuccess(StoreConverter.toGetMenuNameListResponseDto(menuList));
     }
+
+    @GetMapping("/discounts")
+    @Operation(summary = "오늘의 할인 가게 페이지 API", description = "오늘의 할인 가게 페이지 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @Parameters({
+            @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
+    })
+    public ApiResponse<StoreResponseDto.GetOnSaleStoreListDto> GetOnSaleStoreList (@RequestParam Long universityId) {
+
+        StoreParameterDto.GetOnSaleStoreListParamDto getOnSaleStoreListParamDto = StoreDtoConverter.INSTANCE.toGetOnSaleStoreListParamDto(universityId);
+
+        return null;
+    }
 }

@@ -7,15 +7,21 @@ import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
+import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
+import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
+import Bob_BE.domain.university.entity.University;
+import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import Bob_BE.global.response.exception.handler.StoreHandler;
+import Bob_BE.global.response.exception.handler.UniversityHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +31,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StoreService {
 
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
+    private final UniversityRepository universityRepository;
+    private final StoreUniversityRepository storeUniversityRepository;
 
+    @Transactional
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
 
         Store store = storeRepository.findById(storeId)
@@ -48,4 +58,22 @@ public class StoreService {
         }).toList();
     }
 
+    /**
+     * 오늘의 할인 가게 리스트 가져오기 API
+     * return : List<StoreResponseDto.GetOnSaleStoreDataDto>
+     */
+    public List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleStoreListData(@Valid StoreParameterDto.GetOnSaleStoreListParamDto param) {
+
+        University findUniversity = universityRepository.findById(param.getUniversityId())
+                .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+
+        List<StoreUniversity> storeUniversityList = storeUniversityRepository.findAllByUniversity(findUniversity)
+                .orElse(new ArrayList<>());
+
+        List<Store> storeList = storeUniversityList.stream()
+                .map(StoreUniversity::getStore).collect(Collectors.toList());
+
+
+        return null;
+    }
 }
