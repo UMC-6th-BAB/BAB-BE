@@ -57,7 +57,7 @@ public class StoreController {
     }
 
 
-    @PostMapping("/{owner_id}")
+    @PostMapping("/{ownerId}")
     @Operation(summary = "가게 등록 API", description = "가게 정보를 등록하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -67,7 +67,7 @@ public class StoreController {
     @Parameters({
             @Parameter(name = "ownerId", description = "사장님 Id")
     })
-    public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(@PathVariable("owner_id") Long ownerId, @RequestBody StoreRequestDto.StoreCreateRequestDto requestDto){
+    public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(@PathVariable("ownerId") Long ownerId, @RequestBody StoreRequestDto.StoreCreateRequestDto requestDto){
 
 
         return ApiResponse.onSuccess(storeService.createStore(ownerId, requestDto));
