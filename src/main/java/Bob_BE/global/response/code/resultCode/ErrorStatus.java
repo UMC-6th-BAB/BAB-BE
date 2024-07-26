@@ -27,8 +27,12 @@ public enum ErrorStatus implements BaseErrorCode {
     DISCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "DISCOUNT401", "해당 할인 행사가 존재하지 않습니다."),
     DISCOUNT_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST, "DISCOUNT402", "해당 가게의 할인 행사가 아닙니다."),
 
+    // Owner
+    OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "OWNER404", "사장님 정보가 등록되어 있지 않습니다."),
+
     // University
-    UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIVERSITY401", "해당 대학교가 존재하지 않습니다."),
+    UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIVERSITY404", "등록되지 않은 학교입니다."),
+
     ;
 
     private final HttpStatus httpStatus;

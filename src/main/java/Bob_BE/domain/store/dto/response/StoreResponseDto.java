@@ -43,6 +43,15 @@ public class StoreResponseDto {
     }
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StoreCreateResultDto {
+        private Long id;
+        private String name;
+    }
+
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor

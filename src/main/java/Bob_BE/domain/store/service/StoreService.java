@@ -6,6 +6,11 @@ import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.Create
 import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
+import Bob_BE.domain.owner.entity.Owner;
+import Bob_BE.domain.owner.repository.OwnerRepository;
+import Bob_BE.domain.store.converter.StoreConverter;
+import Bob_BE.domain.store.dto.request.StoreRequestDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
@@ -14,19 +19,21 @@ import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
+import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import Bob_BE.global.response.exception.handler.OwnerHandler;
 import java.util.stream.Collectors;
 
 import Bob_BE.global.response.exception.handler.UniversityHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -38,6 +45,10 @@ public class StoreService {
     private final MenuRepository menuRepository;
     private final UniversityRepository universityRepository;
     private final StoreUniversityRepository storeUniversityRepository;
+    private final OwnerRepository ownerRepository;
+
+    private final StoreUniversityService storeUniversityService;
+
 
     @Transactional
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
@@ -56,6 +67,18 @@ public class StoreService {
             newMenu = menuRepository.save(newMenu);
             return MenuConverter.toCreateMenuRegisterResponseDto(newMenu);
         }).toList();
+    }
+
+    @Transactional
+    public StoreResponseDto.StoreCreateResultDto createStore(Long ownerId, StoreRequestDto.StoreCreateRequestDto requestDto){
+        Owner findOwner = ownerRepository.findById(ownerId).orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
+
+        Store newStore = StoreConverter.toStore(findOwner, requestDto);
+
+        storeUniversityService.saveStoreUniversity(newStore, requestDto.getUniversity());
+        storeRepository.save(newStore);
+
+        return StoreConverter.toCreateStoreResponseDto(newStore);
     }
 
     /**
