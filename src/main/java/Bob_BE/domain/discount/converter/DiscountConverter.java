@@ -1,6 +1,5 @@
 package Bob_BE.domain.discount.converter;
 
-import Bob_BE.domain.discount.dto.data.DiscountDataDto;
 import Bob_BE.domain.discount.dto.parameter.DiscountParameterDto;
 import Bob_BE.domain.discount.dto.response.DiscountResponseDto;
 import Bob_BE.domain.discount.entity.Discount;
@@ -15,9 +14,9 @@ public class DiscountConverter {
 
     public static DiscountResponseDto.GetDiscountedListResponseDto toGetDiscountedListResponseDto(List<Discount> discountList) {
 
-        List<DiscountDataDto.GetDiscountDataDto> getDiscountDataDtoList = discountList.stream()
+        List<DiscountResponseDto.GetDiscountDataDto> getDiscountDataDtoList = discountList.stream()
                 .map(discount -> {
-                    return DiscountDataDto.GetDiscountDataDto.builder()
+                    return DiscountResponseDto.GetDiscountDataDto.builder()
                             .discountId(discount.getId())
                             .storeName(discount.getStore().getName())
                             .discountTitle(discount.getTitle())
