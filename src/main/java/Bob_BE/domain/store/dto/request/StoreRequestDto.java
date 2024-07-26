@@ -22,4 +22,19 @@ public class StoreRequestDto {
         private String registration;
         private String university;
     }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    public static class StoreUpdateRequestDto{
+        private String name;
+        private Double longitude;
+        private Double latitude;
+        private String address;
+        private String streetAddress;
+        private String storeLink;
+        private String registration;
+        private String university;
+    }
 }
