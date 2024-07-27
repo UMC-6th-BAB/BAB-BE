@@ -1,6 +1,5 @@
 package Bob_BE.domain.discount.dto.response;
 
-import Bob_BE.domain.discount.dto.data.DiscountDataDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,7 +37,20 @@ public class DiscountResponseDto {
     @AllArgsConstructor
     public static class GetDiscountedListResponseDto {
 
-        private List<DiscountDataDto.GetDiscountDataDto> getDiscountDataDtoList;
+        private List<GetDiscountDataDto> getDiscountDataDtoList;
         private Integer totalDataNum;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetDiscountDataDto {
+
+        private Long discountId;
+        private String storeName;
+        private String discountTitle;
+        private LocalDate startDate;
+        private LocalDate endDate;
     }
 }
