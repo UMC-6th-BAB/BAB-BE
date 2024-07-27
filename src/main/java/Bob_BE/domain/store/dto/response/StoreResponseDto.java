@@ -55,7 +55,7 @@ public class StoreResponseDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GetOnSaleStoreListDto {
+    public static class GetOnSaleStoreListResponseDto {
 
         private List<GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList;
         private Integer totalDateNum;

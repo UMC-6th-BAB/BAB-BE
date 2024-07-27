@@ -7,6 +7,8 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.QStore;
 import Bob_BE.domain.store.entity.Store;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +31,7 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
         QDiscountMenu discountMenu = QDiscountMenu.discountMenu;
         QMenu menu = QMenu.menu;
 
-        /*return queryFactory
+        return queryFactory
                 .select(Projections.constructor(StoreResponseDto.GetOnSaleStoreDataDto.class,
                         store.id,
                         discount.title,
@@ -39,7 +41,16 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
                                 menu.price,
                                 discountMenu.discountPrice))
                         ))
-                .from(store)*/
-        return null;
+                .from(store)
+                .leftJoin(store.discountList, discount)
+                .leftJoin(discount.discountMenuList, discountMenu)
+                .leftJoin(discountMenu.menu, menu)
+                .where(discountMenu.discountPrice.eq(
+                        JPAExpressions
+                                .select(discountMenu.discountPrice.max())
+                                .from(discountMenu)
+                                .where(discountMenu.discount.eq(discount))
+                ))
+                .fetch();
     }
 }

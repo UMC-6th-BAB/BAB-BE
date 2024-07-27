@@ -13,6 +13,14 @@ import Bob_BE.domain.store.entity.Store;
 
 public class StoreConverter {
 
+    public static StoreResponseDto.GetOnSaleStoreListResponseDto toGetOnSaleStoreListResponseDto (List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList) {
+
+        return StoreResponseDto.GetOnSaleStoreListResponseDto.builder()
+                .getOnSaleStoreDataDtoList(getOnSaleStoreDataDtoList)
+                .totalDateNum(getOnSaleStoreDataDtoList.size())
+                .build();
+    }
+
     public static StoreResponseDto.GetMenuNameListResponseDto toGetMenuNameListResponseDto (List<Menu> menuList) {
 
         List<StoreResponseDto.MenuNameDataDto> menuNameDataDtoList = menuList.stream()

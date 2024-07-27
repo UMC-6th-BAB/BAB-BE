@@ -96,7 +96,8 @@ public class StoreService {
         List<Store> storeList = storeUniversityList.stream()
                 .map(StoreUniversity::getStore).collect(Collectors.toList());
 
+        List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = storeRepository.GetOnSaleStoreAndMenuData(storeList);
 
-        return null;
+        return getOnSaleStoreDataDtoList;
     }
 }

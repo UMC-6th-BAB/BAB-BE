@@ -94,10 +94,10 @@ public class StoreController {
     @Parameters({
             @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
     })
-    public ApiResponse<StoreResponseDto.GetOnSaleStoreListDto> GetOnSaleStoreList (@RequestParam Long universityId) {
+    public ApiResponse<StoreResponseDto.GetOnSaleStoreListResponseDto> GetOnSaleStoreList (@RequestParam Long universityId) {
 
         StoreParameterDto.GetOnSaleStoreListParamDto getOnSaleStoreListParamDto = StoreDtoConverter.INSTANCE.toGetOnSaleStoreListParamDto(universityId);
-
-        return null;
+        List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = storeService.GetOnSaleStoreListData(getOnSaleStoreListParamDto);
+        return ApiResponse.onSuccess(StoreConverter.toGetOnSaleStoreListResponseDto(getOnSaleStoreDataDtoList));
     }
 }
