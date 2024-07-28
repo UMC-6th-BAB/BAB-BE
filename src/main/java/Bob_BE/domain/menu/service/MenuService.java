@@ -60,7 +60,6 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
         if (menu.getMenuUrl() != null) {
-            System.out.println(menu.getMenuUrl() + " before image file name");
             try {
                 s3StorageService.deleteFile("Menu", menu.getMenuUrl());
             }catch(Exception e){
@@ -73,7 +72,6 @@ public class MenuService {
         try{
             imageUrl = s3StorageService.uploadFile(imageFile, "Menu");
         }catch(Exception e){
-            System.out.println(e.getMessage());
             throw new MenuHandler(ErrorStatus.FILE_UPLOAD_FAILED);
         }
         menu.setMenuUrl(imageUrl);

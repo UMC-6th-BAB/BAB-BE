@@ -34,7 +34,6 @@ public class S3StorageService implements StorageService{
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, inputStream, metadata);
             amazonS3Client.putObject(putObjectRequest);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
             throw new IOException("Failed to upload file to S3", e);
         }
         return amazonS3Client.getUrl(bucketName, fileName).toString();
@@ -47,7 +46,6 @@ public class S3StorageService implements StorageService{
             String filePath = Paths.get(dirName, fileName).toString();
 
             amazonS3Client.deleteObject(bucketName, filePath);
-            System.out.println(fileName + " DELETED");
         }catch (Exception e){
             throw new IOException("Failed to delete file to S3", e);
         }
