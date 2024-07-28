@@ -59,8 +59,17 @@ public class MenuService {
     public MenuResponseDto.CreateMenuResponseDto uploadMenuImage(Long menuId, MultipartFile imageFile) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
+        if (menu.getMenuUrl() != null) {
+            System.out.println(menu.getMenuUrl() + " before image file name");
+            try {
+                s3StorageService.deleteFile("Menu", menu.getMenuUrl());
+            }catch(Exception e){
+                throw new MenuHandler(ErrorStatus.FILE_DELETE_FAILED);
+            }
+        }
 
         String imageUrl;
+
         try{
             imageUrl = s3StorageService.uploadFile(imageFile, "Menu");
         }catch(Exception e){
