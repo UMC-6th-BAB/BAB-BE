@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.UUID;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,19 @@ public class S3StorageService implements StorageService{
             throw new IOException("Failed to upload file to S3", e);
         }
         return amazonS3Client.getUrl(bucketName, fileName).toString();
+    }
+
+    @Override
+    public void deleteFile(String dirName ,String fileUrl) throws IOException{
+        try{
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+            String filePath = Paths.get(dirName, fileName).toString();
+
+            amazonS3Client.deleteObject(bucketName, filePath);
+            System.out.println(fileName + " DELETED");
+        }catch (Exception e){
+            throw new IOException("Failed to delete file to S3", e);
+        }
     }
 
     private String generateFileName(MultipartFile file, String dirName){
