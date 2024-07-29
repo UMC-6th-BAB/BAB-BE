@@ -7,18 +7,30 @@ import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.DeleteMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
+import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
+import Bob_BE.domain.store.entity.Store;
+import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import Bob_BE.global.response.exception.handler.StoreHandler;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MenuService {
 
     private final MenuRepository menuRepository;
+    private final StoreRepository storeRepository;
 
     public MenuResponseDto.CreateMenuResponseDto updateMenu(Long menuId, MenuUpdateRequestDto requestDTO) {
         Menu menu = menuRepository.findById(menuId)
@@ -55,5 +67,17 @@ public class MenuService {
     private String saveImageFile(MultipartFile imageFile) {
         // TODO: 파일 저장 관련 로직 구현
         return "http://example.com/image";
+    }
+
+    @Transactional(readOnly = true)
+    public List<Menu> GetMenuListByStore (@Valid StoreParameterDto.GetMenuNameListParamDto param) {
+
+        Store findStore = storeRepository.findById(param.getStoreId())
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        List<Menu> menuList = menuRepository.findAllByStore(findStore)
+                .orElse(new ArrayList<>());
+
+        return menuList;
     }
 }

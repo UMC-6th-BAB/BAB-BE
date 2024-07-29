@@ -14,17 +14,20 @@ import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OwnerService {
     private final OwnerRepository ownerRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
 
+    @Transactional
     public OwnerResponseDto.LoginOrRegisterDto registerOrLogin(OwnerRequestDto.LoginOrRegisterDto request) {
         try {
             String authorization = "Bearer " + request.getToken();

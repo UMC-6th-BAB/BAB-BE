@@ -1,6 +1,7 @@
 package Bob_BE.domain.store.entity;
 
 import Bob_BE.domain.banner.entity.Banner;
+import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.owner.entity.Owner;
@@ -63,4 +64,7 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<OperatingHours> operatingHoursList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<Discount> discountList = new ArrayList<>();
 }
