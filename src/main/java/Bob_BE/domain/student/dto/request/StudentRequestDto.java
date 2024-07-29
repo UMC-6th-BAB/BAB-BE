@@ -22,12 +22,8 @@ public class StudentRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class updateUniversityDto {
-        @Schema(description = "대학 이름")
+        @Schema(description = "대학 아이디")
         @NotNull
-        private String universityName;
-
-        @Schema(description = "대학 주소")
-        @NotNull
-        private String universityAddress;
+        private Long universityId;
     }
 }

@@ -5,9 +5,9 @@ import Bob_BE.domain.student.dto.request.StudentRequestDto;
 import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
+import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.domain.university.entity.University;
-import Bob_BE.domain.university.service.UniversityService;
 import Bob_BE.global.external.KakaoResponseDto;
 import Bob_BE.global.external.KakaoUserClient;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
@@ -27,9 +27,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final UniversityRepository universityRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
-    private final UniversityService universityService;
+
 
     @Transactional
     public StudentResponseDto.LoginOrRegisterDto registerOrLogin(StudentRequestDto.LoginOrRegisterDto request) {
@@ -84,26 +85,19 @@ public class StudentService {
     }
 
     public StudentResponseDto.updateUniversityDto updateUniversity(Long userId, StudentRequestDto.updateUniversityDto request) {
-        University university = universityService.findOrCreateUniversity(
-                request.getUniversityName(), request.getUniversityAddress());
-        Optional<Student> studentOptional = studentRepository.findById(userId);
-        if(studentOptional.isPresent()){
-            Student student = studentOptional.get();
-            student.setUniversity(university);
-            studentRepository.save(student);
-            return StudentConverter.toUpdateUniversityDto(student);
-        } else {
-            throw new GeneralException(ErrorStatus.USER_NOT_FOUND);
-        }
+        Long universityId = request.getUniversityId();
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(()->new GeneralException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        Student student = studentRepository.findById(userId)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        student.setUniversity(university);
+        studentRepository.save(student);
+        return StudentConverter.toUpdateUniversityDto(student);
     }
 
     public StudentResponseDto.myPageDto getMyPage(Long userId) {
-        Optional<Student> studentOptional = studentRepository.findById(userId);
-        if(studentOptional.isPresent()){
-            Student student = studentOptional.get();
-            return StudentConverter.toMyPageDto(student);
-        } else {
-            throw new GeneralException(ErrorStatus.USER_NOT_FOUND);
-        }
+        Student student = studentRepository.findById(userId)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        return StudentConverter.toMyPageDto(student);
     }
 }
