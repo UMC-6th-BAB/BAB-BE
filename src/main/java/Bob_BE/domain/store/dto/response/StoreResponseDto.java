@@ -49,4 +49,13 @@ public class StoreResponseDto {
         private Long id;
         private String name;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StoreUpdateResultDto {
+        private Long id;
+        private String name;
+    }
 }

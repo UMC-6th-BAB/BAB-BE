@@ -18,6 +18,7 @@ import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 import java.util.List;
 import Bob_BE.global.response.exception.handler.OwnerHandler;
+import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,7 @@ public class StoreService {
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
 
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDto> menus = requestDto.getMenus();
 
         return menus.stream().map(menu -> {
@@ -66,4 +67,18 @@ public class StoreService {
 
         return StoreConverter.toCreateStoreResponseDto(newStore);
     }
+
+    @Transactional
+    public StoreResponseDto.StoreUpdateResultDto updateStore(Long storeId, StoreRequestDto.StoreUpdateRequestDto requestDto){
+        Store findStore = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        findStore.updateStore(requestDto);
+
+        storeUniversityService.updateStoreUniversity(storeId, requestDto);
+
+        storeRepository.save(findStore);
+
+        return new StoreResponseDto.StoreUpdateResultDto(findStore.getId(), findStore.getName());
+    }
+
 }
