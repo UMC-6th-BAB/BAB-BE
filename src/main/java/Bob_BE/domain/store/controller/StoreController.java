@@ -108,7 +108,7 @@ public class StoreController {
     @Parameters({
             @Parameter(name = "storeId", description = "가게 Id")
     })
-    public ApiResponse<Long> deleteStore(@PathVariable("storeId") Long storeId){
+    public ApiResponse<StoreResponseDto.StoreDeleteResultDto> deleteStore(@PathVariable("storeId") Long storeId){
 
         return ApiResponse.onSuccess(storeService.deleteStore(storeId));
     }

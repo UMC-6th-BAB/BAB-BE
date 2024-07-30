@@ -82,13 +82,13 @@ public class StoreService {
     }
 
     @Transactional
-    public Long deleteStore(Long storeId){
+    public StoreResponseDto.StoreDeleteResultDto deleteStore(Long storeId){
 
         Store findStore = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
 
         storeRepository.delete(findStore);
 
-        return findStore.getId();
+        return StoreConverter.toDeleteStoreResponseDto(findStore);
     }
 
 }

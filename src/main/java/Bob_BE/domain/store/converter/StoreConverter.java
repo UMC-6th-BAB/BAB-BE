@@ -3,6 +3,7 @@ package Bob_BE.domain.store.converter;
 
 import Bob_BE.domain.menu.entity.Menu;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,14 @@ public class StoreConverter {
         return StoreResponseDto.StoreCreateResultDto.builder()
                 .id(store.getId())
                 .name(store.getName())
+                .build();
+    }
+
+    public static StoreResponseDto.StoreDeleteResultDto toDeleteStoreResponseDto(Store store){
+
+        return StoreResponseDto.StoreDeleteResultDto.builder()
+                .id(store.getId())
+                .deletedAt(LocalDateTime.now())
                 .build();
     }
 

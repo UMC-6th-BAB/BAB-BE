@@ -26,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@SQLDelete(sql = "UPDATE store SET deleted_at=current_timestamp WHERE store_id = ?")
+@SQLDelete(sql = "UPDATE store SET deleted_at=current_timestamp(6) WHERE store_id = ?")
 @Where(clause = "deleted_at is null")
 public class Store extends BaseEntity {
     @Id
@@ -51,7 +51,7 @@ public class Store extends BaseEntity {
 
     private String registration;
 
-    @Column
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

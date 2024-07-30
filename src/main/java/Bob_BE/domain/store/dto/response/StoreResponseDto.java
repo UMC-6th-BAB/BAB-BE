@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class StoreResponseDto {
@@ -57,5 +58,14 @@ public class StoreResponseDto {
     public static class StoreUpdateResultDto {
         private Long id;
         private String name;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StoreDeleteResultDto {
+        private Long id;
+        private LocalDateTime deletedAt;
     }
 }
