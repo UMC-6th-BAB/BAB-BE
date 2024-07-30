@@ -41,7 +41,7 @@ public class StoreService {
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
 
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDto> menus = requestDto.getMenus();
 
         return menus.stream().map(menu -> {
