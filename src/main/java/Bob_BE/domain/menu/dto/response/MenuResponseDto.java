@@ -17,7 +17,7 @@ public class MenuResponseDto {
         private Long id;
         private String menuName;
         private Integer price;
-        private String menuUrl;
+        private String menuImageUrl;
         private StoreResponseDto.MenuCreateResultDto store;
     }
 

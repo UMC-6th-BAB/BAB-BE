@@ -14,7 +14,7 @@ public class MenuConverter {
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
-                .menuUrl(menu.getMenuUrl())
+                .menuImageUrl(menu.getMenuUrl())
                 .store(StoreResponseDto.MenuCreateResultDto.builder()
                         .id(menu.getStore().getId())
                         .name(menu.getStore().getName())
@@ -28,7 +28,7 @@ public class MenuConverter {
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
-                .menuUrl(menu.getMenuUrl())
+                .menuImageUrl(menu.getMenuUrl())
                 .build();
     }
 
