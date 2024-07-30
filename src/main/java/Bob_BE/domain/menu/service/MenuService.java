@@ -14,7 +14,6 @@ import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
 import Bob_BE.global.util.aws.S3StorageService;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,29 +55,18 @@ public class MenuService {
         }).toList();
     }
 
-    public MenuResponseDto.CreateMenuResponseDto uploadMenuImage(Long menuId, MultipartFile imageFile) {
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
-        if (menu.getMenuUrl() != null) {
-            try {
-                s3StorageService.deleteFile("Menu", menu.getMenuUrl());
-            }catch(Exception e){
-                throw new MenuHandler(ErrorStatus.FILE_DELETE_FAILED);
-            }
-        }
-
+    public String uploadMenuImage(MultipartFile imageFile) {
         String imageUrl;
 
-        try{
+        try {
             imageUrl = s3StorageService.uploadFile(imageFile, "Menu");
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new MenuHandler(ErrorStatus.FILE_UPLOAD_FAILED);
         }
-        menu.setMenuUrl(imageUrl);
-        menuRepository.save(menu);
 
-        return MenuConverter.toCreateMenuResponseDto(menu);
+        return imageUrl;
     }
+
 
     @Transactional(readOnly = true)
     public List<Menu> GetMenuListByStore (@Valid StoreParameterDto.GetMenuNameListParamDto param) {
