@@ -40,18 +40,6 @@ public class S3StorageService implements StorageService{
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
-    @Override
-    public void deleteFile(String dirName ,String fileUrl) throws IOException{
-        try{
-            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-            String filePath = Paths.get(dirName, fileName).toString();
-
-            amazonS3Client.deleteObject(bucketName, filePath);
-        }catch (Exception e){
-            throw new IOException("Failed to delete file to S3", e);
-        }
-    }
-
     private String generateFileName(MultipartFile file, String dirName){
         return dirName + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
     }
