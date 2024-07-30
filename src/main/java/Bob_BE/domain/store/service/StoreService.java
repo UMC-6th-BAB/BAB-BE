@@ -81,4 +81,14 @@ public class StoreService {
         return new StoreResponseDto.StoreUpdateResultDto(findStore.getId(), findStore.getName());
     }
 
+    @Transactional
+    public Long deleteStore(Long storeId){
+
+        Store findStore = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        storeRepository.delete(findStore);
+
+        return findStore.getId();
+    }
+
 }
