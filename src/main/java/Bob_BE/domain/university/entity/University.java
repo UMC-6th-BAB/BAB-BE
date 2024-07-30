@@ -31,6 +31,9 @@ public class University{
     private String universityName;
 
     @Column(nullable = false)
+    private String universityLogo;
+
+    @Column(nullable = false)
     private String address;
 
     @OneToMany(mappedBy = "university", cascade = CascadeType.ALL)
