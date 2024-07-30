@@ -29,6 +29,7 @@ public class S3StorageService implements StorageService{
         String fileName = generateFileName(file, dirName);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
 
         try (InputStream inputStream = file.getInputStream()) {
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, inputStream, metadata);
