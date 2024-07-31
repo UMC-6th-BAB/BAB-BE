@@ -13,6 +13,7 @@ import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
+import Bob_BE.global.util.aws.S3StorageService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
+    private final S3StorageService s3StorageService;
 
     public MenuResponseDto.CreateMenuResponseDto updateMenu(Long menuId, MenuUpdateRequestDto requestDTO) {
         Menu menu = menuRepository.findById(menuId)
@@ -53,21 +55,18 @@ public class MenuService {
         }).toList();
     }
 
-    public MenuResponseDto.CreateMenuResponseDto uploadMenuImage(Long menuId, MultipartFile imageFile) {
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
+    public String uploadMenuImage(MultipartFile imageFile) {
+        String imageUrl;
 
-        String imageUrl = saveImageFile(imageFile);
-        menu.setMenuUrl(imageUrl);
-        menuRepository.save(menu);
+        try {
+            imageUrl = s3StorageService.uploadFile(imageFile, "Menu");
+        } catch (Exception e) {
+            throw new MenuHandler(ErrorStatus.FILE_UPLOAD_FAILED);
+        }
 
-        return MenuConverter.toCreateMenuResponseDto(menu);
+        return imageUrl;
     }
 
-    private String saveImageFile(MultipartFile imageFile) {
-        // TODO: 파일 저장 관련 로직 구현
-        return "http://example.com/image";
-    }
 
     @Transactional(readOnly = true)
     public List<Menu> GetMenuListByStore (@Valid StoreParameterDto.GetMenuNameListParamDto param) {

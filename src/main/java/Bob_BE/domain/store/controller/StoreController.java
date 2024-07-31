@@ -18,11 +18,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,6 +78,23 @@ public class StoreController {
 
 
         return ApiResponse.onSuccess(storeService.createStore(ownerId, requestDto));
+    }
+
+    @PatchMapping("/{storeId}")
+    @Operation(summary = "가게 수정 API", description = "가게 정보를 수정하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "가게 정보가 존재하지 않습니다.")
+
+    })
+    @Parameters({
+            @Parameter(name = "storeId", description = "가게 Id")
+    })
+    public ApiResponse<StoreResponseDto.StoreUpdateResultDto> updateStore(
+            @PathVariable("storeId") Long storeId,
+            @RequestBody StoreRequestDto.StoreUpdateRequestDto requestDto){
+
+        return ApiResponse.onSuccess(storeService.updateStore( storeId, requestDto));
     }
 
 

@@ -12,7 +12,6 @@ import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
-import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
@@ -30,6 +29,7 @@ import java.util.stream.Collectors;
 
 import Bob_BE.global.response.exception.handler.UniversityHandler;
 import jakarta.validation.Valid;
+import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,9 +43,9 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
-    private final UniversityRepository universityRepository;
-    private final StoreUniversityRepository storeUniversityRepository;
     private final OwnerRepository ownerRepository;
+    private final StoreUniversityRepository storeUniversityRepository;
+    private final UniversityRepository universityRepository;
 
     private final StoreUniversityService storeUniversityService;
 
@@ -80,6 +80,20 @@ public class StoreService {
 
         return StoreConverter.toCreateStoreResponseDto(newStore);
     }
+
+    @Transactional
+    public StoreResponseDto.StoreUpdateResultDto updateStore(Long storeId, StoreRequestDto.StoreUpdateRequestDto requestDto){
+        Store findStore = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        findStore.updateStore(requestDto);
+
+        storeUniversityService.updateStoreUniversity(storeId, requestDto);
+
+        storeRepository.save(findStore);
+
+        return new StoreResponseDto.StoreUpdateResultDto(findStore.getId(), findStore.getName());
+    }
+
 
     /**
      * 오늘의 할인 가게 리스트 가져오기 API

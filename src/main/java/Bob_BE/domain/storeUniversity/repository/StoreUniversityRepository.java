@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface StoreUniversityRepository extends JpaRepository<StoreUniversity, Long> {
 
+    Optional<StoreUniversity> findByStoreId(Long storeId);
     Optional<List<StoreUniversity>> findAllByUniversity(University university);
 }
