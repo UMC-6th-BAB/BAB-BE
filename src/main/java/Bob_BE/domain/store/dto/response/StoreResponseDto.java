@@ -1,11 +1,10 @@
 package Bob_BE.domain.store.dto.response;
 
+import Bob_BE.domain.discount.entity.Discount;
+import Bob_BE.domain.store.entity.Store;
 import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -71,21 +70,19 @@ public class StoreResponseDto {
     }
 
     @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GetOnSaleStoreDataDto {
 
-        private final Long storeId;
-        private final String discountTitle;
-        private final String storeName;
-        private final List<GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList;
+        private Long storeId;
+        private String storeName;
+        private Long discountId;
+        private String discountTitle;
 
-        @QueryProjection
-        public GetOnSaleStoreDataDto(Long storeId, String discountTitle, String storeName, List<GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList) {
+        @Setter
+        private List<GetOnSaleStoreMenuDataDto> getOnSaleStoreMenuDataDtoList;
 
-            this.storeId = storeId;
-            this.discountTitle = discountTitle;
-            this.storeName = storeName;
-            this.getOnSaleStoreDataDtoList = getOnSaleStoreDataDtoList;
-        }
     }
 
     @Getter
@@ -97,10 +94,23 @@ public class StoreResponseDto {
 
         @QueryProjection
         public GetOnSaleStoreMenuDataDto(String menuName, Integer price, Integer discountPrice) {
-
             this.menuName = menuName;
             this.price = price;
             this.discountPrice = discountPrice;
+        }
+    }
+
+    @Getter
+    public static class StoreAndDiscountDataDto {
+
+        private final Store store;
+        private final Discount discount;
+
+        @QueryProjection
+        public StoreAndDiscountDataDto(Store store, Discount discount) {
+
+            this.store = store;
+            this.discount = discount;
         }
     }
 }

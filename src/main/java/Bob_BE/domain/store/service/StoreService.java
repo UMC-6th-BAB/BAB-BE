@@ -14,7 +14,6 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
-import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
@@ -22,10 +21,8 @@ import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
-import java.util.ArrayList;
 import java.util.List;
 import Bob_BE.global.response.exception.handler.OwnerHandler;
-import java.util.stream.Collectors;
 
 import Bob_BE.global.response.exception.handler.UniversityHandler;
 import jakarta.validation.Valid;
@@ -44,7 +41,6 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OwnerRepository ownerRepository;
-    private final StoreUniversityRepository storeUniversityRepository;
     private final UniversityRepository universityRepository;
 
     private final StoreUniversityService storeUniversityService;
@@ -104,19 +100,12 @@ public class StoreService {
         University findUniversity = universityRepository.findById(param.getUniversityId())
                 .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
 
-        List<StoreUniversity> storeUniversityList = storeUniversityRepository.findAllByUniversity(findUniversity)
-                .orElse(new ArrayList<>());
+        List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList = storeRepository.GetOnSaleStoreAndDiscount(findUniversity);
 
-        List<Store> storeList = storeUniversityList.stream()
-                .map(StoreUniversity::getStore).collect(Collectors.toList());
+        List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = StoreConverter.toGetOnSaleStoreDataDtoList(storeAndDiscountDataDtoList);
 
-        List<Long> storeIdList = storeRepository.GetOnSaleStoreId(storeList);
+        getOnSaleStoreDataDtoList = storeRepository.GetOnSaleMenuData(getOnSaleStoreDataDtoList);
 
-        System.out.println(storeIdList.size());
-        for (Long storeId : storeIdList) {
-            System.out.println(storeId + "--");
-        }
-
-        return null;
+        return getOnSaleStoreDataDtoList;
     }
 }
