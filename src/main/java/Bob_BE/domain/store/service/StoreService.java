@@ -96,8 +96,13 @@ public class StoreService {
         List<Store> storeList = storeUniversityList.stream()
                 .map(StoreUniversity::getStore).collect(Collectors.toList());
 
-        List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = storeRepository.GetOnSaleStoreAndMenuData(storeList);
+        List<Long> storeIdList = storeRepository.GetOnSaleStoreId(storeList);
 
-        return getOnSaleStoreDataDtoList;
+        System.out.println(storeIdList.size());
+        for (Long storeId : storeIdList) {
+            System.out.println(storeId + "--");
+        }
+
+        return null;
     }
 }

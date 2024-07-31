@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface StoreCustomRepository {
 
-    List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleStoreAndMenuData(List<Store> storeList);
+    List<Long> GetOnSaleStoreId(List<Store> storeList);
 }
