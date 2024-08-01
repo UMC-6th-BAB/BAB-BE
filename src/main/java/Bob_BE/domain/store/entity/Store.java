@@ -9,10 +9,12 @@ import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.global.baseEntity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,8 @@ import java.util.List;
 @NoArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@SQLDelete(sql = "UPDATE store SET deleted_at=current_timestamp(6) WHERE store_id = ?")
+@Where(clause = "deleted_at is null")
 public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +50,9 @@ public class Store extends BaseEntity {
     private String storeLink;
 
     private String registration;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")

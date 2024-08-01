@@ -95,7 +95,22 @@ public class StoreController {
             @PathVariable("storeId") Long storeId,
             @RequestBody StoreRequestDto.StoreUpdateRequestDto requestDto){
 
-        return ApiResponse.onSuccess(storeService.updateStore( storeId, requestDto));
+        return ApiResponse.onSuccess(storeService.updateStore(storeId, requestDto));
+    }
+
+    @DeleteMapping("/{storeId}")
+    @Operation(summary = "가게 삭제 API", description = "가게를 삭제하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "가게 정보가 존재하지 않습니다.")
+
+    })
+    @Parameters({
+            @Parameter(name = "storeId", description = "가게 Id")
+    })
+    public ApiResponse<StoreResponseDto.StoreDeleteResultDto> deleteStore(@PathVariable("storeId") Long storeId){
+
+        return ApiResponse.onSuccess(storeService.deleteStore(storeId));
     }
 
 }
