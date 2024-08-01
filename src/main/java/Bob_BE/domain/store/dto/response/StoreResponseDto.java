@@ -6,6 +6,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class StoreResponseDto {
@@ -70,6 +71,15 @@ public class StoreResponseDto {
     }
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StoreDeleteResultDto {
+        private Long id;
+        private LocalDateTime deletedAt;
+    }
+  
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -113,4 +123,5 @@ public class StoreResponseDto {
             this.discount = discount;
         }
     }
+   
 }

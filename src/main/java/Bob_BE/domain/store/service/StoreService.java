@@ -90,6 +90,15 @@ public class StoreService {
         return new StoreResponseDto.StoreUpdateResultDto(findStore.getId(), findStore.getName());
     }
 
+    @Transactional
+    public StoreResponseDto.StoreDeleteResultDto deleteStore(Long storeId){
+
+        Store findStore = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        storeRepository.delete(findStore);
+
+        return StoreConverter.toDeleteStoreResponseDto(findStore);
+    }
 
     /**
      * 오늘의 할인 가게 리스트 가져오기 API
@@ -108,4 +117,5 @@ public class StoreService {
 
         return getOnSaleStoreDataDtoList;
     }
+
 }
