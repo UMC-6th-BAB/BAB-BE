@@ -104,6 +104,7 @@ public class StoreService {
      * 오늘의 할인 가게 리스트 가져오기 API
      * return : List<StoreResponseDto.GetOnSaleStoreDataDto>
      */
+    @Transactional
     public List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleStoreListData(@Valid StoreParameterDto.GetOnSaleStoreListParamDto param) {
 
         University findUniversity = universityRepository.findById(param.getUniversityId())

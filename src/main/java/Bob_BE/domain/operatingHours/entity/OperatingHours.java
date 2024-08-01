@@ -39,10 +39,9 @@ public class OperatingHours {
 
     private Time breakEndTime;
 
-    private boolean holiday;
+    private Boolean holiday;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
-
 }
