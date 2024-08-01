@@ -11,13 +11,21 @@ import Bob_BE.domain.owner.repository.OwnerRepository;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
+import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
+import Bob_BE.domain.university.entity.University;
+import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
+
 import java.util.List;
 import Bob_BE.global.response.exception.handler.OwnerHandler;
+
+import Bob_BE.global.response.exception.handler.UniversityHandler;
+import jakarta.validation.Valid;
 import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +41,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OwnerRepository ownerRepository;
+    private final UniversityRepository universityRepository;
 
     private final StoreUniversityService storeUniversityService;
 
@@ -41,7 +50,7 @@ public class StoreService {
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
 
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+                .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDto> menus = requestDto.getMenus();
 
         return menus.stream().map(menu -> {
@@ -89,6 +98,24 @@ public class StoreService {
         storeRepository.delete(findStore);
 
         return StoreConverter.toDeleteStoreResponseDto(findStore);
+    }
+
+    /**
+     * 오늘의 할인 가게 리스트 가져오기 API
+     * return : List<StoreResponseDto.GetOnSaleStoreDataDto>
+     */
+    public List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleStoreListData(@Valid StoreParameterDto.GetOnSaleStoreListParamDto param) {
+
+        University findUniversity = universityRepository.findById(param.getUniversityId())
+                .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+
+        List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList = storeRepository.GetOnSaleStoreAndDiscount(findUniversity);
+
+        List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = StoreConverter.toGetOnSaleStoreDataDtoList(storeAndDiscountDataDtoList);
+
+        getOnSaleStoreDataDtoList = storeRepository.GetOnSaleMenuData(getOnSaleStoreDataDtoList);
+
+        return getOnSaleStoreDataDtoList;
     }
 
 }

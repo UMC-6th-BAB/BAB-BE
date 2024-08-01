@@ -46,7 +46,6 @@ public class StoreController {
         return ApiResponse.onSuccess(response);
     }
 
-
     @GetMapping("/{storeId}/menus-name")
     @Operation(summary = "가게 메뉴 이름 목록 가져오기 API", description = "가게 메뉴 이름 목록 가져오기 API 입니다.")
     @ApiResponses({
@@ -113,4 +112,20 @@ public class StoreController {
         return ApiResponse.onSuccess(storeService.deleteStore(storeId));
     }
 
+
+    @GetMapping("/discounts")
+    @Operation(summary = "오늘의 할인 가게 페이지 API", description = "오늘의 할인 가게 페이지 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "UNIVERSITY404", description = "해당 대학교를 찾지 못했습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
+    })
+    public ApiResponse<StoreResponseDto.GetOnSaleStoreListResponseDto> GetOnSaleStoreList (@RequestParam Long universityId) {
+
+        StoreParameterDto.GetOnSaleStoreListParamDto getOnSaleStoreListParamDto = StoreDtoConverter.INSTANCE.toGetOnSaleStoreListParamDto(universityId);
+        List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = storeService.GetOnSaleStoreListData(getOnSaleStoreListParamDto);
+        return ApiResponse.onSuccess(StoreConverter.toGetOnSaleStoreListResponseDto(getOnSaleStoreDataDtoList));
+    }
 }
