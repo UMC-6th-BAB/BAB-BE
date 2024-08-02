@@ -5,6 +5,7 @@ import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.owner.entity.Owner;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.global.baseEntity.BaseEntity;
@@ -57,6 +58,9 @@ public class Store extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private Owner owner;
+
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    private SignatureMenu signatureMenu;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<StoreUniversity> storeUniversityList = new ArrayList<>();

@@ -1,6 +1,7 @@
 package Bob_BE.domain.menu.entity;
 
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,9 @@ public class Menu {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
+
+    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
+    private SignatureMenu signatureMenu;
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
     private List<DiscountMenu> discountMenuList = new ArrayList<>();
