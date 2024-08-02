@@ -136,7 +136,9 @@ public class StoreController {
 
     @PostMapping("/{storeId}/operating_hours")
     @Operation(summary = "운영시간 등록 API", description = "가게 운영시간을 등록하는 API")
-    public ApiResponse<OHResponseDto.OHCreateResultDto> createStoreOperatingHours(@PathVariable("storeId") Long storeId, @RequestBody List<OHRequestDto.OHCreateRequestDto> requestDto){
+    public ApiResponse<OHResponseDto> createStoreOperatingHours(
+            @PathVariable("storeId") Long storeId,
+            @RequestBody List<OHRequestDto> requestDto){
 
 
         return ApiResponse.onSuccess(operatingHoursService.createOperatingHours(storeId, requestDto));
@@ -152,11 +154,11 @@ public class StoreController {
     @Parameters({
             @Parameter(name = "storeId", description = "가게 Id")
     })
-    public ApiResponse<StoreResponseDto.StoreUpdateResultDto> updateStoreOperatingHours(
+    public ApiResponse<OHResponseDto> updateStoreOperatingHours(
             @PathVariable("storeId") Long storeId,
-            @RequestBody StoreRequestDto.StoreUpdateRequestDto requestDto){
+            @RequestBody List<OHRequestDto> requestDto){
 
-        return ApiResponse.onSuccess(storeService.updateStore( storeId, requestDto));
+        return ApiResponse.onSuccess(operatingHoursService.updateOperatingHours(storeId, requestDto));
     }
 
 }

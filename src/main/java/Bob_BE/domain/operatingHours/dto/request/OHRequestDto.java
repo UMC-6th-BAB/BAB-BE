@@ -8,31 +8,24 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
 public class OHRequestDto {
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    @Builder
-    public static class OHCreateRequestDto {
-        private DayOfWeek day;
-        private Time openTime;
-        private Time closeTime;
-        private Time breakStartTime;
-        private Time breakEndTime;
-        private boolean holiday;
-    }
+    private DayOfWeek day;
+    private Time openTime;
+    private Time closeTime;
+    private BreakTime breakTime;
 
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
     @Builder
-    public static class OHUpdateRequestDto{
-        private DayOfWeek day;
-        private Time openTime;
-        private Time closeTime;
-        private Time breakStartTime;
-        private Time breakEndTime;
-
+    public static class BreakTime{
+        private Time startTime;
+        private Time endTime;
     }
+
 }
