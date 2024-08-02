@@ -1,5 +1,7 @@
 package Bob_BE.domain.student.service;
 
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.student.converter.StudentConverter;
 import Bob_BE.domain.student.dto.request.StudentRequestDto;
 import Bob_BE.domain.student.dto.response.StudentResponseDto;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -28,6 +31,7 @@ import java.util.Optional;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final UniversityRepository universityRepository;
+    private final StoreRepository storeRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
 
@@ -98,6 +102,10 @@ public class StudentService {
     public StudentResponseDto.myPageDto getMyPage(Long userId) {
         Student student = studentRepository.findById(userId)
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
-        return StudentConverter.toMyPageDto(student);
+        University university = student.getUniversity();
+        List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = null;
+        if(university != null)
+            saleStoreAndDiscount = storeRepository.GetOnSaleStoreAndDiscount(university);
+        return StudentConverter.toMyPageDto(student, university, saleStoreAndDiscount);
     }
 }

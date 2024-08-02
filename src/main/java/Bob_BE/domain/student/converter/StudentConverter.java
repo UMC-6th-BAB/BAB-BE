@@ -1,9 +1,12 @@
 package Bob_BE.domain.student.converter;
 
 
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.university.entity.University;
+
+import java.util.List;
 
 public class StudentConverter {
     public static StudentResponseDto.updateUniversityDto toUpdateUniversityDto(Student student){
@@ -13,13 +16,13 @@ public class StudentConverter {
                 .build();
     }
 
-    public static StudentResponseDto.myPageDto toMyPageDto(Student student) {
+    public static StudentResponseDto.myPageDto toMyPageDto(
+            Student student, University university, List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount) {
         StudentResponseDto.AccountDto accountDto = StudentResponseDto.AccountDto
                 .builder()
                 .name(student.getNickname())
                 .email(student.getEmail())
                 .build();
-        University university = student.getUniversity();
         if(university == null){
             return StudentResponseDto.myPageDto
                     .builder()
@@ -37,10 +40,9 @@ public class StudentConverter {
                     .account(accountDto)
                     .isUniversityExist(true)
                     .university(universityDto)
+                    .todayMenus(saleStoreAndDiscount)
                     .build();
         }
-
-
     }
 }
 
