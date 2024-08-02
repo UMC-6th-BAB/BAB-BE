@@ -18,11 +18,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +45,6 @@ public class StoreController {
         var response = storeService.createMenus(storeId, requestDto);
         return ApiResponse.onSuccess(response);
     }
-
 
     @GetMapping("/{storeId}/menus-name")
     @Operation(summary = "가게 메뉴 이름 목록 가져오기 API", description = "가게 메뉴 이름 목록 가져오기 API 입니다.")
@@ -86,4 +80,52 @@ public class StoreController {
         return ApiResponse.onSuccess(storeService.createStore(ownerId, requestDto));
     }
 
+    @PatchMapping("/{storeId}")
+    @Operation(summary = "가게 수정 API", description = "가게 정보를 수정하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "가게 정보가 존재하지 않습니다.")
+
+    })
+    @Parameters({
+            @Parameter(name = "storeId", description = "가게 Id")
+    })
+    public ApiResponse<StoreResponseDto.StoreUpdateResultDto> updateStore(
+            @PathVariable("storeId") Long storeId,
+            @RequestBody StoreRequestDto.StoreUpdateRequestDto requestDto){
+
+        return ApiResponse.onSuccess(storeService.updateStore(storeId, requestDto));
+    }
+
+    @DeleteMapping("/{storeId}")
+    @Operation(summary = "가게 삭제 API", description = "가게를 삭제하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "가게 정보가 존재하지 않습니다.")
+
+    })
+    @Parameters({
+            @Parameter(name = "storeId", description = "가게 Id")
+    })
+    public ApiResponse<StoreResponseDto.StoreDeleteResultDto> deleteStore(@PathVariable("storeId") Long storeId){
+
+        return ApiResponse.onSuccess(storeService.deleteStore(storeId));
+    }
+
+
+    @GetMapping("/discounts")
+    @Operation(summary = "오늘의 할인 가게 페이지 API", description = "오늘의 할인 가게 페이지 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "UNIVERSITY404", description = "해당 대학교를 찾지 못했습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
+    })
+    public ApiResponse<StoreResponseDto.GetOnSaleStoreListResponseDto> GetOnSaleStoreList (@RequestParam Long universityId) {
+
+        StoreParameterDto.GetOnSaleStoreListParamDto getOnSaleStoreListParamDto = StoreDtoConverter.INSTANCE.toGetOnSaleStoreListParamDto(universityId);
+        List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = storeService.GetOnSaleStoreListData(getOnSaleStoreListParamDto);
+        return ApiResponse.onSuccess(StoreConverter.toGetOnSaleStoreListResponseDto(getOnSaleStoreDataDtoList));
+    }
 }

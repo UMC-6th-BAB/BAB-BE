@@ -2,6 +2,7 @@ package Bob_BE.domain.menu.controller;
 
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuDeleteRequestDto;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuUpdateRequestDto;
+import Bob_BE.domain.menu.dto.response.ImageUploadResponseDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.DeleteMenuResponseDto;
 import Bob_BE.domain.menu.service.MenuService;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,19 +54,16 @@ public class MenuController {
         return ApiResponse.onSuccess(response);
     }
 
-    @PostMapping("/{menuId}/upload-image")
+    @PostMapping(value="/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "메뉴 이미지 업로드 API", description = "메뉴 이미지 파일을 업로드하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "S3BUCKET500", description = "파일 업로드에 실패했습니다.")
     })
-    @Parameters({
-            @Parameter(name = "menuId", description = "메뉴 식별자, PathVariable")
-    })
-    public ApiResponse<MenuResponseDto.CreateMenuResponseDto> uploadMenuImage(
-            @PathVariable Long menuId,
+    public ApiResponse<ImageUploadResponseDto> uploadMenuImage(
             @RequestParam("imageFile") MultipartFile imageFile
     ){
-        MenuResponseDto.CreateMenuResponseDto response = menuService.uploadMenuImage(menuId, imageFile);
-        return ApiResponse.onSuccess(response);
+        String imageUrl = menuService.uploadMenuImage(imageFile);
+        return ApiResponse.onSuccess(new ImageUploadResponseDto(imageUrl));
     }
 }
