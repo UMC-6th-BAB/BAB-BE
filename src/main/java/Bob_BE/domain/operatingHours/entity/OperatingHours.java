@@ -1,5 +1,6 @@
 package Bob_BE.domain.operatingHours.entity;
 
+import Bob_BE.domain.operatingHours.dto.request.OHRequestDto;
 import Bob_BE.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,10 +30,10 @@ public class OperatingHours {
     @Enumerated(EnumType.STRING)
     private DayOfWeek day;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Time openTime;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Time closeTime;
 
     private Time breakStartTime;
@@ -44,4 +45,20 @@ public class OperatingHours {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
+
+    public void updateOH(OHRequestDto requestDto){
+        this.openTime=requestDto.getOpenTime();
+        this.closeTime=requestDto.getCloseTime();
+        this.breakStartTime=requestDto.getBreakTime().getStartTime();
+        this.breakEndTime=requestDto.getBreakTime().getEndTime();
+        this.holiday=false;
+    }
+
+    public void updateHoliday(){
+        this.openTime=null;
+        this.closeTime=null;
+        this.breakStartTime=null;
+        this.breakEndTime=null;
+        this.holiday=true;
+    }
 }
