@@ -1,5 +1,6 @@
 package Bob_BE.domain.student.service;
 
+import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.student.converter.StudentConverter;
@@ -88,6 +89,7 @@ public class StudentService {
         return jwtTokenProvider.getId(jwtToken);
     }
 
+    @Transactional
     public StudentResponseDto.updateUniversityDto updateUniversity(Long userId, StudentRequestDto.updateUniversityDto request) {
         Long universityId = request.getUniversityId();
         University university = universityRepository.findById(universityId)
@@ -103,9 +105,12 @@ public class StudentService {
         Student student = studentRepository.findById(userId)
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
         University university = student.getUniversity();
-        List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = null;
-        if(university != null)
-            saleStoreAndDiscount = storeRepository.GetOnSaleStoreAndDiscount(university);
-        return StudentConverter.toMyPageDto(student, university, saleStoreAndDiscount);
+        List<StoreResponseDto.GetOnSaleStoreInMyPageDto> getOnSaleStoreDataDtos = null;
+        if(university != null){
+            List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = storeRepository.GetOnSaleStoreAndDiscount(university);
+            getOnSaleStoreDataDtos = StoreConverter.toGetOnSaleStoreInMyPageDtoList(saleStoreAndDiscount);
+        }
+
+        return StudentConverter.toMyPageDto(student, university, getOnSaleStoreDataDtos);
     }
 }

@@ -27,7 +27,7 @@ public class StudentResponseDto {
         private Boolean isUniversityExist;
         private UniversityDto university;
 
-        private List<StoreResponseDto.StoreAndDiscountDataDto> todayMenus;
+        private List<StoreResponseDto.GetOnSaleStoreInMyPageDto> todayMenus;
         private AccountDto account;
     }
 

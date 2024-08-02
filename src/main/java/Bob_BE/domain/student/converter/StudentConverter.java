@@ -17,7 +17,7 @@ public class StudentConverter {
     }
 
     public static StudentResponseDto.myPageDto toMyPageDto(
-            Student student, University university, List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount) {
+            Student student, University university, List<StoreResponseDto.GetOnSaleStoreInMyPageDto> saleStoreAndDiscount) {
         StudentResponseDto.AccountDto accountDto = StudentResponseDto.AccountDto
                 .builder()
                 .name(student.getNickname())
