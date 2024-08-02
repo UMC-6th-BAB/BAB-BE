@@ -45,7 +45,7 @@ public class StudentController {
             @RequestBody StudentRequestDto.updateUniversityDto request){
         Long userId = studentService.getUserIdFromJwt(authorizationHeader);
 
-        StudentResponseDto.updateUniversityDto response = studentService.updateUniversity(userId, request);
+        StudentResponseDto.myPageDto response = studentService.updateUniversity(userId, request);
         return ApiResponse.onSuccess(response);
     }
 

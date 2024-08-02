@@ -9,13 +9,6 @@ import Bob_BE.domain.university.entity.University;
 import java.util.List;
 
 public class StudentConverter {
-    public static StudentResponseDto.updateUniversityDto toUpdateUniversityDto(Student student){
-        return StudentResponseDto.updateUniversityDto
-                .builder()
-                .message("성공")
-                .build();
-    }
-
     public static StudentResponseDto.myPageDto toMyPageDto(
             Student student, University university, List<StoreResponseDto.GetOnSaleStoreInMyPageDto> saleStoreAndDiscount) {
         StudentResponseDto.AccountDto accountDto = StudentResponseDto.AccountDto

@@ -90,7 +90,7 @@ public class StudentService {
     }
 
     @Transactional
-    public StudentResponseDto.updateUniversityDto updateUniversity(Long userId, StudentRequestDto.updateUniversityDto request) {
+    public StudentResponseDto.myPageDto updateUniversity(Long userId, StudentRequestDto.updateUniversityDto request) {
         Long universityId = request.getUniversityId();
         University university = universityRepository.findById(universityId)
                 .orElseThrow(()->new GeneralException(ErrorStatus.UNIVERSITY_NOT_FOUND));
@@ -98,7 +98,9 @@ public class StudentService {
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
         student.setUniversity(university);
         studentRepository.save(student);
-        return StudentConverter.toUpdateUniversityDto(student);
+
+        return getMyPage(userId);
+//        return StudentConverter.toUpdateUniversityDto(student);
     }
 
     public StudentResponseDto.myPageDto getMyPage(Long userId) {
