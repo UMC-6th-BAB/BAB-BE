@@ -1,6 +1,7 @@
 package Bob_BE.domain.student.dto.response;
 
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.university.dto.UniversityResponseDto;
 import Bob_BE.global.response.code.resultCode.SuccessStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,26 +18,14 @@ public class StudentResponseDto {
 
     @Getter
     @Builder
-    public static class updateUniversityDto {
-        private String message;
-    }
-
-    @Getter
-    @Builder
     public static class myPageDto {
         private Boolean isUniversityExist;
-        private UniversityDto university;
+        private UniversityResponseDto.UniversityBaseInfoDto university;
 
         private List<StoreResponseDto.GetOnSaleStoreInMyPageDto> todayMenus;
         private AccountDto account;
     }
 
-    @Getter
-    @Builder
-    public static class UniversityDto {
-        private String universityName;
-        private String universityAddress;
-    }
 
     @Getter
     @Builder
