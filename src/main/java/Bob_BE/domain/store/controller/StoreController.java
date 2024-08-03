@@ -82,7 +82,7 @@ public class StoreController {
             @RequestParam("storeLink") String storeLink,
             @RequestParam("registration") String registration,
             @RequestParam("university") String university,
-            @RequestParam(value="bannerFile", required = false)MultipartFile bannerFile
+            @RequestParam(value="bannerFiles", required = false)MultipartFile[] bannerFiles
             ){
         StoreRequestDto.StoreCreateRequestDto requestDto = StoreCreateRequestDto.builder()
                 .name(name)
@@ -95,7 +95,7 @@ public class StoreController {
                 .university(university)
                 .build();
 
-        StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFile);
+        StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFiles);
         return ApiResponse.onSuccess(responseDto);
     }
 

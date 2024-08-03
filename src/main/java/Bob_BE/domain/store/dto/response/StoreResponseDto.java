@@ -1,5 +1,6 @@
 package Bob_BE.domain.store.dto.response;
 
+import Bob_BE.domain.banner.entity.Banner;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.store.entity.Store;
 import com.querydsl.core.annotations.QueryProjection;
@@ -49,6 +50,7 @@ public class StoreResponseDto {
     public static class StoreCreateResultDto {
         private Long id;
         private String name;
+        private List<String> bannerImageUrls;
     }
 
     @Getter

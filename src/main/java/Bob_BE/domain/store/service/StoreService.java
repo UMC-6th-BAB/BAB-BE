@@ -24,6 +24,7 @@ import Bob_BE.global.response.exception.handler.MenuHandler;
 
 import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import Bob_BE.global.response.exception.handler.OwnerHandler;
 
@@ -71,7 +72,7 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreResponseDto.StoreCreateResultDto createStore(Long ownerId, StoreRequestDto.StoreCreateRequestDto requestDto, MultipartFile bannerFile){
+    public StoreResponseDto.StoreCreateResultDto createStore(Long ownerId, StoreRequestDto.StoreCreateRequestDto requestDto, MultipartFile[] bannerFiles){
         Owner findOwner = ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
 
@@ -80,21 +81,27 @@ public class StoreService {
 
         storeUniversityService.saveStoreUniversity(newStore, requestDto.getUniversity());
 
-        if (bannerFile != null && !bannerFile.isEmpty()){
-            try{
-                String bannerUrl = s3StorageService.uploadFile(bannerFile, "Banners");
-                Banner banner = Banner.builder()
-                        .bannerName(bannerFile.getOriginalFilename())
-                        .bannerType(bannerFile.getContentType())
-                        .bannerUrl(bannerUrl)
-                        .store(newStore)
-                        .build();
-                bannerRepository.save(banner);
-            }catch (IOException e){
-                throw new StoreHandler(ErrorStatus.FILE_UPLOAD_FAILED);
+        List<Banner> banners = new ArrayList<>();
+        for (MultipartFile bannerFile : bannerFiles){
+            if (bannerFile != null && !bannerFile.isEmpty()){
+                try{
+                    String bannerUrl = s3StorageService.uploadFile(bannerFile, "Banners");
+                    Banner banner = Banner.builder()
+                            .bannerName(bannerFile.getOriginalFilename())
+                            .bannerType(bannerFile.getContentType())
+                            .bannerUrl(bannerUrl)
+                            .store(newStore)
+                            .build();
+
+                    banners.add(banner);
+                    bannerRepository.save(banner);
+                }catch (IOException e){
+                    throw new StoreHandler(ErrorStatus.FILE_UPLOAD_FAILED);
+                }
             }
         }
 
+        newStore.setBannerList(banners);
         return StoreConverter.toCreateStoreResponseDto(newStore);
     }
 
