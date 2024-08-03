@@ -30,6 +30,21 @@ public class StoreConverter {
                 .collect(Collectors.toList());
     }
 
+    public static List<StoreResponseDto.GetOnSaleStoreInMyPageDto> toGetOnSaleStoreInMyPageDtoList (List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList) {
+
+        return storeAndDiscountDataDtoList.stream()
+                .limit(3)
+                .map(storeAndDiscountDataDto -> {
+                    return StoreResponseDto.GetOnSaleStoreInMyPageDto.builder()
+                            .storeId(storeAndDiscountDataDto.getStore().getId())
+                            .storeName(storeAndDiscountDataDto.getStore().getName())
+                            .discountTitle(storeAndDiscountDataDto.getDiscount().getTitle())
+                            .discountId(storeAndDiscountDataDto.getDiscount().getId())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
     public static StoreResponseDto.GetOnSaleStoreListResponseDto toGetOnSaleStoreListResponseDto (List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList) {
 
         return StoreResponseDto.GetOnSaleStoreListResponseDto.builder()

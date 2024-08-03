@@ -31,4 +31,36 @@ public class StudentController {
         StudentResponseDto.LoginOrRegisterDto response = studentService.registerOrLogin(request);
         return ApiResponse.of(response.getSuccessStatus(), response);
     }
+
+    @PatchMapping("/university")
+    @Operation(summary = "학생 대학교 등록 및 수정",
+            description = "학생의 대학교를 변경합니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "COMMON200: 학생 대학 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "OAUTH401: JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "OAUTH404: JWT 토큰 없음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "GLOBAL401: 서버 에러")})
+    public ApiResponse<?> updateStudentUniversity(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @RequestBody StudentRequestDto.updateUniversityDto request){
+        Long userId = studentService.getUserIdFromJwt(authorizationHeader);
+
+        StudentResponseDto.myPageDto response = studentService.updateUniversity(userId, request);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @GetMapping("/mypage")
+    @Operation(summary = "학생의 마이페이지 조회",
+            description = "학생의 마이페이지 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "COMMON200: 학생 마이페이지 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "OAUTH401: JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "OAUTH404: JWT 토큰 없음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "GLOBAL401: 서버 에러")})
+    public ApiResponse<?> getMyPage(@RequestHeader(value = "Authorization", required = false) String authorizationHeader){
+        Long userId = studentService.getUserIdFromJwt(authorizationHeader);
+
+        StudentResponseDto.myPageDto response = studentService.getMyPage(userId);
+        return ApiResponse.onSuccess(response);
+    }
 }

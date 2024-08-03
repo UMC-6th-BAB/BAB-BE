@@ -1,10 +1,16 @@
 package Bob_BE.domain.student.service;
 
+import Bob_BE.domain.store.converter.StoreConverter;
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.repository.StoreRepository;
+import Bob_BE.domain.student.converter.StudentConverter;
 import Bob_BE.domain.student.dto.request.StudentRequestDto;
 import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
+import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.global.util.JwtTokenProvider;
+import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.external.KakaoResponseDto;
 import Bob_BE.global.external.KakaoUserClient;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
@@ -16,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -24,8 +31,11 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final UniversityRepository universityRepository;
+    private final StoreRepository storeRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
+
 
     @Transactional
     public StudentResponseDto.LoginOrRegisterDto registerOrLogin(StudentRequestDto.LoginOrRegisterDto request) {
@@ -65,5 +75,44 @@ public class StudentService {
             log.error("Error during student register or login", e);
             throw new GeneralException(ErrorStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public Long getUserIdFromJwt(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new GeneralException(ErrorStatus.MISSING_JWT_EXCEPTION);
+        }
+        String jwtToken = authorizationHeader.substring(7);
+        boolean isValidToken = jwtTokenProvider.isValidateToken(jwtToken);
+        if (!isValidToken) {
+            throw new GeneralException(ErrorStatus.EXPIRED_JWT_EXCEPTION);
+        }
+        return jwtTokenProvider.getId(jwtToken);
+    }
+
+    @Transactional
+    public StudentResponseDto.myPageDto updateUniversity(Long userId, StudentRequestDto.updateUniversityDto request) {
+        Long universityId = request.getUniversityId();
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(()->new GeneralException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        Student student = studentRepository.findById(userId)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        student.setUniversity(university);
+        studentRepository.save(student);
+
+        return getMyPage(userId);
+//        return StudentConverter.toUpdateUniversityDto(student);
+    }
+
+    public StudentResponseDto.myPageDto getMyPage(Long userId) {
+        Student student = studentRepository.findById(userId)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        University university = student.getUniversity();
+        List<StoreResponseDto.GetOnSaleStoreInMyPageDto> getOnSaleStoreDataDtos = null;
+        if(university != null){
+            List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = storeRepository.GetOnSaleStoreAndDiscount(university);
+            getOnSaleStoreDataDtos = StoreConverter.toGetOnSaleStoreInMyPageDtoList(saleStoreAndDiscount);
+        }
+
+        return StudentConverter.toMyPageDto(student, university, getOnSaleStoreDataDtos);
     }
 }

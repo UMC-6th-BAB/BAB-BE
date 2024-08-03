@@ -96,6 +96,18 @@ public class StoreResponseDto {
     }
 
     @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetOnSaleStoreInMyPageDto {
+
+        private Long storeId;
+        private String storeName;
+        private Long discountId;
+        private String discountTitle;
+    }
+
+    @Getter
     public static class GetOnSaleStoreMenuDataDto {
 
         private final String menuName;
