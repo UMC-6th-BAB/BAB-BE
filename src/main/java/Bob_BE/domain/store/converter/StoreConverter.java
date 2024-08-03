@@ -24,14 +24,14 @@ public class StoreConverter {
                 .build();
     }
 
-    public static StoreResponseDto.StoreDataDto toStoreDataDto (Store store, int discountPrice) {
+    public static StoreResponseDto.StoreDataDto toStoreDataDto (Store store, Menu menu, int discountPrice) {
 
         return StoreResponseDto.StoreDataDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
-                .signatureMenuPrice(store.getSignatureMenu().getMenu().getPrice())
+                .menuPrice(menu.getPrice())
                 .discountPrice(discountPrice)
                 .build();
     }

@@ -156,7 +156,7 @@ public class StoreResponseDto {
         private String storeName;
         private Double latitude;
         private Double longitude;
-        private Integer signatureMenuPrice;
+        private Integer menuPrice;
         private Integer discountPrice;
     }
 }

@@ -1,5 +1,8 @@
 package Bob_BE.domain.store.service;
 
+import Bob_BE.domain.discount.entity.Discount;
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
+import Bob_BE.domain.discountMenu.repository.DiscountMenuRepository;
 import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.CreateMenuDto;
@@ -48,6 +51,7 @@ public class StoreService {
     private final OwnerRepository ownerRepository;
     private final UniversityRepository universityRepository;
     private final StoreUniversityRepository storeUniversityRepository;
+    private final DiscountMenuRepository discountMenuRepository;
 
     private final StoreUniversityService storeUniversityService;
 
@@ -142,15 +146,27 @@ public class StoreService {
 
         return storeList.stream()
                 .map(store -> {
-                    AtomicInteger discountPrice = new AtomicInteger();
+                    if(store.getDiscountList().stream().anyMatch(Discount::getInProgress)) {
+                        AtomicInteger discountPrice = new AtomicInteger();
 
-                    store.getSignatureMenu().getMenu().getDiscountMenuList()
-                            .forEach(discountMenu -> {
-                                if(discountMenu.getDiscount().getInProgress())
-                                    discountPrice.addAndGet(discountMenu.getDiscountPrice());
-                            });
+                        store.getSignatureMenu().getMenu().getDiscountMenuList()
+                                .forEach(discountMenu -> {
 
-                    return StoreConverter.toStoreDataDto(store, discountPrice.get());
+                                    if(discountMenu.getDiscount().getInProgress())
+                                        discountPrice.addAndGet(discountMenu.getDiscountPrice());
+                                });
+
+                        if (discountPrice.get() == 0) {
+                            DiscountMenu discountMenu = discountMenuRepository.GetDiscountMenuByStoreAndMaxDiscountPrice(store);
+
+                            return StoreConverter.toStoreDataDto(store, discountMenu.getMenu(), discountMenu.getDiscountPrice());
+                        }
+
+                        return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(),discountPrice.get());
+                    }
+                    else {
+                        return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(), 0);
+                    }
                 }).collect(Collectors.toList());
     }
 }
