@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "banner")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
