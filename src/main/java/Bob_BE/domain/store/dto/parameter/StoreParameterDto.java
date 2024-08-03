@@ -24,4 +24,13 @@ public class StoreParameterDto {
 
         private Long universityId;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetDataForPingParamDto {
+
+        private Long universityId;
+    }
 }

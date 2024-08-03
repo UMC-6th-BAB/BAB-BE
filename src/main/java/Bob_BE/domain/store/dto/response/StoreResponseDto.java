@@ -78,7 +78,7 @@ public class StoreResponseDto {
         private Long id;
         private LocalDateTime deletedAt;
     }
-  
+
     @Getter
     @Builder
     @NoArgsConstructor
@@ -135,5 +135,28 @@ public class StoreResponseDto {
             this.discount = discount;
         }
     }
-   
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetDataForPingResponseDto {
+
+        private List<StoreDataDto> storeDataDtoList;
+        private Integer totalDataNum;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StoreDataDto {
+
+        private Long storeId;
+        private String storeName;
+        private Double latitude;
+        private Double longitude;
+        private Integer signatureMenuPrice;
+        private Integer discountPrice;
+    }
 }

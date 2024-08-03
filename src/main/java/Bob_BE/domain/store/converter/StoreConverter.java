@@ -6,6 +6,7 @@ import Bob_BE.domain.menu.entity.Menu;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import Bob_BE.domain.owner.entity.Owner;
@@ -14,6 +15,26 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 
 public class StoreConverter {
+
+    public static StoreResponseDto.GetDataForPingResponseDto toGetDataForPingResponseDto (List<StoreResponseDto.StoreDataDto> storeDataDtoList) {
+
+        return StoreResponseDto.GetDataForPingResponseDto.builder()
+                .storeDataDtoList(storeDataDtoList)
+                .totalDataNum(storeDataDtoList.size())
+                .build();
+    }
+
+    public static StoreResponseDto.StoreDataDto toStoreDataDto (Store store, int discountPrice) {
+
+        return StoreResponseDto.StoreDataDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .latitude(store.getLatitude())
+                .longitude(store.getLongitude())
+                .signatureMenuPrice(store.getSignatureMenu().getMenu().getPrice())
+                .discountPrice(discountPrice)
+                .build();
+    }
 
     public static List<StoreResponseDto.GetOnSaleStoreDataDto> toGetOnSaleStoreDataDtoList (List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList) {
 

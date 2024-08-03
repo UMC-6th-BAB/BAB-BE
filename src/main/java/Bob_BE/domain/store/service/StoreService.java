@@ -14,6 +14,7 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
+import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
@@ -21,7 +22,11 @@ import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import Bob_BE.global.response.exception.handler.OwnerHandler;
 
 import Bob_BE.global.response.exception.handler.UniversityHandler;
@@ -42,6 +47,7 @@ public class StoreService {
     private final MenuRepository menuRepository;
     private final OwnerRepository ownerRepository;
     private final UniversityRepository universityRepository;
+    private final StoreUniversityRepository storeUniversityRepository;
 
     private final StoreUniversityService storeUniversityService;
 
@@ -118,4 +124,33 @@ public class StoreService {
         return getOnSaleStoreDataDtoList;
     }
 
+    /**
+     * 지도 핑을 위한 데이터 가져오기 API
+     * return : List<StoreDataDto>
+     */
+    public List<StoreResponseDto.StoreDataDto> GetStoreDataList(StoreParameterDto.GetDataForPingParamDto param) {
+
+        University findUniversity = universityRepository.findById(param.getUniversityId())
+                .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+
+        List<StoreUniversity> storeUniversityList = storeUniversityRepository.findAllByUniversity(findUniversity)
+                .orElse(new ArrayList<>());
+
+        List<Store> storeList = storeUniversityList.stream()
+                .map(StoreUniversity::getStore)
+                .collect(Collectors.toList());
+
+        return storeList.stream()
+                .map(store -> {
+                    AtomicInteger discountPrice = new AtomicInteger();
+
+                    store.getSignatureMenu().getMenu().getDiscountMenuList()
+                            .forEach(discountMenu -> {
+                                if(discountMenu.getDiscount().getInProgress())
+                                    discountPrice.addAndGet(discountMenu.getDiscountPrice());
+                            });
+
+                    return StoreConverter.toStoreDataDto(store, discountPrice.get());
+                }).collect(Collectors.toList());
+    }
 }
