@@ -1,5 +1,6 @@
 package Bob_BE.domain.menu.service;
 
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuDeleteRequestDto;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuUpdateRequestDto;
@@ -7,7 +8,9 @@ import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.DeleteMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
+import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
@@ -16,6 +19,7 @@ import Bob_BE.global.response.exception.handler.MenuHandler;
 import Bob_BE.global.util.aws.S3StorageService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import Bob_BE.global.response.exception.handler.StoreHandler;
 import jakarta.validation.Valid;
@@ -28,12 +32,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MenuService {
 
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
     private final S3StorageService s3StorageService;
 
+    @Transactional
     public MenuResponseDto.CreateMenuResponseDto updateMenu(Long menuId, MenuUpdateRequestDto requestDTO) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.MENU_NOT_FOUND));
@@ -45,6 +51,7 @@ public class MenuService {
         return MenuConverter.toCreateMenuResponseDto(menu);
     }
 
+    @Transactional
     public List<DeleteMenuResponseDto> deleteMenus(MenuDeleteRequestDto requestDTO) {
         List<Long> menuIds = requestDTO.getMenuIds();
         return menuIds.stream().map(menuId -> {
@@ -55,6 +62,7 @@ public class MenuService {
         }).toList();
     }
 
+    @Transactional
     public String uploadMenuImage(MultipartFile imageFile) {
         String imageUrl;
 
@@ -67,8 +75,6 @@ public class MenuService {
         return imageUrl;
     }
 
-
-    @Transactional(readOnly = true)
     public List<Menu> GetMenuListByStore (@Valid StoreParameterDto.GetMenuNameListParamDto param) {
 
         Store findStore = storeRepository.findById(param.getStoreId())
@@ -78,5 +84,36 @@ public class MenuService {
                 .orElse(new ArrayList<>());
 
         return menuList;
+    }
+
+    /**
+     * 가게 상세 페이지 API : 메뉴 데이터 가져오기
+     * return : List<GetStoreMenuDataDto>
+     */
+    public List<StoreResponseDto.GetStoreMenuDataDto> GetStoreMenuData(StoreParameterDto.GetStoreDataParamDto param) {
+
+        Store findStore = storeRepository.findById(param.getStoreId())
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        List<Menu> menuList = menuRepository.findAllByStore(findStore)
+                .orElse(new ArrayList<>());
+
+        return menuList.stream()
+                .map(menu -> {
+
+                    int discountPrice = 0;
+                    int discountRate = 0;
+
+                    for (DiscountMenu discountMenu : menu.getDiscountMenuList()) {
+                        discountPrice += discountMenu.getDiscountPrice();
+                    }
+
+                    if (discountPrice != 0) {
+                        discountRate += (int)((discountPrice / (double)menu.getPrice()) * 100);
+                    }
+
+                    System.out.println("discountRate : " + discountRate);
+                    return StoreConverter.toGetStoreMenuDataDto(menu, discountPrice, discountRate);
+                }).collect(Collectors.toList());
     }
 }
