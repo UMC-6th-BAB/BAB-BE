@@ -145,6 +145,7 @@ public class StoreResponseDto {
         private Long storeId;
         private String storeName;
         private String storeLink;
+        private Boolean onSale;
         private Long signatureMenuId;
         private List<String> bannerUrlList;
         private List<GetStoreMenuDataDto> getStoreMenuDataDtoList;

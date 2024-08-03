@@ -2,6 +2,7 @@ package Bob_BE.domain.store.converter;
 
 
 import Bob_BE.domain.banner.entity.Banner;
+import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.entity.Menu;
 
@@ -23,9 +24,13 @@ public class StoreConverter {
                 .map(Banner::getBannerUrl)
                 .collect(Collectors.toList());
 
+        Boolean onSale = store.getDiscountList().stream()
+                .anyMatch(Discount::getInProgress);
+
         return StoreResponseDto.GetStoreDataResponseDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
+                .onSale(onSale)
                 .storeLink(store.getStoreLink())
                 .signatureMenuId(store.getSignatureMenu().getMenu().getId())
                 .bannerUrlList(bannerUrlList)
