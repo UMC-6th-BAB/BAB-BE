@@ -19,6 +19,7 @@ import Bob_BE.global.response.exception.handler.MenuHandler;
 import Bob_BE.global.util.aws.S3StorageService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import Bob_BE.global.response.exception.handler.StoreHandler;
@@ -101,19 +102,19 @@ public class MenuService {
         return menuList.stream()
                 .map(menu -> {
 
-                    int discountPrice = 0;
-                    int discountRate = 0;
+                    AtomicInteger discountPrice = new AtomicInteger(0);
+                    AtomicInteger discountRate = new AtomicInteger(0);
 
                     for (DiscountMenu discountMenu : menu.getDiscountMenuList()) {
-                        discountPrice += discountMenu.getDiscountPrice();
+                        discountPrice.addAndGet(discountMenu.getDiscountPrice());
                     }
 
-                    if (discountPrice != 0) {
-                        discountRate += (int)((discountPrice / (double)menu.getPrice()) * 100);
+                    if (discountPrice.get() != 0) {
+                        discountRate.set((int)((discountPrice.get() / (double)menu.getPrice()) * 100));
                     }
 
                     System.out.println("discountRate : " + discountRate);
-                    return StoreConverter.toGetStoreMenuDataDto(menu, discountPrice, discountRate);
+                    return StoreConverter.toGetStoreMenuDataDto(menu, discountPrice.get(), discountRate.get());
                 }).collect(Collectors.toList());
     }
 }
