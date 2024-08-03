@@ -106,14 +106,18 @@ public class MenuService {
                     AtomicInteger discountRate = new AtomicInteger(0);
 
                     for (DiscountMenu discountMenu : menu.getDiscountMenuList()) {
-                        discountPrice.addAndGet(discountMenu.getDiscountPrice());
+
+                        if (discountMenu.getDiscount().getInProgress()) {
+
+                            discountPrice.addAndGet(discountMenu.getDiscountPrice());
+                        }
                     }
 
                     if (discountPrice.get() != 0) {
+
                         discountRate.set((int)((discountPrice.get() / (double)menu.getPrice()) * 100));
                     }
 
-                    System.out.println("discountRate : " + discountRate);
                     return StoreConverter.toGetStoreMenuDataDto(menu, discountPrice.get(), discountRate.get());
                 }).collect(Collectors.toList());
     }
