@@ -1,5 +1,7 @@
 package Bob_BE.domain.store.service;
 
+import Bob_BE.domain.banner.entity.Banner;
+import Bob_BE.domain.banner.repository.BannerRepository;
 import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.CreateMenuDto;
@@ -14,13 +16,14 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
-import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
+import Bob_BE.global.util.aws.S3StorageService;
+import java.io.IOException;
 import java.util.List;
 import Bob_BE.global.response.exception.handler.OwnerHandler;
 
@@ -31,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -42,8 +46,9 @@ public class StoreService {
     private final MenuRepository menuRepository;
     private final OwnerRepository ownerRepository;
     private final UniversityRepository universityRepository;
-
     private final StoreUniversityService storeUniversityService;
+    private final S3StorageService s3StorageService;
+    private final BannerRepository bannerRepository;
 
 
     @Transactional
@@ -66,13 +71,29 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreResponseDto.StoreCreateResultDto createStore(Long ownerId, StoreRequestDto.StoreCreateRequestDto requestDto){
-        Owner findOwner = ownerRepository.findById(ownerId).orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
+    public StoreResponseDto.StoreCreateResultDto createStore(Long ownerId, StoreRequestDto.StoreCreateRequestDto requestDto, MultipartFile bannerFile){
+        Owner findOwner = ownerRepository.findById(ownerId)
+                .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
 
         Store newStore = StoreConverter.toStore(findOwner, requestDto);
+        storeRepository.save(newStore);
 
         storeUniversityService.saveStoreUniversity(newStore, requestDto.getUniversity());
-        storeRepository.save(newStore);
+
+        if (bannerFile != null && !bannerFile.isEmpty()){
+            try{
+                String bannerUrl = s3StorageService.uploadFile(bannerFile, "Banners");
+                Banner banner = Banner.builder()
+                        .bannerName(bannerFile.getOriginalFilename())
+                        .bannerType(bannerFile.getContentType())
+                        .bannerUrl(bannerUrl)
+                        .store(newStore)
+                        .build();
+                bannerRepository.save(banner);
+            }catch (IOException e){
+                throw new StoreHandler(ErrorStatus.FILE_UPLOAD_FAILED);
+            }
+        }
 
         return StoreConverter.toCreateStoreResponseDto(newStore);
     }
