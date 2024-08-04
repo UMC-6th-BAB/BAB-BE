@@ -20,6 +20,7 @@ import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
+import Bob_BE.global.response.exception.handler.ImageHandler;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
 import Bob_BE.global.util.aws.S3StorageService;
@@ -96,7 +97,7 @@ public class StoreService {
                     banners.add(banner);
                     bannerRepository.save(banner);
                 }catch (IOException e){
-                    throw new StoreHandler(ErrorStatus.FILE_UPLOAD_FAILED);
+                    throw new ImageHandler(ErrorStatus.FILE_UPLOAD_FAILED);
                 }
             }
         }
