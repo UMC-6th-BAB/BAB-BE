@@ -29,11 +29,9 @@ public class OperatingHours {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DayOfWeek day;
-
-    @Column(nullable = true)
+    
     private Time openTime;
 
-    @Column(nullable = true)
     private Time closeTime;
 
     private Time breakStartTime;
