@@ -16,7 +16,6 @@ import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
-import Bob_BE.global.util.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -35,7 +34,7 @@ public class StoreController {
     private final MenuService menuService;
     private final OperatingHoursService operatingHoursService;
     private final OwnerService ownerService;
-
+    
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
     @ApiResponses({
