@@ -70,7 +70,7 @@ public class StoreController {
     }
 
 
-    @PostMapping("/{ownerId}")
+    @PostMapping
     @Operation(summary = "가게 등록 API", description = "가게 정보를 등록하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
