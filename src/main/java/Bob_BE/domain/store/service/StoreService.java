@@ -1,5 +1,8 @@
 package Bob_BE.domain.store.service;
 
+import Bob_BE.domain.discount.entity.Discount;
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
+import Bob_BE.domain.discountMenu.repository.DiscountMenuRepository;
 import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.CreateMenuDto;
@@ -14,6 +17,7 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
+import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
@@ -21,7 +25,11 @@ import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.handler.MenuHandler;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import Bob_BE.global.response.exception.handler.OwnerHandler;
 
 import Bob_BE.global.response.exception.handler.UniversityHandler;
@@ -42,6 +50,8 @@ public class StoreService {
     private final MenuRepository menuRepository;
     private final OwnerRepository ownerRepository;
     private final UniversityRepository universityRepository;
+    private final StoreUniversityRepository storeUniversityRepository;
+    private final DiscountMenuRepository discountMenuRepository;
 
     private final StoreUniversityService storeUniversityService;
 
@@ -118,6 +128,48 @@ public class StoreService {
         return getOnSaleStoreDataDtoList;
     }
 
+    /**
+     * 지도 핑을 위한 데이터 가져오기 API
+     * return : List<StoreDataDto>
+     */
+    public List<StoreResponseDto.StoreDataDto> GetStoreDataList(StoreParameterDto.GetDataForPingParamDto param) {
+
+        University findUniversity = universityRepository.findById(param.getUniversityId())
+                .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+
+        List<StoreUniversity> storeUniversityList = storeUniversityRepository.findAllByUniversity(findUniversity)
+                .orElse(new ArrayList<>());
+
+        List<Store> storeList = storeUniversityList.stream()
+                .map(StoreUniversity::getStore)
+                .collect(Collectors.toList());
+
+        return storeList.stream()
+                .map(store -> {
+                    if(store.getDiscountList().stream().anyMatch(Discount::getInProgress)) {
+                        AtomicInteger discountPrice = new AtomicInteger();
+
+                        store.getSignatureMenu().getMenu().getDiscountMenuList()
+                                .forEach(discountMenu -> {
+
+                                    if(discountMenu.getDiscount().getInProgress())
+                                        discountPrice.addAndGet(discountMenu.getDiscountPrice());
+                                });
+
+                        if (discountPrice.get() == 0) {
+                            DiscountMenu discountMenu = discountMenuRepository.GetDiscountMenuByStoreAndMaxDiscountPrice(store);
+
+                            return StoreConverter.toStoreDataDto(store, discountMenu.getMenu(), discountMenu.getDiscountPrice());
+                        }
+
+                        return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(),discountPrice.get());
+                    }
+                    else {
+                        return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(), 0);
+                    }
+                }).collect(Collectors.toList());
+    }
+  
     /**
      * 가게 상세 페이지 API : 가게 데이터 가져오기
      * return : Store

@@ -140,6 +140,31 @@ public class StoreResponseDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class GetDataForPingResponseDto {
+
+        private List<StoreDataDto> storeDataDtoList;
+        private Integer totalDataNum;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StoreDataDto {
+
+        private Long storeId;
+        private String storeName;
+        private Double latitude;
+        private Double longitude;
+        private Integer menuPrice;
+        private Integer discountPrice;
+      
+    }
+  
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GetStoreDataResponseDto {
 
         private Long storeId;
@@ -151,7 +176,10 @@ public class StoreResponseDto {
         private List<GetStoreMenuDataDto> getStoreMenuDataDtoList;
     }
 
-    @Getter @Builder @NoArgsConstructor @AllArgsConstructor
+    @Getter 
+    @Builder 
+    @NoArgsConstructor 
+    @AllArgsConstructor
     public static class GetStoreMenuDataDto {
 
         private Long menuId;

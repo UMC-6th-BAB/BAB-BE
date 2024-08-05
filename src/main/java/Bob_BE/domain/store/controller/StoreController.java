@@ -134,6 +134,22 @@ public class StoreController {
         return ApiResponse.onSuccess(StoreConverter.toGetOnSaleStoreListResponseDto(getOnSaleStoreDataDtoList));
     }
 
+    @GetMapping("/")
+    @Operation(summary = "지도 핑을 위한 데이터 가져오기 API", description = "지도 핑을 위한 데이터 가져오기 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "UNIVERSITY404", description = "해당 대학교를 찾지 못했습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
+    })
+    public ApiResponse<StoreResponseDto.GetDataForPingResponseDto> GetDataForPing (@RequestParam Long universityId) {
+
+        StoreParameterDto.GetDataForPingParamDto getDataForPingParamDto = StoreDtoConverter.INSTANCE.toGetDataForPingParamDto(universityId);
+        List<StoreResponseDto.StoreDataDto> storeDataDtoList = storeService.GetStoreDataList(getDataForPingParamDto);
+        return ApiResponse.onSuccess(StoreConverter.toGetDataForPingResponseDto(storeDataDtoList));
+    }
+
     @GetMapping("/{storeId}")
     @Operation(summary = "가게 상세 페이지 API", description = "가게 상세 페이지 API 입니다.")
     @ApiResponses({
