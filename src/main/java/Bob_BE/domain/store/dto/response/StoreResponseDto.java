@@ -158,5 +158,35 @@ public class StoreResponseDto {
         private Double longitude;
         private Integer menuPrice;
         private Integer discountPrice;
+      
+    }
+  
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetStoreDataResponseDto {
+
+        private Long storeId;
+        private String storeName;
+        private String storeLink;
+        private Boolean onSale;
+        private Long signatureMenuId;
+        private List<String> bannerUrlList;
+        private List<GetStoreMenuDataDto> getStoreMenuDataDtoList;
+    }
+
+    @Getter 
+    @Builder 
+    @NoArgsConstructor 
+    @AllArgsConstructor
+    public static class GetStoreMenuDataDto {
+
+        private Long menuId;
+        private String menuName;
+        private String menuUrl;
+        private Integer menuPrice;
+        private Integer discountPrice;
+        private Integer discountRate;
     }
 }

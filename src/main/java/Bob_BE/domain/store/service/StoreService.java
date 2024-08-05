@@ -169,4 +169,15 @@ public class StoreService {
                     }
                 }).collect(Collectors.toList());
     }
+  
+    /**
+     * 가게 상세 페이지 API : 가게 데이터 가져오기
+     * return : Store
+     */
+    public Store GetStoreData(StoreParameterDto.GetStoreDataParamDto param) {
+
+        return storeRepository.findById(param.getStoreId())
+                .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+    }
+
 }

@@ -12,4 +12,6 @@ public interface StoreDtoConverter {
     StoreParameterDto.GetMenuNameListParamDto toGetMenuNameListParamDto(Long storeId);
     StoreParameterDto.GetOnSaleStoreListParamDto toGetOnSaleStoreListParamDto(Long universityId);
     StoreParameterDto.GetDataForPingParamDto toGetDataForPingParamDto(Long universityId);
+    StoreParameterDto.GetStoreDataParamDto toGetStoreDataParamDto(Long storeId);
+
 }
