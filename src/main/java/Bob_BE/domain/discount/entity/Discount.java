@@ -36,7 +36,7 @@ public class Discount {
 
     private String title;
 
-    private boolean inProgress;
+    private Boolean inProgress;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")

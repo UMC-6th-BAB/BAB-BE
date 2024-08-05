@@ -14,6 +14,7 @@ import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -131,6 +132,23 @@ public class StoreController {
         StoreParameterDto.GetOnSaleStoreListParamDto getOnSaleStoreListParamDto = StoreDtoConverter.INSTANCE.toGetOnSaleStoreListParamDto(universityId);
         List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = storeService.GetOnSaleStoreListData(getOnSaleStoreListParamDto);
         return ApiResponse.onSuccess(StoreConverter.toGetOnSaleStoreListResponseDto(getOnSaleStoreDataDtoList));
+    }
+
+    @GetMapping("/{storeId}")
+    @Operation(summary = "가게 상세 페이지 API", description = "가게 상세 페이지 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다.")
+    })
+    @Parameters({
+            @Parameter(name = "storeId", description = "가게 식별자, PathVariable")
+    })
+    public ApiResponse<StoreResponseDto.GetStoreDataResponseDto> GetStoreDataList (@PathVariable("storeId") Long storeId) {
+
+        StoreParameterDto.GetStoreDataParamDto getStoreDataParamDto = StoreDtoConverter.INSTANCE.toGetStoreDataParamDto(storeId);
+        Store findStore = storeService.GetStoreData(getStoreDataParamDto);
+        List<StoreResponseDto.GetStoreMenuDataDto> getStoreMenuDataDtoList = menuService.GetStoreMenuData(getStoreDataParamDto);
+        return ApiResponse.onSuccess(StoreConverter.toGetStoreDataResponseDto(findStore, getStoreMenuDataDtoList));
     }
 
     @PostMapping("/{storeId}/operating_hours")
