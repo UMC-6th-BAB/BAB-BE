@@ -8,6 +8,7 @@ import Bob_BE.domain.menu.service.MenuService;
 import Bob_BE.domain.operatingHours.dto.request.OHRequestDto;
 import Bob_BE.domain.operatingHours.dto.response.OHResponseDto;
 import Bob_BE.domain.operatingHours.service.OperatingHoursService;
+import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
@@ -15,6 +16,7 @@ import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
+import Bob_BE.global.util.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -32,6 +34,7 @@ public class StoreController {
     private final StoreService storeService;
     private final MenuService menuService;
     private final OperatingHoursService operatingHoursService;
+    private final OwnerService ownerService;
 
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
@@ -75,11 +78,8 @@ public class StoreController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "사장님 정보가 등록되어 있지 않습니다.")
 
     })
-    @Parameters({
-            @Parameter(name = "ownerId", description = "사장님 Id")
-    })
-    public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(@PathVariable("ownerId") Long ownerId, @RequestBody StoreRequestDto.StoreCreateRequestDto requestDto){
-
+    public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody StoreRequestDto.StoreCreateRequestDto requestDto){
+        Long ownerId = ownerService.getOwnerIdFromJwt(authorizationHeader);
 
         return ApiResponse.onSuccess(storeService.createStore(ownerId, requestDto));
     }

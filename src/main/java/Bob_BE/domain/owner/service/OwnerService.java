@@ -66,4 +66,16 @@ public class OwnerService {
             throw new GeneralException(ErrorStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public Long getOwnerIdFromJwt(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new GeneralException(ErrorStatus.MISSING_JWT_EXCEPTION);
+        }
+        String jwtToken = authorizationHeader.substring(7);
+        boolean isValidToken = jwtTokenProvider.isValidateToken(jwtToken);
+        if (!isValidToken) {
+            throw new GeneralException(ErrorStatus.EXPIRED_JWT_EXCEPTION);
+        }
+        return jwtTokenProvider.getId(jwtToken);
+    }
 }
