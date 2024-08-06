@@ -36,6 +36,8 @@ public class StoreConverter {
                 .longitude(store.getLongitude())
                 .menuPrice(menu.getPrice())
                 .discountPrice(discountPrice)
+                .build();
+    }
 
     public static StoreResponseDto.GetStoreDataResponseDto toGetStoreDataResponseDto(Store store, List<StoreResponseDto.GetStoreMenuDataDto> getStoreMenuDataDtoList) {
 
