@@ -142,7 +142,7 @@ public class StoreController {
         return ApiResponse.onSuccess(StoreConverter.toGetOnSaleStoreListResponseDto(getOnSaleStoreDataDtoList));
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     @Operation(summary = "지도 핑을 위한 데이터 가져오기 API", description = "지도 핑을 위한 데이터 가져오기 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
