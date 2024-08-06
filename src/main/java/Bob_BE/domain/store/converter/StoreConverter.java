@@ -125,10 +125,14 @@ public class StoreConverter {
 
 
     public static StoreResponseDto.StoreCreateResultDto toCreateStoreResponseDto(Store store){
+        List<String> bannerImageUrls = store.getBannerList().stream()
+                .map(banner -> banner.getBannerUrl())
+                .collect(Collectors.toList());
 
         return StoreResponseDto.StoreCreateResultDto.builder()
                 .id(store.getId())
                 .name(store.getName())
+                .bannerImageUrls(bannerImageUrls)
                 .build();
     }
 

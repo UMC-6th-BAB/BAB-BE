@@ -22,6 +22,7 @@ import java.util.List;
 @Entity
 @Table(name = "store")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

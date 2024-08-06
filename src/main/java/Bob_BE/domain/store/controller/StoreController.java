@@ -13,6 +13,7 @@ import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
+import Bob_BE.domain.store.dto.request.StoreRequestDto.StoreCreateRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
@@ -25,6 +26,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/v1/stores")
@@ -75,13 +77,19 @@ public class StoreController {
     @Operation(summary = "가게 등록 API", description = "가게 정보를 등록하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "사장님 정보가 등록되어 있지 않습니다.")
-
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "유저 정보가 존재하지 않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })
-    public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody StoreRequestDto.StoreCreateRequestDto requestDto){
+    public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(
+            @RequestHeader(value = "Authorization",required = false) String authorizationHeader,
+            @RequestPart("store") StoreRequestDto.StoreCreateRequestDto requestDto,
+            @RequestPart(value = "bannerFiles", required = false) MultipartFile[] bannerFiles
+    ){
         Long ownerId = ownerService.getOwnerIdFromJwt(authorizationHeader);
-
-        return ApiResponse.onSuccess(storeService.createStore(ownerId, requestDto));
+        StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFiles);
+        return ApiResponse.onSuccess(responseDto);
     }
 
     @PatchMapping("/{storeId}")
