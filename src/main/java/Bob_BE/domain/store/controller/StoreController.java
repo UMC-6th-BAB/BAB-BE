@@ -5,6 +5,7 @@ import Bob_BE.domain.menu.dto.response.MenuResponseDto.CreateMenuResponseDto;
 
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.service.MenuService;
+import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
@@ -30,6 +31,7 @@ public class StoreController {
 
     private final StoreService storeService;
     private final MenuService menuService;
+    private final OwnerService ownerService;
 
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
@@ -66,17 +68,19 @@ public class StoreController {
     }
 
 
-    @PostMapping("/{ownerId}")
+    @PostMapping
+    @Operation(summary = "가게 등록 API", description = "가게 정보를 등록하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "유저 정보가 존재하지 않습니다.")
     })
     public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(
-            @PathVariable("ownerId") Long ownerId,
+            @RequestHeader(value = "Authorization",required = false) String authorizationHeader,
             @RequestPart("store") StoreRequestDto.StoreCreateRequestDto requestDto,
             @RequestPart(value = "bannerFiles", required = false) MultipartFile[] bannerFiles
     ){
+        Long ownerId = ownerService.getOwnerIdFromJwt(authorizationHeader);
         StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFiles);
         return ApiResponse.onSuccess(responseDto);
     }

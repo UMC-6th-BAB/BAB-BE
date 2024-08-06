@@ -14,6 +14,10 @@ public enum ErrorStatus implements BaseErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "GLOBAL401", "서버 오류"),
     KAKAO_TOKEN_ERROR(HttpStatus.BAD_REQUEST, "GLOBAL402", "토큰관련 서버 에러"),
 
+    // OAuth
+    EXPIRED_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "OAUTH401", "JWT 토큰 만료"),
+    MISSING_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "OAUTH404", "JWT 토큰 없음"),
+
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER401", "해당 유저가 존재하지 않습니다." ),
 
