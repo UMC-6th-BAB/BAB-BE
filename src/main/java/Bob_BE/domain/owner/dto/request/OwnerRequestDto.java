@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class OwnerRequestDto {
+
     @Getter
     @Builder
     @NoArgsConstructor
@@ -17,4 +18,5 @@ public class OwnerRequestDto {
         @NotNull
         private String token;
     }
+
 }
