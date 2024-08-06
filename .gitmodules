@@ -1,3 +1,4 @@
 [submodule "Config"]
 	path = Config
 	url = https://github.com/UMC-6th-BAB/submodule
+    branch = main
