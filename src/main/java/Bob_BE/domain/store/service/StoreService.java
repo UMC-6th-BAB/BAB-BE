@@ -13,6 +13,8 @@ import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
+import Bob_BE.domain.signatureMenu.repository.SignatureMenuRepository;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
@@ -62,6 +64,7 @@ public class StoreService {
     private final StoreUniversityService storeUniversityService;
     private final S3StorageService s3StorageService;
     private final BannerRepository bannerRepository;
+    private final SignatureMenuRepository signatureMenuRepository;
 
 
     @Transactional
@@ -71,6 +74,13 @@ public class StoreService {
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDto> menus = requestDto.getMenus();
 
+        long signatureMenuSize = menus.stream()
+                .filter(MenuCreateRequestDto.CreateMenuDto::getIsSignature).count();
+
+        if (signatureMenuSize == 0 || signatureMenuSize > 1){
+            throw new MenuHandler(ErrorStatus.INVALID_SIGNATURE_MENU_COUNT);
+        }
+
         return menus.stream().map(menu -> {
             Menu newMenu = Menu.builder()
                     .menuName(menu.getName())
@@ -79,7 +89,15 @@ public class StoreService {
                     .store(store)
                     .build();
             newMenu = menuRepository.save(newMenu);
-            return MenuConverter.toCreateMenuRegisterResponseDto(newMenu);
+
+            if (menu.getIsSignature()){
+                SignatureMenu signatureMenu = SignatureMenu.builder()
+                        .menu(newMenu)
+                        .store(store)
+                        .build();
+                signatureMenuRepository.save(signatureMenu);
+            }
+            return MenuConverter.toCreateMenuRegisterResponseDto(newMenu, menu.getIsSignature());
         }).toList();
     }
 
