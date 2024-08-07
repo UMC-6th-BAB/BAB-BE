@@ -43,7 +43,8 @@ public class StoreController {
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE 404", description = "해당하는 가게가 존재하지않습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE 404", description = "해당하는 가게가 존재하지않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MENU 401", description = "유효하지 않은 시그니처 메뉴 개수입니다.")
     })
     @Parameters({
             @Parameter(name = "storeId", description = "가게 식별자, PathVariable")
