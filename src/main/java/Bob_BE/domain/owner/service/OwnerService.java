@@ -1,14 +1,18 @@
 package Bob_BE.domain.owner.service;
 
+import Bob_BE.domain.owner.dto.parameter.OwnerParameterDto;
 import Bob_BE.domain.owner.dto.request.OwnerRequestDto;
 import Bob_BE.domain.owner.dto.response.OwnerResponseDto;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
+import Bob_BE.domain.store.entity.Store;
+import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.global.external.KakaoResponseDto;
 import Bob_BE.global.external.KakaoUserClient;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.code.resultCode.SuccessStatus;
 import Bob_BE.global.response.exception.GeneralException;
+import Bob_BE.global.response.exception.handler.OwnerHandler;
 import Bob_BE.global.util.JwtTokenProvider;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,7 @@ public class OwnerService {
     private final OwnerRepository ownerRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
+    private final StoreRepository storeRepository;
 
     @Transactional
     public OwnerResponseDto.LoginOrRegisterDto registerOrLogin(OwnerRequestDto.LoginOrRegisterDto request) {
@@ -77,5 +82,27 @@ public class OwnerService {
             throw new GeneralException(ErrorStatus.EXPIRED_JWT_EXCEPTION);
         }
         return jwtTokenProvider.getId(jwtToken);
+    }
+
+    /**
+     * 사장님 마이페이지 API
+     * 사장님 데이터 찾는 메서드
+     * return : Owner
+     */
+    public Owner getOwnerMypage(OwnerParameterDto.OwnerMyPageParamDto param) {
+
+        return ownerRepository.findById(param.getOwnerId())
+                .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
+    }
+
+    /**
+     * 사장님 마이페이지 API
+     * 사장님이 가게를 보유하고있는지 확인하는 메서드
+     * return : Store
+     */
+    public Store getOwnerStore(Owner owner) {
+
+        return storeRepository.findFirstByOwnerId(owner.getId())
+                .orElse(new Store());
     }
 }
