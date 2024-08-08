@@ -18,11 +18,16 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
+import Bob_BE.global.response.code.resultCode.SuccessStatus;
+import Bob_BE.global.util.google.GoogleCloudOCRService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+
+import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -153,7 +158,6 @@ public class StoreController {
             @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
     })
     public ApiResponse<StoreResponseDto.GetDataForPingResponseDto> GetDataForPing (@RequestParam Long universityId) {
-
         StoreParameterDto.GetDataForPingParamDto getDataForPingParamDto = StoreDtoConverter.INSTANCE.toGetDataForPingParamDto(universityId);
         List<StoreResponseDto.StoreDataDto> storeDataDtoList = storeService.GetStoreDataList(getDataForPingParamDto);
         return ApiResponse.onSuccess(StoreConverter.toGetDataForPingResponseDto(storeDataDtoList));
@@ -201,6 +205,18 @@ public class StoreController {
             @RequestBody List<OHRequestDto> requestDto){
 
         return ApiResponse.onSuccess(operatingHoursService.updateOperatingHours(storeId, requestDto));
+    }
+
+
+    @PostMapping(value = "/certificates", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "사업자 등록증 등록 API", description = "사업자 등록증 정보를 불러오는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CERTIFICATE404", description = "정보를 읽어오는데 실패했습니다.")
+    })
+    public ApiResponse<StoreResponseDto.CertificateResultDto> registerCertificates(@RequestPart("file") MultipartFile file) throws IOException {
+
+        return ApiResponse.onSuccess(storeService.registerCertificates(file));
     }
 
 }
