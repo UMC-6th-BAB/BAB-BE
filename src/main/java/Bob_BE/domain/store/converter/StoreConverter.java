@@ -19,6 +19,23 @@ import Bob_BE.domain.store.entity.Store;
 
 public class StoreConverter {
 
+    public static StoreResponseDto.CertificateResultDto toCertificateResultDto(List<String> datas) {
+
+        String businessType = datas.get(4);
+        businessType = businessType.replace(" ,", ",");
+
+        String categories = datas.get(5);
+        categories = categories.replace(" ,", ",");
+
+        return StoreResponseDto.CertificateResultDto.builder()
+                .registrationNumber(datas.get(1))
+                .storeName(datas.get(2))
+                .address(datas.get(3))
+                .businessTypes(businessType)
+                .categories(categories)
+                .build();
+    }
+
     public static StoreResponseDto.GetDataForPingResponseDto toGetDataForPingResponseDto (List<StoreResponseDto.StoreDataDto> storeDataDtoList) {
 
         return StoreResponseDto.GetDataForPingResponseDto.builder()

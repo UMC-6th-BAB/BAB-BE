@@ -191,4 +191,17 @@ public class StoreResponseDto {
         private Integer discountPrice;
         private Integer discountRate;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CertificateResultDto {
+        private String registrationNumber;
+        private String storeName;
+        private String address;
+        private String businessTypes;
+        private String categories;
+    }
+
 }

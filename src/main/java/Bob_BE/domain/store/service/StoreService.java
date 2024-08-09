@@ -13,6 +13,8 @@ import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
+import Bob_BE.domain.signatureMenu.repository.SignatureMenuRepository;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
@@ -32,12 +34,17 @@ import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+
+import java.util.Map;
 
 import Bob_BE.global.response.exception.handler.OwnerHandler;
 
 import Bob_BE.global.response.exception.handler.UniversityHandler;
+import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +67,13 @@ public class StoreService {
     private final DiscountMenuRepository discountMenuRepository;
 
     private final StoreUniversityService storeUniversityService;
+
     private final S3StorageService s3StorageService;
     private final BannerRepository bannerRepository;
+    private final SignatureMenuRepository signatureMenuRepository;
+
+    private final GoogleCloudOCRService googleCloudOCRService;
+
 
 
     @Transactional
@@ -71,6 +83,13 @@ public class StoreService {
                 .orElseThrow(() -> new MenuHandler(ErrorStatus.STORE_NOT_FOUND));
         List<CreateMenuDto> menus = requestDto.getMenus();
 
+        long signatureMenuSize = menus.stream()
+                .filter(MenuCreateRequestDto.CreateMenuDto::getIsSignature).count();
+
+        if (signatureMenuSize == 0 || signatureMenuSize > 1){
+            throw new MenuHandler(ErrorStatus.INVALID_SIGNATURE_MENU_COUNT);
+        }
+
         return menus.stream().map(menu -> {
             Menu newMenu = Menu.builder()
                     .menuName(menu.getName())
@@ -79,7 +98,15 @@ public class StoreService {
                     .store(store)
                     .build();
             newMenu = menuRepository.save(newMenu);
-            return MenuConverter.toCreateMenuRegisterResponseDto(newMenu);
+
+            if (menu.getIsSignature()){
+                SignatureMenu signatureMenu = SignatureMenu.builder()
+                        .menu(newMenu)
+                        .store(store)
+                        .build();
+                signatureMenuRepository.save(signatureMenu);
+            }
+            return MenuConverter.toCreateMenuRegisterResponseDto(newMenu, menu.getIsSignature());
         }).toList();
     }
 
@@ -208,6 +235,32 @@ public class StoreService {
 
         return storeRepository.findById(param.getStoreId())
                 .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+    }
+    public StoreResponseDto.CertificateResultDto registerCertificates(MultipartFile file) throws IOException {
+
+        List<Map.Entry<String, Integer>> texts = googleCloudOCRService.detectTextGcs(file);
+
+        String data = "";
+
+        List<String> datas = new ArrayList<>();
+
+        int referenceY = 0;
+
+        for (Map.Entry<String, Integer> text: texts){
+
+            if (text.getKey().equals(":")) {
+                datas.add(data.trim());
+                data = "";
+                referenceY = text.getValue();
+            } else if (text.getValue() >= referenceY - 10 && text.getValue() <= referenceY + 10){
+                data = new StringBuilder(data).append(text.getKey()).append(" ").toString();
+                log.info("data: {}", data);
+            }
+        }
+
+        datas.add(data);
+
+        return StoreConverter.toCertificateResultDto(datas);
     }
 
 }

@@ -22,6 +22,7 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER401", "해당 유저가 존재하지 않습니다." ),
 
     // Menu
+    INVALID_SIGNATURE_MENU_COUNT(HttpStatus.NOT_FOUND, "MENU401", "유효하지 않은 시그니처 메뉴 개수입니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU404", "해당 메뉴가 존재하지않습니다."),
 
     // Store
