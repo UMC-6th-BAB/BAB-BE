@@ -19,6 +19,7 @@ public class MenuResponseDto {
         private Integer price;
         private String menuImageUrl;
         private StoreResponseDto.MenuCreateResultDto store;
+        private Boolean isSignature;
     }
 
     @Getter

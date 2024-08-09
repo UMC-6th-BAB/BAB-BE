@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class MenuConverter {
 
     // Menu Create
-    public static MenuResponseDto.CreateMenuResponseDto toCreateMenuRegisterResponseDto(Menu menu) {
+    public static MenuResponseDto.CreateMenuResponseDto toCreateMenuRegisterResponseDto(Menu menu, boolean isSignature) {
         return MenuResponseDto.CreateMenuResponseDto.builder()
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
@@ -19,6 +19,7 @@ public class MenuConverter {
                         .id(menu.getStore().getId())
                         .name(menu.getStore().getName())
                         .build())
+                .isSignature(isSignature)
                 .build();
     }
 

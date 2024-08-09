@@ -25,6 +25,7 @@ public class MenuRequestDto {
             private String name;
             private Integer price;
             private String menuUrl;
+            private Boolean isSignature;
         }
     }
 
