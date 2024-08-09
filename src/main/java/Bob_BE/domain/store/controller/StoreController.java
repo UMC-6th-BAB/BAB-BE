@@ -91,8 +91,8 @@ public class StoreController {
     })
     public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(
             @RequestHeader(value = "Authorization",required = false) String authorizationHeader,
-            @RequestPart("store") StoreRequestDto.StoreCreateRequestDto requestDto,
-            @RequestPart(value = "bannerFiles", required = false) MultipartFile[] bannerFiles
+            @RequestPart StoreRequestDto.StoreCreateRequestDto requestDto,
+            @ModelAttribute(value = "bannerFiles") MultipartFile[] bannerFiles
     ){
         Long ownerId = ownerService.getOwnerIdFromJwt(authorizationHeader);
         StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFiles);
