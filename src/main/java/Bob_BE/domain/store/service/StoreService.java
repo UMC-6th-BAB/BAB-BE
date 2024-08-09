@@ -34,12 +34,17 @@ import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+
+import java.util.Map;
 
 import Bob_BE.global.response.exception.handler.OwnerHandler;
 
 import Bob_BE.global.response.exception.handler.UniversityHandler;
+import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
@@ -62,9 +67,13 @@ public class StoreService {
     private final DiscountMenuRepository discountMenuRepository;
 
     private final StoreUniversityService storeUniversityService;
+
     private final S3StorageService s3StorageService;
     private final BannerRepository bannerRepository;
     private final SignatureMenuRepository signatureMenuRepository;
+
+    private final GoogleCloudOCRService googleCloudOCRService;
+
 
 
     @Transactional
@@ -226,6 +235,32 @@ public class StoreService {
 
         return storeRepository.findById(param.getStoreId())
                 .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+    }
+    public StoreResponseDto.CertificateResultDto registerCertificates(MultipartFile file) throws IOException {
+
+        List<Map.Entry<String, Integer>> texts = googleCloudOCRService.detectTextGcs(file);
+
+        String data = "";
+
+        List<String> datas = new ArrayList<>();
+
+        int referenceY = 0;
+
+        for (Map.Entry<String, Integer> text: texts){
+
+            if (text.getKey().equals(":")) {
+                datas.add(data.trim());
+                data = "";
+                referenceY = text.getValue();
+            } else if (text.getValue() >= referenceY - 10 && text.getValue() <= referenceY + 10){
+                data = new StringBuilder(data).append(text.getKey()).append(" ").toString();
+                log.info("data: {}", data);
+            }
+        }
+
+        datas.add(data);
+
+        return StoreConverter.toCertificateResultDto(datas);
     }
 
 }

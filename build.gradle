@@ -50,6 +50,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+
+	//google vision
+	implementation 'com.google.cloud:google-cloud-vision:3.45.0'
+
+	//google storage
+	implementation 'com.google.cloud:google-cloud-storage:2.41.0'
 }
 
 dependencyManagement {
