@@ -39,7 +39,7 @@ public class OwnerController {
         return ApiResponse.of(response.getSuccessStatus(), response);
     }
 
-    @GetMapping("/owners/mypage")
+    @GetMapping("/mypage")
     @Operation(summary = "사장님 마이페이지 API", description = "사장님 마이페이지 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
