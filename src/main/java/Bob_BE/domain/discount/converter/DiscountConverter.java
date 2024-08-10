@@ -31,10 +31,10 @@ public class DiscountConverter {
                 .build();
     }
 
-    public static DiscountResponseDto.DeleteDiscountResponseDto toDeleteDiscountResponseDto() {
+    public static DiscountResponseDto.DeleteDiscountResponseDto toDeleteDiscountResponseDto(Discount deletedDiscount) {
 
         return DiscountResponseDto.DeleteDiscountResponseDto.builder()
-                .message("삭제 성공.")
+                .id(deletedDiscount.getId())
                 .deletedAt(LocalDateTime.now())
                 .build();
     }

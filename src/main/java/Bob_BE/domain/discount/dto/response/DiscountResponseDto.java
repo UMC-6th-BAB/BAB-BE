@@ -27,7 +27,7 @@ public class DiscountResponseDto {
     @AllArgsConstructor
     public static class DeleteDiscountResponseDto {
 
-        private String message;
+        private Long id;
         private LocalDateTime deletedAt;
     }
 
