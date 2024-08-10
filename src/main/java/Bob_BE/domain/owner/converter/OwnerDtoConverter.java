@@ -9,5 +9,5 @@ public interface OwnerDtoConverter {
 
     OwnerDtoConverter INSTANCE = Mappers.getMapper(OwnerDtoConverter.class);
 
-    OwnerParameterDto.OwnerMyPageParamDto toOwnerMyPageParamDto(Long ownerId);
+    OwnerParameterDto.OwnerMyPageParamDto toOwnerMyPageParamDto(String authorizationHeader);
 }
