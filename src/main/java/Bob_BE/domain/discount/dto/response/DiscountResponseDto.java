@@ -1,5 +1,6 @@
 package Bob_BE.domain.discount.dto.response;
 
+import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +18,27 @@ public class DiscountResponseDto {
     @AllArgsConstructor
     public static class CreateDiscountResponseDto {
 
+        private Long storeId;
+        private String storeName;
         private Long discountId;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private String title;
+        private Boolean inProgress;
         private LocalDateTime createdAt;
+        private List<CreateDiscountMenuResponseDto> createDiscountMenuDataDtoList;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateDiscountMenuResponseDto {
+
+        private Long menuId;
+        private String menuName;
+        private Integer menuPrice;
+        private Integer discountPrice;
     }
 
     @Getter
@@ -27,7 +47,7 @@ public class DiscountResponseDto {
     @AllArgsConstructor
     public static class DeleteDiscountResponseDto {
 
-        private String message;
+        private Long id;
         private LocalDateTime deletedAt;
     }
 

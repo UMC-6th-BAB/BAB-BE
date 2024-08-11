@@ -70,7 +70,7 @@ public class DiscountService {
      * return : void
      */
     @Transactional
-    public void DeleteDiscount(@Valid DiscountParameterDto.DeleteDiscountParamDto param) {
+    public Discount DeleteDiscount(@Valid DiscountParameterDto.DeleteDiscountParamDto param) {
 
         Store findStore = storeRepository.findById(param.getStoreId())
                 .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
@@ -81,6 +81,8 @@ public class DiscountService {
         if (!findDiscount.getStore().equals(findStore)) throw new DiscountHandler(ErrorStatus.DISCOUNT_STORE_NOT_MATCH);
 
         discountRepository.delete(findDiscount);
+
+        return (findDiscount);
     }
 
     /**
