@@ -9,6 +9,7 @@ import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.university.repository.UniversityRepository;
+import Bob_BE.global.external.KakaoAuthClient;
 import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.external.KakaoResponseDto;
@@ -19,6 +20,7 @@ import Bob_BE.global.response.exception.GeneralException;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,12 +37,36 @@ public class StudentService {
     private final StoreRepository storeRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
+    private final KakaoAuthClient kakaoAuthClient;
+
+    @Value("${social.client.kakao.rest-api-key}")
+    private String kakaoAppKey;
+    @Value("${social.client.kakao.secret-key}")
+    private String kakaoAppSecret;
+    @Value("${social.client.kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+    @Value("${social.client.kakao.grant_type}")
+    private String kakaoGrantType;
 
 
     @Transactional
     public StudentResponseDto.LoginOrRegisterDto registerOrLogin(StudentRequestDto.LoginOrRegisterDto request) {
         try {
-            String authorization = "Bearer " + request.getToken();
+            String authorizationCode = request.getToken();
+            KakaoResponseDto.KakaoTokenResponseDto kakaoTokenInfo = kakaoAuthClient.getAccessToken(
+                    kakaoAppKey,
+                    kakaoAppSecret,
+                    kakaoGrantType,
+                    kakaoRedirectUri,
+                    authorizationCode
+            );
+
+            log.info(kakaoTokenInfo.toString());
+            log.info(kakaoTokenInfo.getAccessToken());
+            log.info(kakaoTokenInfo.getRefreshToken());
+            log.info(kakaoTokenInfo.getTokenType());
+            log.info(kakaoTokenInfo.getScope());
+            String authorization = "Bearer " + kakaoTokenInfo.getAccessToken();
             KakaoResponseDto.KakaoUserResponseDto kakaoUserInfo = kakaoUserClient.getUserInfo(authorization);
 
             Long socialId = kakaoUserInfo.getId();

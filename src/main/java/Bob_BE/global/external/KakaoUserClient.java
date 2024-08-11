@@ -6,10 +6,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "KakaoUser" , url = "https://kapi.kakao.com/v2/user/me")
+@FeignClient(name = "KakaoUser" , url = "https://kapi.kakao.com")
 public interface KakaoUserClient {
-    @GetMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @GetMapping(path = "/v2/user/me", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     KakaoResponseDto.KakaoUserResponseDto getUserInfo(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     );
+
+
 }
