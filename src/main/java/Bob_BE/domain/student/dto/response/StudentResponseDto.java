@@ -1,7 +1,7 @@
 package Bob_BE.domain.student.dto.response;
 
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
-import Bob_BE.domain.university.dto.UniversityResponseDto;
+import Bob_BE.domain.university.dto.response.UniversityResponseDto;
 import Bob_BE.global.response.code.resultCode.SuccessStatus;
 import lombok.Builder;
 import lombok.Getter;
