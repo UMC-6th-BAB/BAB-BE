@@ -13,6 +13,7 @@ import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
+import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.signatureMenu.repository.SignatureMenuRepository;
 import Bob_BE.domain.store.converter.StoreConverter;
@@ -23,12 +24,14 @@ import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
+import Bob_BE.domain.student.entity.Student;
+import Bob_BE.domain.student.repository.StudentRepository;
+import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
-import Bob_BE.global.response.exception.handler.ImageHandler;
-import Bob_BE.global.response.exception.handler.MenuHandler;
+import Bob_BE.global.response.exception.handler.*;
 
 import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
@@ -41,12 +44,8 @@ import java.util.stream.Collectors;
 
 import java.util.Map;
 
-import Bob_BE.global.response.exception.handler.OwnerHandler;
-
-import Bob_BE.global.response.exception.handler.UniversityHandler;
 import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
-import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,8 +64,10 @@ public class StoreService {
     private final UniversityRepository universityRepository;
     private final StoreUniversityRepository storeUniversityRepository;
     private final DiscountMenuRepository discountMenuRepository;
+    private final StudentRepository studentRepository;
 
     private final StoreUniversityService storeUniversityService;
+    private final StudentService studentService;
 
     private final S3StorageService s3StorageService;
     private final BannerRepository bannerRepository;
@@ -173,8 +174,12 @@ public class StoreService {
      */
     public List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleStoreListData(@Valid StoreParameterDto.GetOnSaleStoreListParamDto param) {
 
-        University findUniversity = universityRepository.findById(param.getUniversityId())
-                .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        Long studentId = studentService.getUserIdFromJwt(param.getAuthorizationHeader());
+
+        Student findStudent = studentRepository.findById(studentId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+
+        University findUniversity = findStudent.getUniversity();
 
         List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList = storeRepository.GetOnSaleStoreAndDiscount(findUniversity);
 
@@ -191,8 +196,12 @@ public class StoreService {
      */
     public List<StoreResponseDto.StoreDataDto> GetStoreDataList(StoreParameterDto.GetDataForPingParamDto param) {
 
-        University findUniversity = universityRepository.findById(param.getUniversityId())
-                .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        Long studentId = studentService.getUserIdFromJwt(param.getAuthorizationHeader());
+
+        Student findStudent = studentRepository.findById(studentId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+
+        University findUniversity = findStudent.getUniversity();
 
         List<StoreUniversity> storeUniversityList = storeUniversityRepository.findAllByUniversity(findUniversity)
                 .orElse(new ArrayList<>());

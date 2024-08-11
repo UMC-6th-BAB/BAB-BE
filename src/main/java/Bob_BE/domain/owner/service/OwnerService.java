@@ -91,7 +91,9 @@ public class OwnerService {
      */
     public Owner getOwnerMypage(OwnerParameterDto.OwnerMyPageParamDto param) {
 
-        return ownerRepository.findById(param.getOwnerId())
+        Long ownerId = getOwnerIdFromJwt(param.getAuthorizationHeader());
+
+        return ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
     }
 
