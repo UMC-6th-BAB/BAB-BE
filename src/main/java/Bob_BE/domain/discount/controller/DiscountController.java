@@ -60,8 +60,8 @@ public class DiscountController {
     public ApiResponse<DiscountResponseDto.DeleteDiscountResponseDto> DeleteDiscount(@PathVariable("storeId") Long storeId, @PathVariable("discountId") Long discountId) {
 
         DiscountParameterDto.DeleteDiscountParamDto deleteDiscountParamDto = DiscountDtoConverter.INSTANCE.toDeleteDiscountParamDto(storeId, discountId);
-        discountService.DeleteDiscount(deleteDiscountParamDto);
-        return ApiResponse.onSuccess(DiscountConverter.toDeleteDiscountResponseDto());
+        Discount deletedDiscount = discountService.DeleteDiscount(deleteDiscountParamDto);
+        return ApiResponse.onSuccess(DiscountConverter.toDeleteDiscountResponseDto(deletedDiscount));
     }
 
     @GetMapping("/{storeId}/discounts")

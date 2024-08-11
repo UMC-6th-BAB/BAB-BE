@@ -22,7 +22,7 @@ public class StoreParameterDto {
     @AllArgsConstructor
     public static class GetOnSaleStoreListParamDto {
 
-        private Long universityId;
+        private String authorizationHeader;
     }
 
     @Getter
@@ -31,8 +31,7 @@ public class StoreParameterDto {
     @AllArgsConstructor
     public static class GetDataForPingParamDto {
 
-        private Long universityId;
-      
+        private String authorizationHeader;
     }
 
     @Getter

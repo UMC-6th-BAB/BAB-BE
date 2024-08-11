@@ -31,19 +31,37 @@ public class DiscountConverter {
                 .build();
     }
 
-    public static DiscountResponseDto.DeleteDiscountResponseDto toDeleteDiscountResponseDto() {
+    public static DiscountResponseDto.DeleteDiscountResponseDto toDeleteDiscountResponseDto(Discount deletedDiscount) {
 
         return DiscountResponseDto.DeleteDiscountResponseDto.builder()
-                .message("삭제 성공.")
+                .id(deletedDiscount.getId())
                 .deletedAt(LocalDateTime.now())
                 .build();
     }
 
     public static DiscountResponseDto.CreateDiscountResponseDto toCreateDiscountResponseDto(Discount discount) {
 
+        List<DiscountResponseDto.CreateDiscountMenuResponseDto> createDiscountMenuResponseDtoList = discount.getDiscountMenuList().stream()
+                .map(discountMenu -> {
+
+                    return DiscountResponseDto.CreateDiscountMenuResponseDto.builder()
+                            .menuId(discountMenu.getMenu().getId())
+                            .menuName(discountMenu.getMenu().getMenuName())
+                            .menuPrice(discountMenu.getMenu().getPrice())
+                            .discountPrice(discountMenu.getDiscountPrice())
+                            .build();
+                }).collect(Collectors.toList());
+
         return DiscountResponseDto.CreateDiscountResponseDto.builder()
+                .storeId(discount.getStore().getId())
+                .storeName(discount.getStore().getName())
                 .discountId(discount.getId())
+                .startDate(discount.getStartDate())
+                .endDate(discount.getEndDate())
+                .title(discount.getTitle())
+                .inProgress(discount.getInProgress())
                 .createdAt(LocalDateTime.now())
+                .createDiscountMenuDataDtoList(createDiscountMenuResponseDtoList)
                 .build();
     }
 

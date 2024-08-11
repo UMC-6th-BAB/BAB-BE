@@ -13,6 +13,6 @@ public class OwnerParameterDto {
     @AllArgsConstructor
     public static class OwnerMyPageParamDto {
 
-        private Long ownerId;
+        private String authorizationHeader;
     }
 }
