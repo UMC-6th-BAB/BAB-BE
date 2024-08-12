@@ -59,6 +59,8 @@ dependencies {
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'com.redislabs:spring-redisearch:3.1.2'
+	implementation 'io.lettuce.core:lettuce-core:6.1.5'
 }
 
 dependencyManagement {
