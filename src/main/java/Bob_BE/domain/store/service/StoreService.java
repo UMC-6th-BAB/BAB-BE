@@ -224,7 +224,7 @@ public class StoreService {
                     else {
                         return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(), 0);
                     }
-                }).collect(Collectors.toList());
+                }).toList();
     }
   
     /**
@@ -264,12 +264,13 @@ public class StoreService {
     }
 
     public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(StoreParameterDto.GetSearchKeywordParamDto param){
-        String keyword = "%" + param.getKeyword() + "%";
+        String keyword = param.getKeyword();
         List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword);
 
         return stores.stream()
-                .map(StoreConverter::toStoreSearchResponseDto)
-                .collect(Collectors.toList());
+                .map(store -> StoreConverter.toStoreSearchResponseDto(store, keyword))
+                .filter(dto -> !dto.getMenuList().isEmpty())
+                .toList();
     }
 
 }

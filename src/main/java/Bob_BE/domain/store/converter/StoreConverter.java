@@ -63,7 +63,7 @@ public class StoreConverter {
 
         List<String> bannerUrlList = store.getBannerList().stream()
                 .map(Banner::getBannerUrl)
-                .collect(Collectors.toList());
+                .toList();
 
         Boolean onSale = store.getDiscountList().stream()
                 .anyMatch(Discount::getInProgress);
@@ -103,7 +103,7 @@ public class StoreConverter {
                             .getOnSaleStoreMenuDataDtoList(new ArrayList<>())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static List<StoreResponseDto.GetOnSaleStoreInMyPageDto> toGetOnSaleStoreInMyPageDtoList (List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList) {
@@ -118,7 +118,7 @@ public class StoreConverter {
                             .discountId(storeAndDiscountDataDto.getDiscount().getId())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static StoreResponseDto.GetOnSaleStoreListResponseDto toGetOnSaleStoreListResponseDto (List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList) {
@@ -137,7 +137,7 @@ public class StoreConverter {
                             .menuId(menu.getId())
                             .name(menu.getMenuName())
                             .build();
-                }).collect(Collectors.toList());
+                }).toList();
 
         return StoreResponseDto.GetMenuNameListResponseDto.builder()
                 .menuNameDataDtoList(menuNameDataDtoList)
@@ -149,7 +149,7 @@ public class StoreConverter {
     public static StoreResponseDto.StoreCreateResultDto toCreateStoreResponseDto(Store store){
         List<String> bannerImageUrls = store.getBannerList().stream()
                 .map(banner -> banner.getBannerUrl())
-                .collect(Collectors.toList());
+                .toList();
 
         return StoreResponseDto.StoreCreateResultDto.builder()
                 .id(store.getId())
@@ -180,10 +180,11 @@ public class StoreConverter {
                 .build();
     }
 
-    public static GetStoreSearchDto toStoreSearchResponseDto(Store store){
+    public static GetStoreSearchDto toStoreSearchResponseDto(Store store, String keyword){
         List<SearchMenuResponseDto> menus = store.getMenuList().stream()
+                .filter(menu -> menu.getMenuName().contains(keyword))
                 .map(StoreConverter::toMenuResponseDto)
-                .collect(Collectors.toList());
+                .toList();
 
         return GetStoreSearchDto.builder()
                 .storeId(store.getId())
@@ -198,7 +199,6 @@ public class StoreConverter {
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
                 .menuImageUrl(menu.getMenuUrl())
-                .store(null)
                 .isSignature(menu.getSignatureMenu() != null)
                 .build();
     }
