@@ -263,4 +263,13 @@ public class StoreService {
         return StoreConverter.toCertificateResultDto(datas);
     }
 
+    public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(StoreParameterDto.GetSearchKeywordParamDto param){
+        String keyword = "%" + param.getKeyword() + "%";
+        List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword);
+
+        return stores.stream()
+                .map(StoreConverter::toStoreSearchResponseDto)
+                .collect(Collectors.toList());
+    }
+
 }

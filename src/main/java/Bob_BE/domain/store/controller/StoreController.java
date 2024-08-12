@@ -12,9 +12,11 @@ import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
+import Bob_BE.domain.store.dto.parameter.StoreParameterDto.GetSearchKeywordParamDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto.StoreCreateRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
@@ -220,4 +222,10 @@ public class StoreController {
         return ApiResponse.onSuccess(storeService.registerCertificates(file));
     }
 
+    @GetMapping("/menus/search")
+    public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(@RequestParam String keyword){
+        GetSearchKeywordParamDto searchKeywordParamDto = GetSearchKeywordParamDto.builder().keyword(keyword).build();
+        List<GetStoreSearchDto> stores = storeService.searchStoreWithMenus(searchKeywordParamDto);
+        return ApiResponse.onSuccess(stores);
+    }
 }

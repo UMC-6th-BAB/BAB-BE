@@ -43,4 +43,13 @@ public class StoreParameterDto {
 
         private Long storeId;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetSearchKeywordParamDto {
+
+        private String keyword;
+    }
 }

@@ -4,8 +4,10 @@ package Bob_BE.domain.store.converter;
 import Bob_BE.domain.banner.entity.Banner;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
+import Bob_BE.domain.menu.dto.response.MenuResponseDto.SearchMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +18,7 @@ import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
+import org.springframework.core.annotation.MergedAnnotations.Search;
 
 public class StoreConverter {
 
@@ -174,6 +177,29 @@ public class StoreConverter {
                 .streetAddress(requestDto.getStreetAddress())
                 .storeLink(requestDto.getStoreLink())
                 .registration(requestDto.getRegistration())
+                .build();
+    }
+
+    public static GetStoreSearchDto toStoreSearchResponseDto(Store store){
+        List<SearchMenuResponseDto> menus = store.getMenuList().stream()
+                .map(StoreConverter::toMenuResponseDto)
+                .collect(Collectors.toList());
+
+        return GetStoreSearchDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .menuList(menus)
+                .build();
+    }
+
+    private static SearchMenuResponseDto toMenuResponseDto(Menu menu){
+        return SearchMenuResponseDto.builder()
+                .id(menu.getId())
+                .menuName(menu.getMenuName())
+                .price(menu.getPrice())
+                .menuImageUrl(menu.getMenuUrl())
+                .store(null)
+                .isSignature(menu.getSignatureMenu() != null)
                 .build();
     }
 }
