@@ -48,6 +48,7 @@ import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -263,6 +264,7 @@ public class StoreService {
         return StoreConverter.toCertificateResultDto(datas);
     }
 
+    @Cacheable(value = "storeSearch", key = "#param.keyword")
     public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(StoreParameterDto.GetSearchKeywordParamDto param){
         String keyword = param.getKeyword();
         List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword);

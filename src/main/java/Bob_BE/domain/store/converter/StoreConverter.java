@@ -184,7 +184,8 @@ public class StoreConverter {
         List<SearchMenuResponseDto> menus = store.getMenuList().stream()
                 .filter(menu -> menu.getMenuName().contains(keyword))
                 .map(StoreConverter::toMenuResponseDto)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
+
 
         return GetStoreSearchDto.builder()
                 .storeId(store.getId())
