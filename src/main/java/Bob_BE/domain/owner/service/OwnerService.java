@@ -34,6 +34,7 @@ public class OwnerService {
     private final KakaoUserClient kakaoUserClient;
     private final KakaoAuthClient kakaoAuthClient;
     private final StoreRepository storeRepository;
+    private final String ROLE = "owner";
 
     @Value("${social.client.kakao.rest-api-key}")
     private String kakaoAppKey;
@@ -66,7 +67,7 @@ public class OwnerService {
             Optional<Owner> existingOwner = ownerRepository.findBySocialId(socialId);
 
             if (existingOwner.isPresent()) {
-                String jwt = jwtTokenProvider.createToken(existingOwner.get().getId());
+                String jwt = jwtTokenProvider.createToken(existingOwner.get().getId(), ROLE);
                 return OwnerResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._OK)
@@ -78,7 +79,7 @@ public class OwnerService {
                         .nickname(nickname)
                         .build();
                 Owner savedOwner = ownerRepository.save(newOwner);
-                String jwt = jwtTokenProvider.createToken(savedOwner.getId());
+                String jwt = jwtTokenProvider.createToken(savedOwner.getId(), ROLE);
                 return OwnerResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._CREATED)
