@@ -49,6 +49,31 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
     }
 
     @Override
+    public List<StoreResponseDto.StoreAndDiscountDataDto> GetOnSaleStore(University university) {
+
+        QStore store = QStore.store;
+        QDiscount discount = QDiscount.discount;
+        QDiscountMenu discountMenu = QDiscountMenu.discountMenu;
+        QStoreUniversity storeUniversity = QStoreUniversity.storeUniversity;
+
+        List<StoreResponseDto.StoreAndDiscountDataDto> results = queryFactory
+                .select(Projections.constructor(StoreResponseDto.StoreAndDiscountDataDto.class,
+                        store,
+                        discount))
+                .from(store)
+                .leftJoin(store.discountList, discount)
+                .leftJoin(discount.discountMenuList, discountMenu)
+                .leftJoin(store.storeUniversityList, storeUniversity)
+                .groupBy(store)
+                .orderBy(discountMenu.discountPrice.max().desc())
+                .where(storeUniversity.university.eq(university)
+                        .and(discount.inProgress.isTrue()))
+                .fetch();
+
+        return results;
+    }
+
+    @Override
     public List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleMenuData(List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList) {
 
         QDiscount discount = QDiscount.discount;
