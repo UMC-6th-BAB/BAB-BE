@@ -135,7 +135,7 @@ public class StudentService {
         University university = student.getUniversity();
         List<StoreResponseDto.GetOnSaleStoreInMyPageDto> getOnSaleStoreDataDtos = null;
         if(university != null){
-            List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = storeRepository.GetOnSaleStoreAndDiscount(university);
+            List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = storeRepository.GetOnSaleStore(university);
             getOnSaleStoreDataDtos = StoreConverter.toGetOnSaleStoreInMyPageDtoList(saleStoreAndDiscount);
         }
 
