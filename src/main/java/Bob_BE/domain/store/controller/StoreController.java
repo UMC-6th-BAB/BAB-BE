@@ -137,7 +137,8 @@ public class StoreController {
     @Operation(summary = "오늘의 할인 가게 페이지 API", description = "오늘의 할인 가게 페이지 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER401", description = "해당 유저를 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER401", description = "해당 학생을 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "해당 사장님을 찾지 못했습니다.."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })
