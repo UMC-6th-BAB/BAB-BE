@@ -176,18 +176,27 @@ public class StoreResponseDto {
         private Boolean onSale;
         private Long signatureMenuId;
         private List<String> bannerUrlList;
-        private Long discountId;
-        private String discountTitle;
-        private LocalDate discountStartDate;
-        private LocalDate discountEndDate;
-        private List<GetStoreMenuDataDto> getStoreMenuDataDtoList;
+        private StoreDiscountData storeDiscountData;
+        private List<StoreMenuData> storeMenuDataList;
     }
 
-    @Getter 
-    @Builder 
-    @NoArgsConstructor 
+    @Getter
+    @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
-    public static class GetStoreMenuDataDto {
+    public static class StoreDiscountData {
+
+        private Long discountId;
+        private String title;
+        private LocalDate startDate;
+        private LocalDate endDate;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StoreMenuData {
 
         private Long menuId;
         private String menuName;
