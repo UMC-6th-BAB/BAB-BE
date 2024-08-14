@@ -56,7 +56,7 @@ public class StoreConverter {
                 .build();
     }
 
-    public static StoreResponseDto.GetStoreDataResponseDto toGetStoreDataResponseDto(Store store, List<StoreResponseDto.GetStoreMenuDataDto> getStoreMenuDataDtoList) {
+    public static StoreResponseDto.GetStoreDataResponseDto toGetStoreDataResponseDto(Store store, List<StoreResponseDto.StoreMenuData> storeMenuDataList) {
 
         List<String> bannerUrlList = store.getBannerList().stream()
                 .map(Banner::getBannerUrl)
@@ -65,6 +65,23 @@ public class StoreConverter {
         Boolean onSale = store.getDiscountList().stream()
                 .anyMatch(Discount::getInProgress);
 
+        Discount discount = new Discount();
+
+        if (onSale) {
+            discount = store.getDiscountList().stream()
+                    .filter(Discount::getInProgress)
+                    .collect(Collectors.toList()).get(0);
+
+
+        }
+
+        StoreResponseDto.StoreDiscountData storeDiscountData = StoreResponseDto.StoreDiscountData.builder()
+                .discountId(discount.getId())
+                .title(discount.getTitle())
+                .startDate(discount.getStartDate())
+                .endDate(discount.getEndDate())
+                .build();
+
         return StoreResponseDto.GetStoreDataResponseDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
@@ -72,13 +89,14 @@ public class StoreConverter {
                 .storeLink(store.getStoreLink())
                 .signatureMenuId(store.getSignatureMenu().getMenu().getId())
                 .bannerUrlList(bannerUrlList)
-                .getStoreMenuDataDtoList(getStoreMenuDataDtoList)
+                .storeDiscountData(storeDiscountData)
+                .storeMenuDataList(storeMenuDataList)
                 .build();
     }
 
-    public static StoreResponseDto.GetStoreMenuDataDto toGetStoreMenuDataDto(Menu menu, int discountPrice, int discountRate) {
+    public static StoreResponseDto.StoreMenuData toGetStoreMenuDataDto(Menu menu, int discountPrice, int discountRate) {
 
-        return StoreResponseDto.GetStoreMenuDataDto.builder()
+        return StoreResponseDto.StoreMenuData.builder()
                 .menuId(menu.getId())
                 .menuName(menu.getMenuName())
                 .menuUrl(menu.getMenuUrl())
