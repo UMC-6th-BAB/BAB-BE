@@ -38,6 +38,7 @@ public class StudentService {
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
     private final KakaoAuthClient kakaoAuthClient;
+    private final String ROLE = "student";
 
     @Value("${social.client.kakao.rest-api-key}")
     private String kakaoAppKey;
@@ -61,11 +62,6 @@ public class StudentService {
                     authorizationCode
             );
 
-            log.info(kakaoTokenInfo.toString());
-            log.info(kakaoTokenInfo.getAccessToken());
-            log.info(kakaoTokenInfo.getRefreshToken());
-            log.info(kakaoTokenInfo.getTokenType());
-            log.info(kakaoTokenInfo.getScope());
             String authorization = "Bearer " + kakaoTokenInfo.getAccessToken();
             KakaoResponseDto.KakaoUserResponseDto kakaoUserInfo = kakaoUserClient.getUserInfo(authorization);
 
@@ -76,7 +72,7 @@ public class StudentService {
             Optional<Student> existingStudent = studentRepository.findBySocialId(socialId);
 
             if (existingStudent.isPresent()) {
-                String jwt = jwtTokenProvider.createToken(existingStudent.get().getId());
+                String jwt = jwtTokenProvider.createToken(existingStudent.get().getId(), ROLE);
                 return StudentResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._OK)
@@ -88,7 +84,7 @@ public class StudentService {
                         .nickname(nickname)
                         .build();
                 Student savedStudent = studentRepository.save(newStudent);
-                String jwt = jwtTokenProvider.createToken(savedStudent.getId());
+                String jwt = jwtTokenProvider.createToken(savedStudent.getId(), ROLE);
                 return StudentResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._CREATED)
