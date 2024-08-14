@@ -178,8 +178,8 @@ public class StoreController {
 
         StoreParameterDto.GetStoreDataParamDto getStoreDataParamDto = StoreDtoConverter.INSTANCE.toGetStoreDataParamDto(storeId);
         Store findStore = storeService.GetStoreData(getStoreDataParamDto);
-        List<StoreResponseDto.GetStoreMenuDataDto> getStoreMenuDataDtoList = menuService.GetStoreMenuData(getStoreDataParamDto);
-        return ApiResponse.onSuccess(StoreConverter.toGetStoreDataResponseDto(findStore, getStoreMenuDataDtoList));
+        List<StoreResponseDto.StoreMenuData> storeMenuDataList = menuService.GetStoreMenuData(getStoreDataParamDto);
+        return ApiResponse.onSuccess(StoreConverter.toGetStoreDataResponseDto(findStore, storeMenuDataList));
     }
 
     @PostMapping("/{storeId}/operating_hours")
