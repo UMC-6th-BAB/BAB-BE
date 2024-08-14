@@ -31,6 +31,7 @@ import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
+import Bob_BE.global.response.exception.GeneralException;
 import Bob_BE.global.response.exception.handler.*;
 
 import Bob_BE.global.util.JwtTokenProvider;
@@ -199,9 +200,15 @@ public class StoreService {
      */
     public List<StoreResponseDto.StoreDataDto> GetStoreDataList(StoreParameterDto.GetDataForPingParamDto param) {
 
-        University findUniversity = new University();
+        University findUniversity;
+        String authorizationHeader = param.getAuthorizationHeader();
 
-        String role = jwtTokenProvider.getRole(param.getAuthorizationHeader());
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new GeneralException(ErrorStatus.MISSING_JWT_EXCEPTION);
+        }
+        String jwtToken = authorizationHeader.substring(7);
+
+        String role = jwtTokenProvider.getRole(jwtToken);
 
         if (role.equals("student")) {
 
