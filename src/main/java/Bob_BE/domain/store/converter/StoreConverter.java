@@ -65,6 +65,16 @@ public class StoreConverter {
         Boolean onSale = store.getDiscountList().stream()
                 .anyMatch(Discount::getInProgress);
 
+        Discount discount = new Discount();
+
+
+
+        if (onSale) {
+            discount = store.getDiscountList().stream()
+                    .filter(Discount::getInProgress)
+                    .collect(Collectors.toList()).get(0);
+        }
+
         return StoreResponseDto.GetStoreDataResponseDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
@@ -72,6 +82,10 @@ public class StoreConverter {
                 .storeLink(store.getStoreLink())
                 .signatureMenuId(store.getSignatureMenu().getMenu().getId())
                 .bannerUrlList(bannerUrlList)
+                .discountId(discount.getId())
+                .discountTitle(discount.getTitle())
+                .discountStartDate(discount.getStartDate())
+                .discountEndDate(discount.getEndDate())
                 .getStoreMenuDataDtoList(getStoreMenuDataDtoList)
                 .build();
     }

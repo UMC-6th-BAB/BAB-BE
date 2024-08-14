@@ -7,6 +7,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -175,6 +176,10 @@ public class StoreResponseDto {
         private Boolean onSale;
         private Long signatureMenuId;
         private List<String> bannerUrlList;
+        private Long discountId;
+        private String discountTitle;
+        private LocalDate discountStartDate;
+        private LocalDate discountEndDate;
         private List<GetStoreMenuDataDto> getStoreMenuDataDtoList;
     }
 
