@@ -68,9 +68,14 @@ public class OwnerService {
 
             if (existingOwner.isPresent()) {
                 String jwt = jwtTokenProvider.createToken(existingOwner.get().getId(), ROLE);
+                Boolean isStoreExist = getOwnerStore(existingOwner.get()) != null;
                 return OwnerResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._OK)
+                        .kakaoEmail(email)
+                        .kakaoNickname(nickname)
+                        .isStoreExist(isStoreExist)
+                        .role(ROLE)
                         .build();
             } else {
                 Owner newOwner = Owner.builder()
@@ -83,6 +88,10 @@ public class OwnerService {
                 return OwnerResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._CREATED)
+                        .kakaoEmail(email)
+                        .kakaoNickname(nickname)
+                        .isStoreExist(false)
+                        .role(ROLE)
                         .build();
             }
         } catch (FeignException.Unauthorized e){
