@@ -71,11 +71,17 @@ public class StudentService {
 
             Optional<Student> existingStudent = studentRepository.findBySocialId(socialId);
 
+
             if (existingStudent.isPresent()) {
                 String jwt = jwtTokenProvider.createToken(existingStudent.get().getId(), ROLE);
+                Boolean isUniversityExist = existingStudent.get().getUniversity() != null;
                 return StudentResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._OK)
+                        .kakaoEmail(email)
+                        .kakaoNickname(nickname)
+                        .isUniversityExist(isUniversityExist)
+                        .role(ROLE)
                         .build();
             } else {
                 Student newStudent = Student.builder()
@@ -88,6 +94,10 @@ public class StudentService {
                 return StudentResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._CREATED)
+                        .kakaoEmail(email)
+                        .kakaoNickname(nickname)
+                        .isUniversityExist(false)
+                        .role(ROLE)
                         .build();
             }
         } catch (FeignException.Unauthorized e){
