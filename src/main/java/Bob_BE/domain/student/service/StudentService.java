@@ -9,6 +9,7 @@ import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.university.repository.UniversityRepository;
+import Bob_BE.global.response.exception.handler.StudentHandler;
 import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.external.KakaoResponseDto;
@@ -114,5 +115,11 @@ public class StudentService {
         }
 
         return StudentConverter.toMyPageDto(student, university, getOnSaleStoreDataDtos);
+    }
+
+    @Transactional(readOnly = true)
+    public Student findStudentById(Long studentId){
+        return studentRepository.findById(studentId)
+                .orElseThrow(() -> new StudentHandler(ErrorStatus.STUDENT_NOT_FOUND));
     }
 }

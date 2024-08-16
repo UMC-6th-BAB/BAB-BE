@@ -214,6 +214,7 @@ public class StoreResponseDto {
     public static class GetStoreSearchDto{
         private Long storeId;
         private String storeName;
+        private Double distanceFromUniversityKm;
         private List<MenuResponseDto.SearchMenuResponseDto> menuList;
     }
 

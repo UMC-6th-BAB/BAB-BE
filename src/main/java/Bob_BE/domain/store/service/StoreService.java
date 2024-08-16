@@ -19,10 +19,12 @@ import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
+import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
@@ -33,6 +35,7 @@ import Bob_BE.global.response.exception.handler.MenuHandler;
 import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,7 +51,12 @@ import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import Bob_BE.global.response.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +82,9 @@ public class StoreService {
     private final SignatureMenuRepository signatureMenuRepository;
 
     private final GoogleCloudOCRService googleCloudOCRService;
+
+    @Autowired
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
 
@@ -265,14 +276,41 @@ public class StoreService {
     }
 
     @Cacheable(value = "storeSearch", key = "#param.keyword")
-    public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(StoreParameterDto.GetSearchKeywordParamDto param){
+    public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(
+            StoreParameterDto.GetSearchKeywordParamDto param,
+            Student student
+    ) {
         String keyword = param.getKeyword();
-        List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword);
+        Long universityId = student.getUniversity().getId();
+
+        List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword, universityId);
+
+        String geoKey = "locations";
+        String universityIdentifier = "university:" + universityId;
 
         return stores.stream()
-                .map(store -> StoreConverter.toStoreSearchResponseDto(store, keyword))
+                .map(store -> {
+                    String storeIdentifier = "store:" + store.getId();
+                    Distance distance = redisTemplate.opsForGeo()
+                            .distance(geoKey, universityIdentifier, storeIdentifier, Metrics.KILOMETERS);
+
+                    return StoreConverter.toStoreSearchResponseDto(
+                            store,
+                            keyword,
+                            distance != null ? distance.getValue() : null
+                    );
+                })
                 .filter(dto -> !dto.getMenuList().isEmpty())
+                .sorted(Comparator.comparing(StoreResponseDto.GetStoreSearchDto::getDistanceFromUniversityKm))
                 .toList();
     }
 
+    public void saveAllStoreLocationsToRedis(){
+        List<Store> stores = storeRepository.findAll();
+        String key = "locations";
+
+        for (Store store : stores){
+            redisTemplate.opsForGeo().add(key, new Point(store.getLongitude(), store.getLatitude()), "store:"+store.getId());
+        }
+    }
 }

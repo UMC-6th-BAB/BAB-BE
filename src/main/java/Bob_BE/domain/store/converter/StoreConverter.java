@@ -180,7 +180,7 @@ public class StoreConverter {
                 .build();
     }
 
-    public static GetStoreSearchDto toStoreSearchResponseDto(Store store, String keyword){
+    public static GetStoreSearchDto toStoreSearchResponseDto(Store store, String keyword, Double distance){
         List<SearchMenuResponseDto> menus = store.getMenuList().stream()
                 .filter(menu -> menu.getMenuName().contains(keyword))
                 .map(StoreConverter::toMenuResponseDto)
@@ -190,6 +190,7 @@ public class StoreConverter {
         return GetStoreSearchDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
+                .distanceFromUniversityKm(distance)
                 .menuList(menus)
                 .build();
     }

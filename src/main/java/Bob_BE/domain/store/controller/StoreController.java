@@ -19,6 +19,8 @@ import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
+import Bob_BE.domain.student.entity.Student;
+import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.global.response.ApiResponse;
 import Bob_BE.global.response.code.resultCode.SuccessStatus;
 import Bob_BE.global.util.google.GoogleCloudOCRService;
@@ -45,6 +47,7 @@ public class StoreController {
     private final MenuService menuService;
     private final OperatingHoursService operatingHoursService;
     private final OwnerService ownerService;
+    private final StudentService studentService;
     
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
@@ -223,9 +226,16 @@ public class StoreController {
     }
 
     @GetMapping("/menus/search")
-    public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(@RequestParam String keyword){
-        GetSearchKeywordParamDto searchKeywordParamDto = GetSearchKeywordParamDto.builder().keyword(keyword).build();
-        List<GetStoreSearchDto> stores = storeService.searchStoreWithMenus(searchKeywordParamDto);
+    public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(
+            @RequestParam String keyword,
+            @RequestParam Long studentId
+    ){
+        Student student = studentService.findStudentById(studentId);
+        StoreParameterDto.GetSearchKeywordParamDto searchKeywordParamDto = StoreParameterDto.GetSearchKeywordParamDto.builder()
+                .keyword(keyword)
+                .build();
+
+        List<StoreResponseDto.GetStoreSearchDto> stores = storeService.searchStoreWithMenus(searchKeywordParamDto, student);
         return ApiResponse.onSuccess(stores);
     }
 }
