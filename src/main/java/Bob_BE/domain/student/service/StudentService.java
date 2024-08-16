@@ -9,6 +9,7 @@ import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.university.repository.UniversityRepository;
+import Bob_BE.global.external.KakaoAuthClient;
 import Bob_BE.global.response.exception.handler.StudentHandler;
 import Bob_BE.global.external.KakaoAuthClient;
 import Bob_BE.global.util.JwtTokenProvider;
