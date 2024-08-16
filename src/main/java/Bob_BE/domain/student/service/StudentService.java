@@ -10,6 +10,7 @@ import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.global.response.exception.handler.StudentHandler;
+import Bob_BE.global.external.KakaoAuthClient;
 import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.external.KakaoResponseDto;
@@ -20,6 +21,7 @@ import Bob_BE.global.response.exception.GeneralException;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,12 +38,32 @@ public class StudentService {
     private final StoreRepository storeRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
+    private final KakaoAuthClient kakaoAuthClient;
+    private final String ROLE = "student";
+
+    @Value("${social.client.kakao.rest-api-key}")
+    private String kakaoAppKey;
+    @Value("${social.client.kakao.secret-key}")
+    private String kakaoAppSecret;
+    @Value("${social.client.kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+    @Value("${social.client.kakao.grant_type}")
+    private String kakaoGrantType;
 
 
     @Transactional
     public StudentResponseDto.LoginOrRegisterDto registerOrLogin(StudentRequestDto.LoginOrRegisterDto request) {
         try {
-            String authorization = "Bearer " + request.getToken();
+            String authorizationCode = request.getToken();
+            KakaoResponseDto.KakaoTokenResponseDto kakaoTokenInfo = kakaoAuthClient.getAccessToken(
+                    kakaoAppKey,
+                    kakaoAppSecret,
+                    kakaoGrantType,
+                    kakaoRedirectUri,
+                    authorizationCode
+            );
+
+            String authorization = "Bearer " + kakaoTokenInfo.getAccessToken();
             KakaoResponseDto.KakaoUserResponseDto kakaoUserInfo = kakaoUserClient.getUserInfo(authorization);
 
             Long socialId = kakaoUserInfo.getId();
@@ -51,7 +73,7 @@ public class StudentService {
             Optional<Student> existingStudent = studentRepository.findBySocialId(socialId);
 
             if (existingStudent.isPresent()) {
-                String jwt = jwtTokenProvider.createToken(existingStudent.get().getId());
+                String jwt = jwtTokenProvider.createToken(existingStudent.get().getId(), ROLE);
                 return StudentResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._OK)
@@ -63,7 +85,7 @@ public class StudentService {
                         .nickname(nickname)
                         .build();
                 Student savedStudent = studentRepository.save(newStudent);
-                String jwt = jwtTokenProvider.createToken(savedStudent.getId());
+                String jwt = jwtTokenProvider.createToken(savedStudent.getId(), ROLE);
                 return StudentResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._CREATED)
@@ -110,7 +132,7 @@ public class StudentService {
         University university = student.getUniversity();
         List<StoreResponseDto.GetOnSaleStoreInMyPageDto> getOnSaleStoreDataDtos = null;
         if(university != null){
-            List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = storeRepository.GetOnSaleStoreAndDiscount(university);
+            List<StoreResponseDto.StoreAndDiscountDataDto> saleStoreAndDiscount = storeRepository.GetOnSaleStore(university);
             getOnSaleStoreDataDtos = StoreConverter.toGetOnSaleStoreInMyPageDtoList(saleStoreAndDiscount);
         }
 

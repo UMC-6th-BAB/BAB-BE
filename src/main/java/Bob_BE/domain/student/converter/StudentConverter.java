@@ -4,7 +4,7 @@ package Bob_BE.domain.student.converter;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.student.dto.response.StudentResponseDto;
 import Bob_BE.domain.student.entity.Student;
-import Bob_BE.domain.university.dto.UniversityResponseDto;
+import Bob_BE.domain.university.dto.response.UniversityResponseDto;
 import Bob_BE.domain.university.entity.University;
 
 import java.util.List;

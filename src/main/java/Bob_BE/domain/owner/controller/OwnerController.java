@@ -39,18 +39,18 @@ public class OwnerController {
         return ApiResponse.of(response.getSuccessStatus(), response);
     }
 
-    @GetMapping("/mypage/{ownerId}")
+    @GetMapping("/mypage")
     @Operation(summary = "사장님 마이페이지 API", description = "사장님 마이페이지 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "사장님 데이터를 찾지 못했습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "사장님 데이터를 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })
-    @Parameters({
-            @Parameter(name = "ownerId", description = "사장님 식별자, PathVariable")
-    })
-    public ApiResponse<OwnerResponseDto.OwnerMyPageResponseDto> ownerMypage(@PathVariable("ownerId") Long ownerId) {
+    public ApiResponse<OwnerResponseDto.OwnerMyPageResponseDto> ownerMypage(
+            @RequestHeader(value = "Authorization",required = false) String authorizationHeader) {
 
-        OwnerParameterDto.OwnerMyPageParamDto ownerMyPageParamDto = OwnerDtoConverter.INSTANCE.toOwnerMyPageParamDto(ownerId);
+        OwnerParameterDto.OwnerMyPageParamDto ownerMyPageParamDto = OwnerDtoConverter.INSTANCE.toOwnerMyPageParamDto(authorizationHeader);
         Owner owner = ownerService.getOwnerMypage(ownerMyPageParamDto);
         Store store = ownerService.getOwnerStore(owner);
         return ApiResponse.onSuccess(OwnerConverter.toOwnerMyPageResponseDto(owner, store));

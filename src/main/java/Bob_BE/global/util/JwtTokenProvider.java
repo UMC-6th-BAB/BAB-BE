@@ -23,11 +23,12 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String createToken(Long id) {
+    public String createToken(Long id, String role) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
         return Jwts.builder()
                 .claim("id", id)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(secretKey)
@@ -54,5 +55,14 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("id", Long.class);
+    }
+
+    public String getRole(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
     }
 }

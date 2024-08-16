@@ -8,5 +8,6 @@ import java.util.List;
 public interface StoreCustomRepository {
 
     List<StoreResponseDto.StoreAndDiscountDataDto> GetOnSaleStoreAndDiscount(University university);
+    List<StoreResponseDto.StoreAndDiscountDataDto> GetOnSaleStore(University university);
     List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleMenuData(List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList);
 }

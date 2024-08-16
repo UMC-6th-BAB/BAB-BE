@@ -142,14 +142,15 @@ public class StoreController {
     @Operation(summary = "오늘의 할인 가게 페이지 API", description = "오늘의 할인 가게 페이지 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "UNIVERSITY404", description = "해당 대학교를 찾지 못했습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER401", description = "해당 학생을 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "해당 사장님을 찾지 못했습니다.."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })
-    @Parameters({
-            @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
-    })
-    public ApiResponse<StoreResponseDto.GetOnSaleStoreListResponseDto> GetOnSaleStoreList (@RequestParam Long universityId) {
+    public ApiResponse<StoreResponseDto.GetOnSaleStoreListResponseDto> GetOnSaleStoreList(
+            @RequestHeader(value = "Authorization",required = false) String authorizationHeader) {
 
-        StoreParameterDto.GetOnSaleStoreListParamDto getOnSaleStoreListParamDto = StoreDtoConverter.INSTANCE.toGetOnSaleStoreListParamDto(universityId);
+        StoreParameterDto.GetOnSaleStoreListParamDto getOnSaleStoreListParamDto = StoreDtoConverter.INSTANCE.toGetOnSaleStoreListParamDto(authorizationHeader);
         List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList = storeService.GetOnSaleStoreListData(getOnSaleStoreListParamDto);
         return ApiResponse.onSuccess(StoreConverter.toGetOnSaleStoreListResponseDto(getOnSaleStoreDataDtoList));
     }
@@ -158,13 +159,14 @@ public class StoreController {
     @Operation(summary = "지도 핑을 위한 데이터 가져오기 API", description = "지도 핑을 위한 데이터 가져오기 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "UNIVERSITY404", description = "해당 대학교를 찾지 못했습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER401", description = "해당 유저를 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })
-    @Parameters({
-            @Parameter(name = "universityId", description = "대학교 식별자, RequestParam")
-    })
-    public ApiResponse<StoreResponseDto.GetDataForPingResponseDto> GetDataForPing (@RequestParam Long universityId) {
-        StoreParameterDto.GetDataForPingParamDto getDataForPingParamDto = StoreDtoConverter.INSTANCE.toGetDataForPingParamDto(universityId);
+    public ApiResponse<StoreResponseDto.GetDataForPingResponseDto> GetDataForPing (
+            @RequestHeader(value = "Authorization",required = false) String authorizationHeader) {
+
+        StoreParameterDto.GetDataForPingParamDto getDataForPingParamDto = StoreDtoConverter.INSTANCE.toGetDataForPingParamDto(authorizationHeader);
         List<StoreResponseDto.StoreDataDto> storeDataDtoList = storeService.GetStoreDataList(getDataForPingParamDto);
         return ApiResponse.onSuccess(StoreConverter.toGetDataForPingResponseDto(storeDataDtoList));
     }
@@ -182,8 +184,8 @@ public class StoreController {
 
         StoreParameterDto.GetStoreDataParamDto getStoreDataParamDto = StoreDtoConverter.INSTANCE.toGetStoreDataParamDto(storeId);
         Store findStore = storeService.GetStoreData(getStoreDataParamDto);
-        List<StoreResponseDto.GetStoreMenuDataDto> getStoreMenuDataDtoList = menuService.GetStoreMenuData(getStoreDataParamDto);
-        return ApiResponse.onSuccess(StoreConverter.toGetStoreDataResponseDto(findStore, getStoreMenuDataDtoList));
+        List<StoreResponseDto.StoreMenuData> storeMenuDataList = menuService.GetStoreMenuData(getStoreDataParamDto);
+        return ApiResponse.onSuccess(StoreConverter.toGetStoreDataResponseDto(findStore, storeMenuDataList));
     }
 
     @PostMapping("/{storeId}/operating_hours")

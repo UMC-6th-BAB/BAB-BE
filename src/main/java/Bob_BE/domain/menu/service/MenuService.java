@@ -91,7 +91,7 @@ public class MenuService {
      * 가게 상세 페이지 API : 메뉴 데이터 가져오기
      * return : List<GetStoreMenuDataDto>
      */
-    public List<StoreResponseDto.GetStoreMenuDataDto> GetStoreMenuData(StoreParameterDto.GetStoreDataParamDto param) {
+    public List<StoreResponseDto.StoreMenuData> GetStoreMenuData(StoreParameterDto.GetStoreDataParamDto param) {
 
         Store findStore = storeRepository.findById(param.getStoreId())
                 .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));

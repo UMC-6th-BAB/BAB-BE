@@ -7,6 +7,7 @@ import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
+import Bob_BE.global.external.KakaoAuthClient;
 import Bob_BE.global.external.KakaoResponseDto;
 import Bob_BE.global.external.KakaoUserClient;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
@@ -17,6 +18,7 @@ import Bob_BE.global.util.JwtTokenProvider;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,12 +32,32 @@ public class OwnerService {
     private final OwnerRepository ownerRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoUserClient kakaoUserClient;
+    private final KakaoAuthClient kakaoAuthClient;
     private final StoreRepository storeRepository;
+    private final String ROLE = "owner";
+
+    @Value("${social.client.kakao.rest-api-key}")
+    private String kakaoAppKey;
+    @Value("${social.client.kakao.secret-key}")
+    private String kakaoAppSecret;
+    @Value("${social.client.kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+    @Value("${social.client.kakao.grant_type}")
+    private String kakaoGrantType;
 
     @Transactional
     public OwnerResponseDto.LoginOrRegisterDto registerOrLogin(OwnerRequestDto.LoginOrRegisterDto request) {
         try {
-            String authorization = "Bearer " + request.getToken();
+            String authorizationCode = request.getToken();
+            KakaoResponseDto.KakaoTokenResponseDto kakaoTokenInfo = kakaoAuthClient.getAccessToken(
+                    kakaoAppKey,
+                    kakaoAppSecret,
+                    kakaoGrantType,
+                    kakaoRedirectUri,
+                    authorizationCode
+            );
+
+            String authorization = "Bearer " + kakaoTokenInfo.getAccessToken();
             KakaoResponseDto.KakaoUserResponseDto kakaoUserInfo = kakaoUserClient.getUserInfo(authorization);
 
             Long socialId = kakaoUserInfo.getId();
@@ -45,7 +67,7 @@ public class OwnerService {
             Optional<Owner> existingOwner = ownerRepository.findBySocialId(socialId);
 
             if (existingOwner.isPresent()) {
-                String jwt = jwtTokenProvider.createToken(existingOwner.get().getId());
+                String jwt = jwtTokenProvider.createToken(existingOwner.get().getId(), ROLE);
                 return OwnerResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._OK)
@@ -57,7 +79,7 @@ public class OwnerService {
                         .nickname(nickname)
                         .build();
                 Owner savedOwner = ownerRepository.save(newOwner);
-                String jwt = jwtTokenProvider.createToken(savedOwner.getId());
+                String jwt = jwtTokenProvider.createToken(savedOwner.getId(), ROLE);
                 return OwnerResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._CREATED)
@@ -91,7 +113,9 @@ public class OwnerService {
      */
     public Owner getOwnerMypage(OwnerParameterDto.OwnerMyPageParamDto param) {
 
-        return ownerRepository.findById(param.getOwnerId())
+        Long ownerId = getOwnerIdFromJwt(param.getAuthorizationHeader());
+
+        return ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
     }
 
