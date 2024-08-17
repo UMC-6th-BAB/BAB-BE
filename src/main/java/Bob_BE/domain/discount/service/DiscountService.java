@@ -44,6 +44,33 @@ public class DiscountService {
         Store findStore = storeRepository.findById(param.getStoreId())
                 .orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
 
+        List<Discount> discountList = discountRepository.findAllByStore(findStore)
+                .orElse(new ArrayList<>());
+
+        // 이미 진행했던 할인 행사는 삭제
+        discountList.removeIf(discount -> discount.getEndDate().compareTo(LocalDate.now()) < 0);
+
+        if (!discountList.isEmpty()) {
+
+            discountList.forEach(discount -> {
+
+                        LocalDate discountStartDate = discount.getStartDate();
+                        LocalDate discountEndDate = discount.getEndDate();
+                        LocalDate requestStartDate = param.getStartDate();
+                        LocalDate requestEndDate = param.getEndDate();
+
+                        if (!requestStartDate.isBefore(discountStartDate) && !requestEndDate.isAfter(discountEndDate)) {
+
+                            throw new DiscountHandler(ErrorStatus.DISCOUNT_TIME_DUPLICATION);
+                        }
+                        else if ((!requestStartDate.isBefore(discountStartDate) && !requestStartDate.isAfter(discountEndDate)) ||
+                                (!requestEndDate.isAfter(discountEndDate) && !requestEndDate.isBefore(discountStartDate))) {
+
+                            throw new DiscountHandler(ErrorStatus.DISCOUNT_TIME_DUPLICATION);
+                        }
+                    });
+        }
+
         Discount newDiscount = DiscountConverter.toDiscount(param, findStore);
         newDiscount.setInProgress(); // inProgress 값 설정
 
