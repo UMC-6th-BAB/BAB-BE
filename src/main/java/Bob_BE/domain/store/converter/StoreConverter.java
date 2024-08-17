@@ -58,9 +58,16 @@ public class StoreConverter {
 
     public static StoreResponseDto.GetStoreDataResponseDto toGetStoreDataResponseDto(Store store, List<StoreResponseDto.StoreMenuData> storeMenuDataList) {
 
-        List<String> bannerUrlList = store.getBannerList().stream()
-                .map(Banner::getBannerUrl)
-                .collect(Collectors.toList());
+        String bannerUrl;
+        if (store.getBanner() != null) {
+
+            bannerUrl = store.getBanner().getBannerUrl();
+        }
+        else {
+
+            /** 수정 예정 **/
+            bannerUrl = "DEFAULT_IMAGE_URL";
+        }
 
         Boolean onSale = store.getDiscountList().stream()
                 .anyMatch(Discount::getInProgress);
@@ -88,7 +95,7 @@ public class StoreConverter {
                 .onSale(onSale)
                 .storeLink(store.getStoreLink())
                 .signatureMenuId(store.getSignatureMenu().getMenu().getId())
-                .bannerUrlList(bannerUrlList)
+                .bannerUrl(bannerUrl)
                 .storeDiscountData(storeDiscountData)
                 .storeMenuDataList(storeMenuDataList)
                 .build();
