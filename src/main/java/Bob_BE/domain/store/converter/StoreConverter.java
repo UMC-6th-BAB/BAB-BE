@@ -65,8 +65,7 @@ public class StoreConverter {
         }
         else {
 
-            /** 수정 예정 **/
-            bannerUrl = "DEFAULT_IMAGE_URL";
+            bannerUrl = "https://bab-e-deuk-bucket.s3.ap-northeast-2.amazonaws.com/Default/default_banner.png";
         }
 
         Boolean onSale = store.getDiscountList().stream()
