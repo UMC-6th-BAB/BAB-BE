@@ -66,8 +66,8 @@ public class Store extends BaseEntity {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<StoreUniversity> storeUniversityList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
-    private List<Banner> bannerList = new ArrayList<>();
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    private Banner banner;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Menu> menuList = new ArrayList<>();

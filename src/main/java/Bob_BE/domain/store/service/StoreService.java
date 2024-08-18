@@ -31,8 +31,10 @@ import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
 import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
+import Bob_BE.global.response.exception.GeneralException;
 import Bob_BE.global.response.exception.handler.*;
 
+import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,19 +63,21 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OwnerRepository ownerRepository;
-    private final UniversityRepository universityRepository;
     private final StoreUniversityRepository storeUniversityRepository;
     private final DiscountMenuRepository discountMenuRepository;
     private final StudentRepository studentRepository;
+    private final UniversityRepository universityRepository;
 
     private final StoreUniversityService storeUniversityService;
     private final StudentService studentService;
+    private final OwnerService ownerService;
 
     private final S3StorageService s3StorageService;
     private final BannerRepository bannerRepository;
     private final SignatureMenuRepository signatureMenuRepository;
 
     private final GoogleCloudOCRService googleCloudOCRService;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
 
@@ -196,12 +200,52 @@ public class StoreService {
      */
     public List<StoreResponseDto.StoreDataDto> GetStoreDataList(StoreParameterDto.GetDataForPingParamDto param) {
 
-        Long studentId = studentService.getUserIdFromJwt(param.getAuthorizationHeader());
+        University findUniversity;
+        String authorizationHeader = param.getAuthorizationHeader();
 
-        Student findStudent = studentRepository.findById(studentId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new GeneralException(ErrorStatus.MISSING_JWT_EXCEPTION);
+        }
+        String jwtToken = authorizationHeader.substring(7);
 
-        University findUniversity = findStudent.getUniversity();
+        String role = jwtTokenProvider.getRole(jwtToken);
+
+        if (role.equals("student")) {
+
+            Long studentId = studentService.getUserIdFromJwt(param.getAuthorizationHeader());
+
+            Student findStudent = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+
+            findUniversity = findStudent.getUniversity();
+            if (findUniversity == null) {
+
+                findUniversity = universityRepository.findById(2L)
+                        .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+            }
+        }
+        else {
+
+            Long ownerId = ownerService.getOwnerIdFromJwt(param.getAuthorizationHeader());
+
+            Owner findOwner = ownerRepository.findById(ownerId)
+                    .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
+
+            List<Store> ownerStore = findOwner.getStoreList();
+
+            if (ownerStore.isEmpty()) {
+
+                // 만약 사장님이 가게가 없을 경우 default 로 숭실대를 보여주는 것으로 설정했습니다.
+                findUniversity = universityRepository.findById(2L)
+                        .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+            }
+            else {
+
+                // 일단 가게마다 무조건 대학교가 하나 걸려있다고 가정하에 짠 코드라 후에 수정해야할 듯 합니다.
+                // 애초에 현재 erd 상으로는 대학 : 가게 가 n : n 인데 데모데이까지는 1 : n 으로 짜여져 있어 일단 이렇게 놔두었습니다.
+                findUniversity = ownerStore.get(0).getStoreUniversityList().get(0).getUniversity();
+            }
+        }
 
         List<StoreUniversity> storeUniversityList = storeUniversityRepository.findAllByUniversity(findUniversity)
                 .orElse(new ArrayList<>());
