@@ -14,6 +14,10 @@ public class StudentResponseDto {
     public static class LoginOrRegisterDto{
         private SuccessStatus successStatus;
         private String jwt;
+        private String kakaoNickname;
+        private String kakaoEmail;
+        private String role;
+        private Boolean isUniversityExist;
     }
 
     @Getter

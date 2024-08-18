@@ -13,13 +13,10 @@ import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
-import Bob_BE.domain.store.dto.request.StoreRequestDto.StoreCreateRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.global.response.ApiResponse;
-import Bob_BE.global.response.code.resultCode.SuccessStatus;
-import Bob_BE.global.util.google.GoogleCloudOCRService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -92,10 +89,10 @@ public class StoreController {
     public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(
             @RequestHeader(value = "Authorization",required = false) String authorizationHeader,
             @RequestPart StoreRequestDto.StoreCreateRequestDto requestDto,
-            @ModelAttribute(value = "bannerFiles") MultipartFile[] bannerFiles
+            @ModelAttribute(value = "bannerFile") MultipartFile bannerFile
     ){
         Long ownerId = ownerService.getOwnerIdFromJwt(authorizationHeader);
-        StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFiles);
+        StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFile);
         return ApiResponse.onSuccess(responseDto);
     }
 
@@ -137,7 +134,8 @@ public class StoreController {
     @Operation(summary = "오늘의 할인 가게 페이지 API", description = "오늘의 할인 가게 페이지 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER401", description = "해당 유저를 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER401", description = "해당 학생을 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "해당 사장님을 찾지 못했습니다.."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })

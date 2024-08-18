@@ -34,7 +34,7 @@ public class Banner {
     @Column(nullable = false)
     private String bannerUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
 }

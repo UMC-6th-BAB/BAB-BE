@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface DiscountRepository extends JpaRepository<Discount, Long> {
 
     Optional<List<Discount>> findAllByStoreAndInProgress(Store store, Boolean inProgress);
+    Optional<List<Discount>> findAllByStore(Store store);
 }
