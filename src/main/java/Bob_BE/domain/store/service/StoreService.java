@@ -135,6 +135,8 @@ public class StoreService {
                         .store(newStore)
                         .build();
 
+                newStore.setBanner(banner);
+
                 bannerRepository.save(banner);
             }catch (IOException e){
                 throw new ImageHandler(ErrorStatus.FILE_UPLOAD_FAILED);
