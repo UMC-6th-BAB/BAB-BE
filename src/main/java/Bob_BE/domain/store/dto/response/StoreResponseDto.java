@@ -1,6 +1,7 @@
 package Bob_BE.domain.store.dto.response;
 
 import Bob_BE.domain.discount.entity.Discount;
+import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotNull;
@@ -217,4 +218,28 @@ public class StoreResponseDto {
         private String categories;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class GetStoreSearchDto{
+        private Long storeId;
+        private String storeName;
+        private Double latitude;
+        private Double longitude;
+        private Double distanceFromUniversityKm;
+        private List<MenuResponseDto.SearchMenuResponseDto> menuList;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StoreInformDto{
+        private Long storeId;
+        private String storeName;
+        private String bannerImageUrl;
+        private String storeUniversity;
+        private String storeAddress;
+    }
 }

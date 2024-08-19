@@ -57,7 +57,9 @@ dependencies {
 	//google storage
 	implementation 'com.google.cloud:google-cloud-storage:2.41.0'
 
+	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
 }
 
 dependencyManagement {
