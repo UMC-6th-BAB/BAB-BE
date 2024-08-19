@@ -228,14 +228,25 @@ public class StoreController {
     @GetMapping("/menus/search")
     public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(
             @RequestParam String keyword,
-            @RequestParam Long studentId
-    ){
+            @RequestParam Long studentId,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude
+    ) {
         Student student = studentService.findStudentById(studentId);
         StoreParameterDto.GetSearchKeywordParamDto searchKeywordParamDto = StoreParameterDto.GetSearchKeywordParamDto.builder()
                 .keyword(keyword)
                 .build();
 
-        List<StoreResponseDto.GetStoreSearchDto> stores = storeService.searchStoreWithMenus(searchKeywordParamDto, student);
+        List<StoreResponseDto.GetStoreSearchDto> stores;
+
+        // 위도와 경도가 제공된 경우
+        if (latitude != null && longitude != null) {
+            stores = storeService.searchStoreWithMenusByCoordinates(searchKeywordParamDto, latitude, longitude);
+        } else {
+            // 위도와 경도가 없을 때 기존 로직 사용
+            stores = storeService.searchStoreWithMenus(searchKeywordParamDto, student);
+        }
+
         return ApiResponse.onSuccess(stores);
     }
 }

@@ -190,6 +190,8 @@ public class StoreConverter {
         return GetStoreSearchDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
+                .latitude(store.getLatitude())
+                .longitude(store.getLongitude())
                 .distanceFromUniversityKm(distance)
                 .menuList(menus)
                 .build();
