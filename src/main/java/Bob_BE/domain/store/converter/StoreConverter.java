@@ -219,12 +219,19 @@ public class StoreConverter {
     }
 
     private static SearchMenuResponseDto toMenuResponseDto(Menu menu){
+        Integer discountPrice = menu.getDiscountMenuList().stream()
+                .filter(discountMenu -> discountMenu.getDiscount().getInProgress())
+                .map(DiscountMenu::getDiscountPrice)
+                .findFirst()
+                .orElse(null);
+
         return SearchMenuResponseDto.builder()
                 .id(menu.getId())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
                 .menuImageUrl(menu.getMenuUrl())
                 .isSignature(menu.getSignatureMenu() != null)
+                .discountPrice(discountPrice)
                 .build();
     }
 }

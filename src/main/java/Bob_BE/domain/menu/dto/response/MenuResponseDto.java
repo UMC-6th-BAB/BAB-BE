@@ -38,8 +38,9 @@ public class MenuResponseDto {
     public static class SearchMenuResponseDto{
         private Long id;
         private String menuName;
-        private Integer price;
         private String menuImageUrl;
+        private Integer price;
+        private Integer discountPrice;
         private StoreResponseDto.MenuCreateResultDto store;
         private Boolean isSignature;
     }

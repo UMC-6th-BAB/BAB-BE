@@ -18,6 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class UniversityService {
     private final UniversityRepository universityRepository;
 
+    public List<University> getUniversityByUniversityName(String universityName) {
+        return universityRepository.findAllByUniversityName(universityName);
+    }
+
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 

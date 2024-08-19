@@ -90,9 +90,6 @@ public class StoreService {
     @Autowired
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    private final RedisTemplate<String, Object> redisTemplate;
-
 
 
     @Transactional
