@@ -222,6 +222,11 @@ public class StoreController {
     }
 
     @GetMapping("/{storeId}/menus")
+    @Operation(summary = "가게의 메뉴 가져오기 API", description = "메뉴를 가져옵니다. 이미지가 없을 경우 null 반환.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다.")
+    })
     public ApiResponse<List<CreateMenuResponseDto>> getStoreMenu(@PathVariable(name = "storeId")Long storeId){
         List<Menu> menuList = storeService.getStoreMenu(storeId);
         SignatureMenu signatureMenu = storeService.getSignatureMenu(storeId);
