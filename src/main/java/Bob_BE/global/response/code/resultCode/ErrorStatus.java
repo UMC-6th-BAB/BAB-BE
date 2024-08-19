@@ -40,6 +40,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // Owner
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "OWNER404", "사장님 정보가 등록되어 있지 않습니다."),
 
+    //Student
+    STUDENT_NOT_FOUND(HttpStatus.NOT_FOUND, "OWNER404", "학생 정보가 등록되어 있지 않습니다."),
+
     // University
     UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIVERSITY404", "등록되지 않은 학교입니다."),
 
