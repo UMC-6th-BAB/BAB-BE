@@ -313,4 +313,15 @@ public class StoreService {
         return StoreConverter.toCertificateResultDto(datas);
     }
 
+    public List<Menu> getStoreMenu(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()->new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        return store.getMenuList();
+    }
+
+    public SignatureMenu getSignatureMenu(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()->new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        return store.getSignatureMenu();
+    }
 }

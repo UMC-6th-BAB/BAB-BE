@@ -2,8 +2,12 @@ package Bob_BE.domain.menu.converter;
 
 import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class MenuConverter {
@@ -38,6 +42,34 @@ public class MenuConverter {
         return MenuResponseDto.DeleteMenuResponseDto.builder()
                 .id(menuId)
                 .message("삭제되었습니다.")
+                .build();
+    }
+
+    public static List<MenuResponseDto.CreateMenuResponseDto> toStoreMenuDtoList(List<Menu> menuList, SignatureMenu signatureMenu){
+        return menuList.stream()
+                .map(menu -> toStoreMenuDto(menu, signatureMenu))
+                .collect(Collectors.toList());
+    }
+
+    public static MenuResponseDto.CreateMenuResponseDto toStoreMenuDto(Menu menu, SignatureMenu signatureMenu){
+        Menu sigMenu = signatureMenu.getMenu();
+        Boolean isSignature = sigMenu.equals(menu);
+        String menuImageUrl = null;
+
+        if(menu.getMenuUrl() != null){
+            menuImageUrl = menu.getMenuUrl();
+        }
+
+        return MenuResponseDto.CreateMenuResponseDto.builder()
+                .id(menu.getId())
+                .menuName(menu.getMenuName())
+                .price(menu.getPrice())
+                .menuImageUrl(menuImageUrl)
+                .store(StoreResponseDto.MenuCreateResultDto.builder()
+                        .id(menu.getStore().getId())
+                        .name(menu.getStore().getName())
+                        .build())
+                .isSignature(isSignature)
                 .build();
     }
 }

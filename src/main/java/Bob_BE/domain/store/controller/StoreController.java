@@ -1,5 +1,6 @@
 package Bob_BE.domain.store.controller;
 
+import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.CreateMenuResponseDto;
 
@@ -9,6 +10,7 @@ import Bob_BE.domain.operatingHours.dto.request.OHRequestDto;
 import Bob_BE.domain.operatingHours.dto.response.OHResponseDto;
 import Bob_BE.domain.operatingHours.service.OperatingHoursService;
 import Bob_BE.domain.owner.service.OwnerService;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
@@ -217,6 +219,14 @@ public class StoreController {
     public ApiResponse<StoreResponseDto.CertificateResultDto> registerCertificates(@RequestPart("file") MultipartFile file) throws IOException {
 
         return ApiResponse.onSuccess(storeService.registerCertificates(file));
+    }
+
+    @GetMapping("/{storeId}/menus")
+    public ApiResponse<List<CreateMenuResponseDto>> getStoreMenu(@PathVariable(name = "storeId")Long storeId){
+        List<Menu> menuList = storeService.getStoreMenu(storeId);
+        SignatureMenu signatureMenu = storeService.getSignatureMenu(storeId);
+
+        return ApiResponse.onSuccess(MenuConverter.toStoreMenuDtoList(menuList, signatureMenu));
     }
 
 }
