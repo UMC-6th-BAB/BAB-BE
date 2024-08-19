@@ -226,5 +226,6 @@ public class StoreResponseDto {
         private String storeName;
         private String bannerImageUrl;
         private String storeUniversity;
+        private String storeAddress;
     }
 }

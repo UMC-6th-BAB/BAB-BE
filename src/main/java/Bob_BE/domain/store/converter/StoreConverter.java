@@ -206,6 +206,7 @@ public class StoreConverter {
                 .storeName(store.getName())
                 .bannerImageUrl(bannerUrl)
                 .storeUniversity(university.getUniversityName())
+                .storeAddress(store.getStreetAddress())
                 .build();
     }
 }
