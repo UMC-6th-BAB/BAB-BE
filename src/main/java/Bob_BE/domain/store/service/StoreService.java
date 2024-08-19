@@ -20,6 +20,7 @@ import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
@@ -38,6 +39,7 @@ import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,6 +51,12 @@ import java.util.Map;
 import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +86,9 @@ public class StoreService {
 
     private final GoogleCloudOCRService googleCloudOCRService;
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
 
@@ -274,7 +285,7 @@ public class StoreService {
                     else {
                         return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(), 0);
                     }
-                }).collect(Collectors.toList());
+                }).toList();
     }
   
     /**
@@ -313,4 +324,82 @@ public class StoreService {
         return StoreConverter.toCertificateResultDto(datas);
     }
 
+    @Cacheable(value = "storeSearch", key = "#param.keyword")
+    public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(
+            StoreParameterDto.GetSearchKeywordParamDto param,
+            Student student
+    ) {
+        String keyword = param.getKeyword();
+        Long universityId = student.getUniversity().getId();
+
+        List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword, universityId);
+
+        String geoKey = "locations";
+        String universityIdentifier = "university:" + universityId;
+
+        return stores.stream()
+                .map(store -> {
+                    String storeIdentifier = "store:" + store.getId();
+                    Distance distance = redisTemplate.opsForGeo()
+                            .distance(geoKey, universityIdentifier, storeIdentifier, Metrics.KILOMETERS);
+
+                    return StoreConverter.toStoreSearchResponseDto(
+                            store,
+                            keyword,
+                            distance != null ? distance.getValue() : null
+                    );
+                })
+                .filter(dto -> !dto.getMenuList().isEmpty())
+                .sorted(Comparator.comparing(StoreResponseDto.GetStoreSearchDto::getDistanceFromUniversityKm))
+                .toList();
+    }
+
+    @Cacheable(value = "storeSearch", key = "#param.keyword")
+    public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenusByCoordinates(
+            StoreParameterDto.GetSearchKeywordParamDto param,
+            Double latitude,
+            Double longitude
+    ) {
+        String keyword = param.getKeyword();
+        List<Store> stores = storeRepository.findStoresByMenuKeywordAndCoordinates(keyword);
+
+        return stores.stream()
+                .map(store -> {
+                    Double storeLatitude = store.getLatitude();
+                    Double storeLongitude = store.getLongitude();
+
+                    // Haversine 공식을 사용해 거리 계산
+                    double distance = calculateDistance(latitude, longitude, storeLatitude, storeLongitude);
+
+                    return StoreConverter.toStoreSearchResponseDto(
+                            store,
+                            keyword,
+                            distance
+                    );
+                })
+                .filter(dto -> !dto.getMenuList().isEmpty())
+                .sorted(Comparator.comparing(StoreResponseDto.GetStoreSearchDto::getDistanceFromUniversityKm))
+                .toList();
+    }
+
+
+    public void saveAllStoreLocationsToRedis(){
+        List<Store> stores = storeRepository.findAll();
+        String key = "locations";
+
+        for (Store store : stores){
+            redisTemplate.opsForGeo().add(key, new Point(store.getLongitude(), store.getLatitude()), "store:"+store.getId());
+        }
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371;
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
 }

@@ -12,10 +12,14 @@ import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
+import Bob_BE.domain.store.dto.parameter.StoreParameterDto.GetSearchKeywordParamDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
+import Bob_BE.domain.student.entity.Student;
+import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,6 +44,7 @@ public class StoreController {
     private final MenuService menuService;
     private final OperatingHoursService operatingHoursService;
     private final OwnerService ownerService;
+    private final StudentService studentService;
     
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
@@ -219,4 +224,28 @@ public class StoreController {
         return ApiResponse.onSuccess(storeService.registerCertificates(file));
     }
 
+    @GetMapping("/menus/search")
+    public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(
+            @RequestParam String keyword,
+            @RequestParam Long studentId,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude
+    ) {
+        Student student = studentService.findStudentById(studentId);
+        StoreParameterDto.GetSearchKeywordParamDto searchKeywordParamDto = StoreParameterDto.GetSearchKeywordParamDto.builder()
+                .keyword(keyword)
+                .build();
+
+        List<StoreResponseDto.GetStoreSearchDto> stores;
+
+        // 위도와 경도가 제공된 경우
+        if (latitude != null && longitude != null) {
+            stores = storeService.searchStoreWithMenusByCoordinates(searchKeywordParamDto, latitude, longitude);
+        } else {
+            // 위도와 경도가 없을 때 기존 로직 사용
+            stores = storeService.searchStoreWithMenus(searchKeywordParamDto, student);
+        }
+
+        return ApiResponse.onSuccess(stores);
+    }
 }
