@@ -7,6 +7,7 @@ import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.SearchMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -91,12 +92,15 @@ public class StoreConverter {
                 .endDate(discount.getEndDate())
                 .build();
 
+        SignatureMenu signatureMenu = new SignatureMenu();
+        if (store.getSignatureMenu() != null) signatureMenu = store.getSignatureMenu();
+
         return StoreResponseDto.GetStoreDataResponseDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
                 .onSale(onSale)
                 .storeLink(store.getStoreLink())
-                .signatureMenuId(store.getSignatureMenu().getMenu().getId())
+                .signatureMenuId(signatureMenu.getMenu().getId())
                 .bannerUrl(bannerUrl)
                 .storeDiscountData(storeDiscountData)
                 .storeMenuDataList(storeMenuDataList)
