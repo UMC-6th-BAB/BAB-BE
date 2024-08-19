@@ -48,8 +48,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // S3 Storage
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3BUCKET500", "파일 업로드에 실패했습니다."),
-    ;
 
+    STORE_UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "STOREUNIVERSITY401", "가게와 연결된 대학교가 존재하지 않습니다.")
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

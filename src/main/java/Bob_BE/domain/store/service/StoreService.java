@@ -17,40 +17,28 @@ import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.signatureMenu.repository.SignatureMenuRepository;
 import Bob_BE.domain.store.converter.StoreConverter;
+import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
-import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
-import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
+import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
-import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.GeneralException;
 import Bob_BE.global.response.exception.handler.*;
-
 import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.global.util.aws.S3StorageService;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-
-import java.util.Map;
-
 import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.geo.Distance;
@@ -59,8 +47,15 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -75,16 +70,16 @@ public class StoreService {
     private final DiscountMenuRepository discountMenuRepository;
     private final StudentRepository studentRepository;
     private final UniversityRepository universityRepository;
+    private final BannerRepository bannerRepository;
+    private final SignatureMenuRepository signatureMenuRepository;
 
     private final StoreUniversityService storeUniversityService;
     private final StudentService studentService;
     private final OwnerService ownerService;
 
     private final S3StorageService s3StorageService;
-    private final BannerRepository bannerRepository;
-    private final SignatureMenuRepository signatureMenuRepository;
-
     private final GoogleCloudOCRService googleCloudOCRService;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
@@ -382,7 +377,6 @@ public class StoreService {
                 .toList();
     }
 
-
     public void saveAllStoreLocationsToRedis(){
         List<Store> stores = storeRepository.findAll();
         String key = "locations";
@@ -390,6 +384,9 @@ public class StoreService {
         for (Store store : stores){
             redisTemplate.opsForGeo().add(key, new Point(store.getLongitude(), store.getLatitude()), "store:"+store.getId());
         }
+    }
+    public Store getStore(Long storeId){
+        return storeRepository.findById(storeId).orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -401,5 +398,22 @@ public class StoreService {
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    public String getStoreBannerUrl(Store store){
+        String bannerUrl = null;
+        if(store.getBanner() != null) {
+            Banner storeBanner = bannerRepository.findByStore(store);
+            bannerUrl = storeBanner.getBannerUrl();
+        }
+
+
+        return bannerUrl;
+    }
+
+    public University getStoreUniversity(Store store){
+        StoreUniversity storeUniversity = storeUniversityRepository.findByStoreId(store.getId()).orElseThrow(()-> new UniversityHandler(ErrorStatus.STORE_UNIVERSITY_NOT_FOUND));
+
+        return  storeUniversity.getUniversity();
     }
 }

@@ -19,6 +19,7 @@ import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import org.springframework.core.annotation.MergedAnnotations.Search;
+import Bob_BE.domain.university.entity.University;
 
 public class StoreConverter {
 
@@ -172,6 +173,7 @@ public class StoreConverter {
 
     public static StoreResponseDto.StoreCreateResultDto toCreateStoreResponseDto(Store store){
         String bannerImageUrl = store.getBanner() != null ? store.getBanner().getBannerUrl() : null;
+
         return StoreResponseDto.StoreCreateResultDto.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -232,6 +234,16 @@ public class StoreConverter {
                 .menuImageUrl(menu.getMenuUrl())
                 .isSignature(menu.getSignatureMenu() != null)
                 .discountPrice(discountPrice)
+                .build();
+    }
+
+    public static StoreResponseDto.StoreInformDto toStoreInformDto(Store store, String bannerUrl, University university){
+        return StoreResponseDto.StoreInformDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .bannerImageUrl(bannerUrl)
+                .storeUniversity(university.getUniversityName())
+                .storeAddress(store.getStreetAddress())
                 .build();
     }
 }
