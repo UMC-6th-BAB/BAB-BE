@@ -67,16 +67,16 @@ public class StoreService {
     private final DiscountMenuRepository discountMenuRepository;
     private final StudentRepository studentRepository;
     private final UniversityRepository universityRepository;
+    private final BannerRepository bannerRepository;
+    private final SignatureMenuRepository signatureMenuRepository;
 
     private final StoreUniversityService storeUniversityService;
     private final StudentService studentService;
     private final OwnerService ownerService;
 
     private final S3StorageService s3StorageService;
-    private final BannerRepository bannerRepository;
-    private final SignatureMenuRepository signatureMenuRepository;
-
     private final GoogleCloudOCRService googleCloudOCRService;
+
     private final JwtTokenProvider jwtTokenProvider;
 
 
@@ -311,6 +311,27 @@ public class StoreService {
         datas.add(data);
 
         return StoreConverter.toCertificateResultDto(datas);
+    }
+
+    public Store getStore(Long storeId){
+        return storeRepository.findById(storeId).orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+    }
+
+    public String getStoreBannerUrl(Store store){
+        String bannerUrl = null;
+        if(store.getBanner() != null) {
+            Banner storeBanner = bannerRepository.findByStore(store);
+            bannerUrl = storeBanner.getBannerUrl();
+        }
+
+
+        return bannerUrl;
+    }
+
+    public University getStoreUniversity(Store store){
+        StoreUniversity storeUniversity = storeUniversityRepository.findByStoreId(store.getId()).orElseThrow(()-> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+
+        return  storeUniversity.getUniversity();
     }
 
 }

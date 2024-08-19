@@ -16,6 +16,7 @@ import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
+import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -217,6 +218,15 @@ public class StoreController {
     public ApiResponse<StoreResponseDto.CertificateResultDto> registerCertificates(@RequestPart("file") MultipartFile file) throws IOException {
 
         return ApiResponse.onSuccess(storeService.registerCertificates(file));
+    }
+
+    @GetMapping("/{storeId}/inform")
+    public ApiResponse<StoreResponseDto.StoreInformDto> getStoreInform(@PathVariable(name = "storeId")Long storeId){
+        Store store = storeService.getStore(storeId);
+        String bannerUrl = storeService.getStoreBannerUrl(store);
+        University university = storeService.getStoreUniversity(store);
+
+        return ApiResponse.onSuccess(StoreConverter.toStoreInformDto(store, bannerUrl, university));
     }
 
 }

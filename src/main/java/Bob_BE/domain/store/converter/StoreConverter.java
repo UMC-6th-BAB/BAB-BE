@@ -16,6 +16,7 @@ import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.entity.Store;
+import Bob_BE.domain.university.entity.University;
 
 public class StoreConverter {
 
@@ -196,6 +197,15 @@ public class StoreConverter {
                 .streetAddress(requestDto.getStreetAddress())
                 .storeLink(requestDto.getStoreLink())
                 .registration(requestDto.getRegistration())
+                .build();
+    }
+
+    public static StoreResponseDto.StoreInformDto toStoreInformDto(Store store, String bannerUrl, University university){
+        return StoreResponseDto.StoreInformDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .bannerImageUrl(bannerUrl)
+                .storeUniversity(university.getUniversityName())
                 .build();
     }
 }

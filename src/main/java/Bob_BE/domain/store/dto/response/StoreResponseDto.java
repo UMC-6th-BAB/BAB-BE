@@ -217,4 +217,14 @@ public class StoreResponseDto {
         private String categories;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StoreInformDto{
+        private Long storeId;
+        private String storeName;
+        private String bannerImageUrl;
+        private String storeUniversity;
+    }
 }
