@@ -30,4 +30,17 @@ public class MenuResponseDto {
         private Long id;
         private String message;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SearchMenuResponseDto{
+        private Long id;
+        private String menuName;
+        private String menuImageUrl;
+        private Integer price;
+        private Integer discountPrice;
+        private Boolean isSignature;
+    }
 }
