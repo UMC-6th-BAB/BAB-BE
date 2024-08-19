@@ -222,10 +222,10 @@ public class StoreController {
     }
 
     @GetMapping("/{storeId}/operating-hours")
-    @Operation(summary = "사업자 등록증 등록 API", description = "사업자 등록증 정보를 불러오는 API")
+    @Operation(summary = "가게의 운영시간 가져오기 API", description = "가게의 운영시간을 가져옵니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CERTIFICATE404", description = "정보를 읽어오는데 실패했습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다.")
     })
     ApiResponse<List<OHResponseDto.StoreOperatingHoursDto>> getOperatingHours(@PathVariable(name = "storeId")Long storeId){
         List<OperatingHours> operatingHoursList = storeService.getOperatingHours(storeId);
