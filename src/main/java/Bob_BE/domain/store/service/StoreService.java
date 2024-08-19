@@ -18,53 +18,48 @@ import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.signatureMenu.repository.SignatureMenuRepository;
 import Bob_BE.domain.store.converter.StoreConverter;
-import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
-import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
+import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.GeneralException;
 import Bob_BE.global.response.exception.handler.*;
-import Bob_BE.global.util.JwtTokenProvider;
-import Bob_BE.global.util.aws.S3StorageService;
-import Bob_BE.global.util.google.GoogleCloudOCRService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
-import org.springframework.data.redis.core.RedisTemplate;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
+import Bob_BE.global.util.JwtTokenProvider;
+import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+
+import java.util.Map;
+
+import Bob_BE.global.util.google.GoogleCloudOCRService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -79,21 +74,20 @@ public class StoreService {
     private final DiscountMenuRepository discountMenuRepository;
     private final StudentRepository studentRepository;
     private final UniversityRepository universityRepository;
-    private final BannerRepository bannerRepository;
-    private final SignatureMenuRepository signatureMenuRepository;
 
     private final StoreUniversityService storeUniversityService;
     private final StudentService studentService;
     private final OwnerService ownerService;
 
     private final S3StorageService s3StorageService;
-    private final GoogleCloudOCRService googleCloudOCRService;
+    private final BannerRepository bannerRepository;
+    private final SignatureMenuRepository signatureMenuRepository;
 
+    private final GoogleCloudOCRService googleCloudOCRService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private final RedisTemplate<String, Object> redisTemplate;
-
 
 
     @Transactional
@@ -264,7 +258,7 @@ public class StoreService {
 
         List<Store> storeList = storeUniversityList.stream()
                 .map(StoreUniversity::getStore)
-                .collect(Collectors.toList());
+                .toList();
 
         return storeList.stream()
                 .map(store -> {
@@ -289,7 +283,7 @@ public class StoreService {
                     else {
                         return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(), 0);
                     }
-                }).toList();
+                }).collect(Collectors.toList());
     }
   
     /**
@@ -431,4 +425,15 @@ public class StoreService {
         return store.getOperatingHoursList();
     }
 
+    public List<Menu> getStoreMenu(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()->new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        return store.getMenuList();
+    }
+
+    public SignatureMenu getSignatureMenu(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()->new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        return store.getSignatureMenu();
+    }
 }

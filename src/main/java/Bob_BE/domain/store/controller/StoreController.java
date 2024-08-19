@@ -1,5 +1,6 @@
 package Bob_BE.domain.store.controller;
 
+import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.CreateMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
@@ -10,6 +11,7 @@ import Bob_BE.domain.operatingHours.dto.response.OHResponseDto;
 import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.operatingHours.service.OperatingHoursService;
 import Bob_BE.domain.owner.service.OwnerService;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
@@ -26,6 +28,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -272,6 +278,19 @@ public class StoreController {
         List<OperatingHours> operatingHoursList = storeService.getOperatingHours(storeId);
 
         return ApiResponse.onSuccess(OperatingHoursConverter.toStoreOperatingHoursDtoList(operatingHoursList));
+    }
+
+    @GetMapping("/{storeId}/menus")
+    @Operation(summary = "가게의 메뉴 가져오기 API", description = "메뉴를 가져옵니다. 이미지가 없을 경우 null 반환.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다.")
+    })
+    public ApiResponse<List<CreateMenuResponseDto>> getStoreMenu(@PathVariable(name = "storeId")Long storeId){
+        List<Menu> menuList = storeService.getStoreMenu(storeId);
+        SignatureMenu signatureMenu = storeService.getSignatureMenu(storeId);
+
+        return ApiResponse.onSuccess(MenuConverter.toStoreMenuDtoList(menuList, signatureMenu));
     }
 
 }
