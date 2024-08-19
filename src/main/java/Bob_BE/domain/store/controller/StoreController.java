@@ -4,8 +4,10 @@ import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.CreateMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.service.MenuService;
+import Bob_BE.domain.operatingHours.converter.OperatingHoursConverter;
 import Bob_BE.domain.operatingHours.dto.request.OHRequestDto;
 import Bob_BE.domain.operatingHours.dto.response.OHResponseDto;
+import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.operatingHours.service.OperatingHoursService;
 import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.store.converter.StoreConverter;
@@ -258,6 +260,18 @@ public class StoreController {
         University university = storeService.getStoreUniversity(store);
 
         return ApiResponse.onSuccess(StoreConverter.toStoreInformDto(store, bannerUrl, university));
+    }
+
+    @GetMapping("/{storeId}/operating-hours")
+    @Operation(summary = "가게의 운영시간 가져오기 API", description = "가게의 운영시간을 가져옵니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다.")
+    })
+    ApiResponse<List<OHResponseDto.StoreOperatingHoursDto>> getOperatingHours(@PathVariable(name = "storeId")Long storeId){
+        List<OperatingHours> operatingHoursList = storeService.getOperatingHours(storeId);
+
+        return ApiResponse.onSuccess(OperatingHoursConverter.toStoreOperatingHoursDtoList(operatingHoursList));
     }
 
 }

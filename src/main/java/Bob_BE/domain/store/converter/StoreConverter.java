@@ -1,25 +1,21 @@
 package Bob_BE.domain.store.converter;
 
 
-import Bob_BE.domain.banner.entity.Banner;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.SearchMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
-
-import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
-import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
-import org.springframework.core.annotation.MergedAnnotations.Search;
 import Bob_BE.domain.university.entity.University;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StoreConverter {
 

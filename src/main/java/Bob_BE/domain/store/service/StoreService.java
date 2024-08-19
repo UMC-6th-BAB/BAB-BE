@@ -11,6 +11,7 @@ import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.Create
 import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
+import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
 import Bob_BE.domain.owner.service.OwnerService;
@@ -45,9 +46,17 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -416,4 +425,10 @@ public class StoreService {
 
         return  storeUniversity.getUniversity();
     }
+
+    public List<OperatingHours> getOperatingHours(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+        return store.getOperatingHoursList();
+    }
+
 }
