@@ -1,21 +1,21 @@
 package Bob_BE.domain.store.converter;
 
 
-import Bob_BE.domain.banner.entity.Banner;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
+import Bob_BE.domain.menu.dto.response.MenuResponseDto.SearchMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
-
-import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
+import Bob_BE.domain.university.entity.University;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StoreConverter {
 
@@ -124,7 +124,7 @@ public class StoreConverter {
                             .getOnSaleStoreMenuDataDtoList(new ArrayList<>())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static List<StoreResponseDto.GetOnSaleStoreInMyPageDto> toGetOnSaleStoreInMyPageDtoList (List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList) {
@@ -139,7 +139,7 @@ public class StoreConverter {
                             .discountId(storeAndDiscountDataDto.getDiscount().getId())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static StoreResponseDto.GetOnSaleStoreListResponseDto toGetOnSaleStoreListResponseDto (List<StoreResponseDto.GetOnSaleStoreDataDto> getOnSaleStoreDataDtoList) {
@@ -158,7 +158,7 @@ public class StoreConverter {
                             .menuId(menu.getId())
                             .name(menu.getMenuName())
                             .build();
-                }).collect(Collectors.toList());
+                }).toList();
 
         return StoreResponseDto.GetMenuNameListResponseDto.builder()
                 .menuNameDataDtoList(menuNameDataDtoList)
@@ -196,6 +196,50 @@ public class StoreConverter {
                 .streetAddress(requestDto.getStreetAddress())
                 .storeLink(requestDto.getStoreLink())
                 .registration(requestDto.getRegistration())
+                .build();
+    }
+
+    public static GetStoreSearchDto toStoreSearchResponseDto(Store store, String keyword, Double distance){
+        List<SearchMenuResponseDto> menus = store.getMenuList().stream()
+                .filter(menu -> menu.getMenuName().contains(keyword))
+                .map(StoreConverter::toMenuResponseDto)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+
+        return GetStoreSearchDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .latitude(store.getLatitude())
+                .longitude(store.getLongitude())
+                .distanceFromUniversityKm(distance)
+                .menuList(menus)
+                .build();
+    }
+
+    private static SearchMenuResponseDto toMenuResponseDto(Menu menu){
+        Integer discountPrice = menu.getDiscountMenuList().stream()
+                .filter(discountMenu -> discountMenu.getDiscount().getInProgress())
+                .map(DiscountMenu::getDiscountPrice)
+                .findFirst()
+                .orElse(null);
+
+        return SearchMenuResponseDto.builder()
+                .id(menu.getId())
+                .menuName(menu.getMenuName())
+                .price(menu.getPrice())
+                .menuImageUrl(menu.getMenuUrl())
+                .isSignature(menu.getSignatureMenu() != null)
+                .discountPrice(discountPrice)
+                .build();
+    }
+
+    public static StoreResponseDto.StoreInformDto toStoreInformDto(Store store, String bannerUrl, University university){
+        return StoreResponseDto.StoreInformDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .bannerImageUrl(bannerUrl)
+                .storeUniversity(university.getUniversityName())
+                .storeAddress(store.getStreetAddress())
                 .build();
     }
 }
