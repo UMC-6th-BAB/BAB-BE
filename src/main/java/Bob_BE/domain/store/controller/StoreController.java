@@ -14,7 +14,6 @@ import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto.GetSearchKeywordParamDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
-import Bob_BE.domain.store.dto.request.StoreRequestDto.StoreCreateRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
@@ -22,8 +21,6 @@ import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.global.response.ApiResponse;
-import Bob_BE.global.response.code.resultCode.SuccessStatus;
-import Bob_BE.global.util.google.GoogleCloudOCRService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -97,10 +94,10 @@ public class StoreController {
     public ApiResponse<StoreResponseDto.StoreCreateResultDto> createStore(
             @RequestHeader(value = "Authorization",required = false) String authorizationHeader,
             @RequestPart StoreRequestDto.StoreCreateRequestDto requestDto,
-            @ModelAttribute(value = "bannerFiles") MultipartFile[] bannerFiles
+            @ModelAttribute(value = "bannerFile") MultipartFile bannerFile
     ){
         Long ownerId = ownerService.getOwnerIdFromJwt(authorizationHeader);
-        StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFiles);
+        StoreResponseDto.StoreCreateResultDto responseDto = storeService.createStore(ownerId, requestDto, bannerFile);
         return ApiResponse.onSuccess(responseDto);
     }
 

@@ -1,6 +1,5 @@
 package Bob_BE.domain.store.dto.response;
 
-import Bob_BE.domain.banner.entity.Banner;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
@@ -54,7 +53,7 @@ public class StoreResponseDto {
     public static class StoreCreateResultDto {
         private Long id;
         private String name;
-        private List<String> bannerImageUrls;
+        private String bannerImageUrl;
     }
 
     @Getter
@@ -178,7 +177,7 @@ public class StoreResponseDto {
         private String storeLink;
         private Boolean onSale;
         private Long signatureMenuId;
-        private List<String> bannerUrlList;
+        private String bannerUrl;
         private StoreDiscountData storeDiscountData;
         private List<StoreMenuData> storeMenuDataList;
     }

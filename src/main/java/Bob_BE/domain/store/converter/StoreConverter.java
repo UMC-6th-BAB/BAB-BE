@@ -61,9 +61,15 @@ public class StoreConverter {
 
     public static StoreResponseDto.GetStoreDataResponseDto toGetStoreDataResponseDto(Store store, List<StoreResponseDto.StoreMenuData> storeMenuDataList) {
 
-        List<String> bannerUrlList = store.getBannerList().stream()
-                .map(Banner::getBannerUrl)
-                .toList();
+        String bannerUrl;
+        if (store.getBanner() != null) {
+
+            bannerUrl = store.getBanner().getBannerUrl();
+        }
+        else {
+
+            bannerUrl = "https://bab-e-deuk-bucket.s3.ap-northeast-2.amazonaws.com/Default/default_banner.png";
+        }
 
         Boolean onSale = store.getDiscountList().stream()
                 .anyMatch(Discount::getInProgress);
@@ -91,7 +97,7 @@ public class StoreConverter {
                 .onSale(onSale)
                 .storeLink(store.getStoreLink())
                 .signatureMenuId(store.getSignatureMenu().getMenu().getId())
-                .bannerUrlList(bannerUrlList)
+                .bannerUrl(bannerUrl)
                 .storeDiscountData(storeDiscountData)
                 .storeMenuDataList(storeMenuDataList)
                 .build();
@@ -165,14 +171,11 @@ public class StoreConverter {
 
 
     public static StoreResponseDto.StoreCreateResultDto toCreateStoreResponseDto(Store store){
-        List<String> bannerImageUrls = store.getBannerList().stream()
-                .map(banner -> banner.getBannerUrl())
-                .toList();
-
+        String bannerImageUrl = store.getBanner() != null ? store.getBanner().getBannerUrl() : null;
         return StoreResponseDto.StoreCreateResultDto.builder()
                 .id(store.getId())
                 .name(store.getName())
-                .bannerImageUrls(bannerImageUrls)
+                .bannerImageUrl(bannerImageUrl)
                 .build();
     }
 

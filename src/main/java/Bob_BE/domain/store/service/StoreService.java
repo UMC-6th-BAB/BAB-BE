@@ -130,7 +130,7 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreResponseDto.StoreCreateResultDto createStore(Long ownerId, StoreRequestDto.StoreCreateRequestDto requestDto, MultipartFile[] bannerFiles){
+    public StoreResponseDto.StoreCreateResultDto createStore(Long ownerId, StoreRequestDto.StoreCreateRequestDto requestDto, MultipartFile bannerFile){
         Owner findOwner = ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
 
@@ -139,27 +139,24 @@ public class StoreService {
 
         storeUniversityService.saveStoreUniversity(newStore, requestDto.getUniversity());
 
-        List<Banner> banners = new ArrayList<>();
-        for (MultipartFile bannerFile : bannerFiles){
-            if (bannerFile != null && !bannerFile.isEmpty()){
-                try{
-                    String bannerUrl = s3StorageService.uploadFile(bannerFile, "Banners");
-                    Banner banner = Banner.builder()
-                            .bannerName(bannerFile.getOriginalFilename())
-                            .bannerType(bannerFile.getContentType())
-                            .bannerUrl(bannerUrl)
-                            .store(newStore)
-                            .build();
+        if (bannerFile != null && !bannerFile.isEmpty()){
+            try{
+                String bannerUrl = s3StorageService.uploadFile(bannerFile, "Banners");
+                Banner banner = Banner.builder()
+                        .bannerName(bannerFile.getOriginalFilename())
+                        .bannerType(bannerFile.getContentType())
+                        .bannerUrl(bannerUrl)
+                        .store(newStore)
+                        .build();
 
-                    banners.add(banner);
-                    bannerRepository.save(banner);
-                }catch (IOException e){
-                    throw new ImageHandler(ErrorStatus.FILE_UPLOAD_FAILED);
-                }
+                newStore.setBanner(banner);
+
+                bannerRepository.save(banner);
+            }catch (IOException e){
+                throw new ImageHandler(ErrorStatus.FILE_UPLOAD_FAILED);
             }
         }
 
-        newStore.setBannerList(banners);
         return StoreConverter.toCreateStoreResponseDto(newStore);
     }
 
@@ -232,6 +229,11 @@ public class StoreService {
                     .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
 
             findUniversity = findStudent.getUniversity();
+            if (findUniversity == null) {
+
+                findUniversity = universityRepository.findById(2L)
+                        .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+            }
         }
         else {
 
@@ -246,7 +248,7 @@ public class StoreService {
 
                 // 만약 사장님이 가게가 없을 경우 default 로 숭실대를 보여주는 것으로 설정했습니다.
                 findUniversity = universityRepository.findById(2L)
-                        .get();
+                        .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
             }
             else {
 

@@ -35,6 +35,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // Discount
     DISCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "DISCOUNT401", "해당 할인 행사가 존재하지 않습니다."),
     DISCOUNT_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST, "DISCOUNT402", "해당 가게의 할인 행사가 아닙니다."),
+    DISCOUNT_TIME_DUPLICATION(HttpStatus.CONFLICT, "DISCOUNT403", "해당 날짜에 이미 존재하는 할인 행사가 있습니다."),
 
     // Owner
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "OWNER404", "사장님 정보가 등록되어 있지 않습니다."),
