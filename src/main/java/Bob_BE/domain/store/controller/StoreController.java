@@ -221,6 +221,12 @@ public class StoreController {
     }
 
     @GetMapping("/{storeId}/inform")
+    @Operation(summary = "가게정보 가져오기 API", description = "가게의 정보를 가져오며 배너가 없는 경우 null을 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STOREUNIVERSITY401", description = "가게와 연결된 대학교가 존재하지 않습니다.")
+    })
     public ApiResponse<StoreResponseDto.StoreInformDto> getStoreInform(@PathVariable(name = "storeId")Long storeId){
         Store store = storeService.getStore(storeId);
         String bannerUrl = storeService.getStoreBannerUrl(store);
