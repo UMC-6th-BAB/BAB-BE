@@ -329,7 +329,7 @@ public class StoreService {
     }
 
     public University getStoreUniversity(Store store){
-        StoreUniversity storeUniversity = storeUniversityRepository.findByStoreId(store.getId()).orElseThrow(()-> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        StoreUniversity storeUniversity = storeUniversityRepository.findByStoreId(store.getId()).orElseThrow(()-> new UniversityHandler(ErrorStatus.STORE_UNIVERSITY_NOT_FOUND));
 
         return  storeUniversity.getUniversity();
     }
