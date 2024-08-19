@@ -5,8 +5,10 @@ import Bob_BE.domain.menu.dto.response.MenuResponseDto.CreateMenuResponseDto;
 
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.service.MenuService;
+import Bob_BE.domain.operatingHours.converter.OperatingHoursConverter;
 import Bob_BE.domain.operatingHours.dto.request.OHRequestDto;
 import Bob_BE.domain.operatingHours.dto.response.OHResponseDto;
+import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.operatingHours.service.OperatingHoursService;
 import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.store.converter.StoreConverter;
@@ -217,6 +219,18 @@ public class StoreController {
     public ApiResponse<StoreResponseDto.CertificateResultDto> registerCertificates(@RequestPart("file") MultipartFile file) throws IOException {
 
         return ApiResponse.onSuccess(storeService.registerCertificates(file));
+    }
+
+    @GetMapping("/{storeId}/operating-hours")
+    @Operation(summary = "사업자 등록증 등록 API", description = "사업자 등록증 정보를 불러오는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CERTIFICATE404", description = "정보를 읽어오는데 실패했습니다.")
+    })
+    ApiResponse<List<OHResponseDto.StoreOperatingHoursDto>> getOperatingHours(@PathVariable(name = "storeId")Long storeId){
+        List<OperatingHours> operatingHoursList = storeService.getOperatingHours(storeId);
+
+        return ApiResponse.onSuccess(OperatingHoursConverter.toStoreOperatingHoursDtoList(operatingHoursList));
     }
 
 }

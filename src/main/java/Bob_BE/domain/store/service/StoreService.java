@@ -11,48 +11,45 @@ import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.Create
 import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
+import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
 import Bob_BE.domain.owner.service.OwnerService;
 import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.signatureMenu.repository.SignatureMenuRepository;
 import Bob_BE.domain.store.converter.StoreConverter;
+import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
-import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
 import Bob_BE.domain.storeUniversity.repository.StoreUniversityRepository;
+import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.repository.StudentRepository;
 import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.domain.university.repository.UniversityRepository;
-import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.GeneralException;
 import Bob_BE.global.response.exception.handler.*;
-
 import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.global.util.aws.S3StorageService;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-
-import java.util.Map;
-
 import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -311,6 +308,11 @@ public class StoreService {
         datas.add(data);
 
         return StoreConverter.toCertificateResultDto(datas);
+    }
+
+    public List<OperatingHours> getOperatingHours(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+        return store.getOperatingHoursList();
     }
 
 }
