@@ -1,6 +1,5 @@
 package Bob_BE.domain.store.converter;
 
-
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.SearchMenuResponseDto;
@@ -8,6 +7,7 @@ import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.university.entity.University;
@@ -45,6 +45,18 @@ public class StoreConverter {
     }
 
     public static StoreResponseDto.StoreDataDto toStoreDataDto (Store store, Menu menu, int discountPrice) {
+
+        if (menu == null) {
+
+            return StoreResponseDto.StoreDataDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .latitude(store.getLatitude())
+                    .longitude(store.getLongitude())
+                    .menuPrice(0)
+                    .discountPrice(discountPrice)
+                    .build();
+        }
 
         return StoreResponseDto.StoreDataDto.builder()
                 .storeId(store.getId())
@@ -88,16 +100,36 @@ public class StoreConverter {
                 .endDate(discount.getEndDate())
                 .build();
 
-        return StoreResponseDto.GetStoreDataResponseDto.builder()
-                .storeId(store.getId())
-                .storeName(store.getName())
-                .onSale(onSale)
-                .storeLink(store.getStoreLink())
-                .signatureMenuId(store.getSignatureMenu().getMenu().getId())
-                .bannerUrl(bannerUrl)
-                .storeDiscountData(storeDiscountData)
-                .storeMenuDataList(storeMenuDataList)
-                .build();
+        SignatureMenu signatureMenu = new SignatureMenu();
+
+        if (store.getSignatureMenu() != null) {
+
+            signatureMenu = store.getSignatureMenu();
+
+            return StoreResponseDto.GetStoreDataResponseDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .onSale(onSale)
+                    .storeLink(store.getStoreLink())
+                    .signatureMenuId(signatureMenu.getMenu().getId())
+                    .bannerUrl(bannerUrl)
+                    .storeDiscountData(storeDiscountData)
+                    .storeMenuDataList(storeMenuDataList)
+                    .build();
+        }
+        else {
+
+            return StoreResponseDto.GetStoreDataResponseDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .onSale(onSale)
+                    .storeLink(store.getStoreLink())
+                    .signatureMenuId(0L)
+                    .bannerUrl(bannerUrl)
+                    .storeDiscountData(storeDiscountData)
+                    .storeMenuDataList(storeMenuDataList)
+                    .build();
+        }
     }
 
     public static StoreResponseDto.StoreMenuData toGetStoreMenuDataDto(Menu menu, int discountPrice, int discountRate) {
