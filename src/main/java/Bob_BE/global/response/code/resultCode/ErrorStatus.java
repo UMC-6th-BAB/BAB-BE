@@ -52,7 +52,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // SignatureMenu
     SIGNATURE_MENU_NOT_EXIST(HttpStatus.NOT_FOUND, "SIGNATURE401", "해당 가게의 대표 메뉴가 설정되어 있지 않습니다."),
 
-    STORE_UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "STOREUNIVERSITY401", "가게와 연결된 대학교가 존재하지 않습니다.")
+    STORE_UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "STOREUNIVERSITY401", "가게와 연결된 대학교가 존재하지 않습니다."),
+
+    // OCR
+    OCR_BAD_REQUEST(HttpStatus.BAD_REQUEST, "OCR402","아무것도 인식하지 못했습니다.")
     ;
 
     private final HttpStatus httpStatus;

@@ -342,6 +342,12 @@ public class StoreService {
 
         datas.add(data);
 
+        log.info("datas size: {}", datas.size());
+
+        if (datas.get(2).equals("")){
+            throw new StoreHandler(ErrorStatus.OCR_BAD_REQUEST);
+        }
+
         return StoreConverter.toCertificateResultDto(datas);
     }
 
