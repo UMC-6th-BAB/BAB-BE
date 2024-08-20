@@ -1,25 +1,27 @@
 package Bob_BE.domain.store.controller;
 
+import Bob_BE.domain.menu.converter.MenuConverter;
 import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.CreateMenuResponseDto;
-
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.service.MenuService;
+import Bob_BE.domain.operatingHours.converter.OperatingHoursConverter;
 import Bob_BE.domain.operatingHours.dto.request.OHRequestDto;
 import Bob_BE.domain.operatingHours.dto.response.OHResponseDto;
+import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.operatingHours.service.OperatingHoursService;
 import Bob_BE.domain.owner.service.OwnerService;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
 import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.converter.StoreDtoConverter;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
-import Bob_BE.domain.store.dto.parameter.StoreParameterDto.GetSearchKeywordParamDto;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
-import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.service.StoreService;
 import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.service.StudentService;
+import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,6 +37,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/stores")
 @RequiredArgsConstructor
@@ -45,7 +50,7 @@ public class StoreController {
     private final OperatingHoursService operatingHoursService;
     private final OwnerService ownerService;
     private final StudentService studentService;
-    
+
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
     @ApiResponses({
@@ -248,4 +253,44 @@ public class StoreController {
 
         return ApiResponse.onSuccess(stores);
     }
+    @GetMapping("/{storeId}/inform")
+    @Operation(summary = "가게정보 가져오기 API", description = "가게의 정보를 가져오며 배너가 없는 경우 null을 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STOREUNIVERSITY401", description = "가게와 연결된 대학교가 존재하지 않습니다.")
+    })
+    public ApiResponse<StoreResponseDto.StoreInformDto> getStoreInform(@PathVariable(name = "storeId")Long storeId){
+        Store store = storeService.getStore(storeId);
+        String bannerUrl = storeService.getStoreBannerUrl(store);
+        University university = storeService.getStoreUniversity(store);
+
+        return ApiResponse.onSuccess(StoreConverter.toStoreInformDto(store, bannerUrl, university));
+    }
+
+    @GetMapping("/{storeId}/operating-hours")
+    @Operation(summary = "가게의 운영시간 가져오기 API", description = "가게의 운영시간을 가져옵니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다.")
+    })
+    ApiResponse<List<OHResponseDto.StoreOperatingHoursDto>> getOperatingHours(@PathVariable(name = "storeId")Long storeId){
+        List<OperatingHours> operatingHoursList = storeService.getOperatingHours(storeId);
+
+        return ApiResponse.onSuccess(OperatingHoursConverter.toStoreOperatingHoursDtoList(operatingHoursList));
+    }
+
+    @GetMapping("/{storeId}/menus")
+    @Operation(summary = "가게의 메뉴 가져오기 API", description = "메뉴를 가져옵니다. 이미지가 없을 경우 null 반환.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다.")
+    })
+    public ApiResponse<List<CreateMenuResponseDto>> getStoreMenu(@PathVariable(name = "storeId")Long storeId){
+        List<Menu> menuList = storeService.getStoreMenu(storeId);
+        SignatureMenu signatureMenu = storeService.getSignatureMenu(storeId);
+
+        return ApiResponse.onSuccess(MenuConverter.toStoreMenuDtoList(menuList, signatureMenu));
+    }
+
 }

@@ -1,25 +1,21 @@
 package Bob_BE.domain.store.converter;
 
-
-import Bob_BE.domain.banner.entity.Banner;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.SearchMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
-
-import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
-import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
-import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
-import org.springframework.core.annotation.MergedAnnotations.Search;
+import Bob_BE.domain.university.entity.University;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StoreConverter {
 
@@ -176,6 +172,7 @@ public class StoreConverter {
 
     public static StoreResponseDto.StoreCreateResultDto toCreateStoreResponseDto(Store store){
         String bannerImageUrl = store.getBanner() != null ? store.getBanner().getBannerUrl() : null;
+
         return StoreResponseDto.StoreCreateResultDto.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -236,6 +233,16 @@ public class StoreConverter {
                 .menuImageUrl(menu.getMenuUrl())
                 .isSignature(menu.getSignatureMenu() != null)
                 .discountPrice(discountPrice)
+                .build();
+    }
+
+    public static StoreResponseDto.StoreInformDto toStoreInformDto(Store store, String bannerUrl, University university){
+        return StoreResponseDto.StoreInformDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .bannerImageUrl(bannerUrl)
+                .storeUniversity(university.getUniversityName())
+                .storeAddress(store.getStreetAddress())
                 .build();
     }
 }
