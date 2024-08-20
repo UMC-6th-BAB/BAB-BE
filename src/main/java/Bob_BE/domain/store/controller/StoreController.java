@@ -225,6 +225,12 @@ public class StoreController {
     }
 
     @GetMapping("/menus/search")
+    @Operation(summary = "상점 검색 API", description = "키워드로 상점과 메뉴를 검색하는 API입니다. 위치 정보(위도, 경도)가 제공되면 위치 기반으로 검색합니다. 만약 좌표값이 없다면 등록된 학생의 학교를 기준으로 거리를 계산합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON500", description = "서버 오류입니다.")
+    })
     public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(
             @RequestParam String keyword,
             @RequestParam Long studentId,
