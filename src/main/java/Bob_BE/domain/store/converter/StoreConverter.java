@@ -46,6 +46,18 @@ public class StoreConverter {
 
     public static StoreResponseDto.StoreDataDto toStoreDataDto (Store store, Menu menu, int discountPrice) {
 
+        if (menu == null) {
+
+            return StoreResponseDto.StoreDataDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .latitude(store.getLatitude())
+                    .longitude(store.getLongitude())
+                    .menuPrice(0)
+                    .discountPrice(discountPrice)
+                    .build();
+        }
+
         return StoreResponseDto.StoreDataDto.builder()
                 .storeId(store.getId())
                 .storeName(store.getName())
@@ -89,18 +101,35 @@ public class StoreConverter {
                 .build();
 
         SignatureMenu signatureMenu = new SignatureMenu();
-        if (store.getSignatureMenu() != null) signatureMenu = store.getSignatureMenu();
 
-        return StoreResponseDto.GetStoreDataResponseDto.builder()
-                .storeId(store.getId())
-                .storeName(store.getName())
-                .onSale(onSale)
-                .storeLink(store.getStoreLink())
-                .signatureMenuId(signatureMenu.getMenu().getId())
-                .bannerUrl(bannerUrl)
-                .storeDiscountData(storeDiscountData)
-                .storeMenuDataList(storeMenuDataList)
-                .build();
+        if (store.getSignatureMenu() != null) {
+
+            signatureMenu = store.getSignatureMenu();
+
+            return StoreResponseDto.GetStoreDataResponseDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .onSale(onSale)
+                    .storeLink(store.getStoreLink())
+                    .signatureMenuId(signatureMenu.getMenu().getId())
+                    .bannerUrl(bannerUrl)
+                    .storeDiscountData(storeDiscountData)
+                    .storeMenuDataList(storeMenuDataList)
+                    .build();
+        }
+        else {
+
+            return StoreResponseDto.GetStoreDataResponseDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .onSale(onSale)
+                    .storeLink(store.getStoreLink())
+                    .signatureMenuId(0L)
+                    .bannerUrl(bannerUrl)
+                    .storeDiscountData(storeDiscountData)
+                    .storeMenuDataList(storeMenuDataList)
+                    .build();
+        }
     }
 
     public static StoreResponseDto.StoreMenuData toGetStoreMenuDataDto(Menu menu, int discountPrice, int discountRate) {
