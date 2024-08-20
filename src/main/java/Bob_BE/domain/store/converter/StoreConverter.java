@@ -1,39 +1,60 @@
 package Bob_BE.domain.store.converter;
 
-
-import Bob_BE.domain.banner.entity.Banner;
 import Bob_BE.domain.discount.entity.Discount;
 import Bob_BE.domain.discountMenu.entity.DiscountMenu;
 import Bob_BE.domain.menu.dto.response.MenuResponseDto.SearchMenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
-
-import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
-import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
+import Bob_BE.domain.signatureMenu.entity.SignatureMenu;
+import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
-import org.springframework.core.annotation.MergedAnnotations.Search;
+import Bob_BE.domain.university.entity.University;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StoreConverter {
 
     public static StoreResponseDto.CertificateResultDto toCertificateResultDto(List<String> datas) {
+        String storeName;
+        String address;
+        String businessType;
+        String categories;
 
-        String businessType = datas.get(4);
-        businessType = businessType.replace(" ,", ",");
+        if (datas.size()<3) {
+            storeName = "";
+        } else {
+            storeName = datas.get(2);
+        }
 
-        String categories = datas.get(5);
-        categories = categories.replace(" ,", ",");
+        if (datas.size()<4) {
+            address = "";
+        } else {
+            address = datas.get(3);
+        }
+
+        if (datas.size()<5) {
+            businessType = "";
+        } else {
+            businessType = datas.get(4);
+            businessType = businessType.replace(" ,", ",");
+        }
+
+        if (datas.size()<6){
+            categories = "";
+        } else {
+            categories = datas.get(5);
+            categories = categories.replace(" ,", ",");
+        }
 
         return StoreResponseDto.CertificateResultDto.builder()
                 .registrationNumber(datas.get(1))
-                .storeName(datas.get(2))
-                .address(datas.get(3))
+                .storeName(storeName)
+                .address(address)
                 .businessTypes(businessType)
                 .categories(categories)
                 .build();
@@ -48,6 +69,18 @@ public class StoreConverter {
     }
 
     public static StoreResponseDto.StoreDataDto toStoreDataDto (Store store, Menu menu, int discountPrice) {
+
+        if (menu == null) {
+
+            return StoreResponseDto.StoreDataDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .latitude(store.getLatitude())
+                    .longitude(store.getLongitude())
+                    .menuPrice(0)
+                    .discountPrice(discountPrice)
+                    .build();
+        }
 
         return StoreResponseDto.StoreDataDto.builder()
                 .storeId(store.getId())
@@ -91,16 +124,36 @@ public class StoreConverter {
                 .endDate(discount.getEndDate())
                 .build();
 
-        return StoreResponseDto.GetStoreDataResponseDto.builder()
-                .storeId(store.getId())
-                .storeName(store.getName())
-                .onSale(onSale)
-                .storeLink(store.getStoreLink())
-                .signatureMenuId(store.getSignatureMenu().getMenu().getId())
-                .bannerUrl(bannerUrl)
-                .storeDiscountData(storeDiscountData)
-                .storeMenuDataList(storeMenuDataList)
-                .build();
+        SignatureMenu signatureMenu = new SignatureMenu();
+
+        if (store.getSignatureMenu() != null) {
+
+            signatureMenu = store.getSignatureMenu();
+
+            return StoreResponseDto.GetStoreDataResponseDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .onSale(onSale)
+                    .storeLink(store.getStoreLink())
+                    .signatureMenuId(signatureMenu.getMenu().getId())
+                    .bannerUrl(bannerUrl)
+                    .storeDiscountData(storeDiscountData)
+                    .storeMenuDataList(storeMenuDataList)
+                    .build();
+        }
+        else {
+
+            return StoreResponseDto.GetStoreDataResponseDto.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .onSale(onSale)
+                    .storeLink(store.getStoreLink())
+                    .signatureMenuId(0L)
+                    .bannerUrl(bannerUrl)
+                    .storeDiscountData(storeDiscountData)
+                    .storeMenuDataList(storeMenuDataList)
+                    .build();
+        }
     }
 
     public static StoreResponseDto.StoreMenuData toGetStoreMenuDataDto(Menu menu, int discountPrice, int discountRate) {
@@ -172,6 +225,7 @@ public class StoreConverter {
 
     public static StoreResponseDto.StoreCreateResultDto toCreateStoreResponseDto(Store store){
         String bannerImageUrl = store.getBanner() != null ? store.getBanner().getBannerUrl() : null;
+
         return StoreResponseDto.StoreCreateResultDto.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -232,6 +286,16 @@ public class StoreConverter {
                 .menuImageUrl(menu.getMenuUrl())
                 .isSignature(menu.getSignatureMenu() != null)
                 .discountPrice(discountPrice)
+                .build();
+    }
+
+    public static StoreResponseDto.StoreInformDto toStoreInformDto(Store store, String bannerUrl, University university){
+        return StoreResponseDto.StoreInformDto.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .bannerImageUrl(bannerUrl)
+                .storeUniversity(university.getUniversityName())
+                .storeAddress(store.getStreetAddress())
                 .build();
     }
 }

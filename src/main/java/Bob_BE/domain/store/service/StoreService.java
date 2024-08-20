@@ -11,6 +11,7 @@ import Bob_BE.domain.menu.dto.request.MenuRequestDto.MenuCreateRequestDto.Create
 import Bob_BE.domain.menu.dto.response.MenuResponseDto;
 import Bob_BE.domain.menu.entity.Menu;
 import Bob_BE.domain.menu.repository.MenuRepository;
+import Bob_BE.domain.operatingHours.entity.OperatingHours;
 import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.owner.repository.OwnerRepository;
 import Bob_BE.domain.owner.service.OwnerService;
@@ -20,7 +21,6 @@ import Bob_BE.domain.store.converter.StoreConverter;
 import Bob_BE.domain.store.dto.request.StoreRequestDto;
 import Bob_BE.domain.store.dto.response.StoreResponseDto;
 import Bob_BE.domain.store.dto.parameter.StoreParameterDto;
-import Bob_BE.domain.store.dto.response.StoreResponseDto.GetStoreSearchDto;
 import Bob_BE.domain.store.entity.Store;
 import Bob_BE.domain.store.repository.StoreRepository;
 import Bob_BE.domain.storeUniversity.entity.StoreUniversity;
@@ -34,14 +34,16 @@ import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.GeneralException;
 import Bob_BE.global.response.exception.handler.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 
 import Bob_BE.global.util.JwtTokenProvider;
 import Bob_BE.global.util.aws.S3StorageService;
 import java.io.IOException;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -51,8 +53,6 @@ import java.util.Map;
 import Bob_BE.global.util.google.GoogleCloudOCRService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
@@ -89,7 +89,6 @@ public class StoreService {
 
     @Autowired
     private final RedisTemplate<String, Object> redisTemplate;
-
 
 
     @Transactional
@@ -260,32 +259,54 @@ public class StoreService {
 
         List<Store> storeList = storeUniversityList.stream()
                 .map(StoreUniversity::getStore)
-                .collect(Collectors.toList());
+                .toList();
 
         return storeList.stream()
                 .map(store -> {
-                    if(store.getDiscountList().stream().anyMatch(Discount::getInProgress)) {
-                        AtomicInteger discountPrice = new AtomicInteger();
+                    // 할인을 하는 가게
+                    if (store.getDiscountList().stream().anyMatch(Discount::getInProgress)) {
+                        // 할인을 하는 가게 + 대표 메뉴가 설정되어 있는 가게
+                        if (store.getSignatureMenu() != null) {
 
-                        store.getSignatureMenu().getMenu().getDiscountMenuList()
-                                .forEach(discountMenu -> {
+                            AtomicInteger discountPrice = new AtomicInteger();
 
-                                    if(discountMenu.getDiscount().getInProgress())
-                                        discountPrice.addAndGet(discountMenu.getDiscountPrice());
-                                });
+                            store.getSignatureMenu().getMenu().getDiscountMenuList()
+                                    .forEach(discountMenu -> {
 
-                        if (discountPrice.get() == 0) {
+                                        if(discountMenu.getDiscount().getInProgress())
+                                            discountPrice.addAndGet(discountMenu.getDiscountPrice());
+                                    });
+
+                            if (discountPrice.get() == 0) {
+
+                                DiscountMenu discountMenu = discountMenuRepository.GetDiscountMenuByStoreAndMaxDiscountPrice(store);
+
+                                return StoreConverter.toStoreDataDto(store, discountMenu.getMenu(), discountMenu.getDiscountPrice());
+                            }
+
+                            return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(),discountPrice.get());
+                        }
+                        else { // 할인을 하는 가게 + 대표 메뉴가 설정되어 있지 않은 가게
+
                             DiscountMenu discountMenu = discountMenuRepository.GetDiscountMenuByStoreAndMaxDiscountPrice(store);
 
                             return StoreConverter.toStoreDataDto(store, discountMenu.getMenu(), discountMenu.getDiscountPrice());
                         }
+                    }
+                    else { // 할인을 하지 않는 가게
 
-                        return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(),discountPrice.get());
+                        if (store.getSignatureMenu() != null) { // 할인을 하지 않는 가게 + 대표 메뉴가 설정되어 있는 가게
+
+                            return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(), 0);
+                        }
+                        else { // 할인을 하지 않는 가게 + 대표 메뉴가 설정되어 있지 않은 가게
+
+                            Menu menu = menuRepository.GetMaxPriceMenuByStore(store);
+
+                            return StoreConverter.toStoreDataDto(store, menu, 0);
+                        }
                     }
-                    else {
-                        return StoreConverter.toStoreDataDto(store, store.getSignatureMenu().getMenu(), 0);
-                    }
-                }).toList();
+                }).collect(Collectors.toList());
     }
   
     /**
@@ -320,6 +341,12 @@ public class StoreService {
         }
 
         datas.add(data);
+
+        log.info("datas size: {}", datas.size());
+
+        if (datas.get(2).equals("")){
+            throw new StoreHandler(ErrorStatus.OCR_BAD_REQUEST);
+        }
 
         return StoreConverter.toCertificateResultDto(datas);
     }
@@ -376,8 +403,6 @@ public class StoreService {
                 .toList();
     }
 
-
-
     public void saveAllStoreLocationsToRedis(){
         List<Store> stores = storeRepository.findAll();
         String key = "locations";
@@ -385,6 +410,9 @@ public class StoreService {
         for (Store store : stores){
             redisTemplate.opsForGeo().add(key, new Point(store.getLongitude(), store.getLatitude()), "store:"+store.getId());
         }
+    }
+    public Store getStore(Long storeId){
+        return storeRepository.findById(storeId).orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -396,5 +424,39 @@ public class StoreService {
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    public String getStoreBannerUrl(Store store){
+        String bannerUrl = null;
+        if(store.getBanner() != null) {
+            Banner storeBanner = bannerRepository.findByStore(store);
+            bannerUrl = storeBanner.getBannerUrl();
+        }
+
+
+        return bannerUrl;
+    }
+
+    public University getStoreUniversity(Store store){
+        StoreUniversity storeUniversity = storeUniversityRepository.findByStoreId(store.getId()).orElseThrow(()-> new UniversityHandler(ErrorStatus.STORE_UNIVERSITY_NOT_FOUND));
+
+        return  storeUniversity.getUniversity();
+    }
+
+    public List<OperatingHours> getOperatingHours(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()-> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+        return store.getOperatingHoursList();
+    }
+
+    public List<Menu> getStoreMenu(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()->new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        return store.getMenuList();
+    }
+
+    public SignatureMenu getSignatureMenu(Long storeId){
+        Store store = storeRepository.findById(storeId).orElseThrow(()->new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
+
+        return store.getSignatureMenu();
     }
 }

@@ -1,12 +1,11 @@
 package Bob_BE.domain.store.repository;
 
-import Bob_BE.domain.owner.entity.Owner;
 import Bob_BE.domain.store.entity.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.Query;
 
 public interface StoreRepository extends JpaRepository<Store, Long>, StoreCustomRepository {
     Optional<Store> findFirstByOwnerId(Long ownerId);
