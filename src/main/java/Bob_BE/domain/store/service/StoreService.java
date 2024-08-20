@@ -354,33 +354,28 @@ public class StoreService {
                 .toList();
     }
 
-    @Cacheable(value = "storeSearch", key = "#param.keyword")
+    @Cacheable(value = "storeSearch", key = "#param.keyword + ':' + T(java.lang.Math).round(#latitude * 10) / 10 + ':' + T(java.lang.Math).round(#longitude * 10) / 10")
     public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenusByCoordinates(
             StoreParameterDto.GetSearchKeywordParamDto param,
             Double latitude,
             Double longitude
-    ) {
+    ){
         String keyword = param.getKeyword();
-        List<Store> stores = storeRepository.findStoresByMenuKeywordAndCoordinates(keyword);
+        double radius = 5.0; // 반경 (km)
+
+        // 반경 내의 가게 검색
+        List<Store> stores = storeRepository.findStoresByMenuKeywordAndCoordinates(keyword, latitude, longitude, radius);
 
         return stores.stream()
                 .map(store -> {
-                    Double storeLatitude = store.getLatitude();
-                    Double storeLongitude = store.getLongitude();
-
-                    // Haversine 공식을 사용해 거리 계산
-                    double distance = calculateDistance(latitude, longitude, storeLatitude, storeLongitude);
-
-                    return StoreConverter.toStoreSearchResponseDto(
-                            store,
-                            keyword,
-                            distance
-                    );
+                    double distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
+                    return StoreConverter.toStoreSearchResponseDto(store, keyword, distance);
                 })
                 .filter(dto -> !dto.getMenuList().isEmpty())
                 .sorted(Comparator.comparing(StoreResponseDto.GetStoreSearchDto::getDistanceFromUniversityKm))
                 .toList();
     }
+
 
 
     public void saveAllStoreLocationsToRedis(){

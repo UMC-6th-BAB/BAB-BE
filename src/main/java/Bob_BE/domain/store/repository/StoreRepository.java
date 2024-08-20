@@ -14,6 +14,12 @@ public interface StoreRepository extends JpaRepository<Store, Long>, StoreCustom
     @Query("SELECT DISTINCT s FROM Store s JOIN s.menuList m JOIN s.storeUniversityList su WHERE m.menuName LIKE %:keyword% AND su.university.id = :universityId")
     List<Store> findStoresByMenuKeyword(String keyword, Long universityId);
 
-    @Query("SELECT DISTINCT s FROM Store s JOIN s.menuList m WHERE m.menuName LIKE %:keyword%")
-    List<Store> findStoresByMenuKeywordAndCoordinates(String keyword);
+    @Query("""
+    SELECT DISTINCT s FROM Store s\s
+    JOIN s.menuList m\s
+    WHERE m.menuName LIKE %:keyword%\s
+    AND (6371 * acos(cos(radians(:latitude)) * cos(radians(s.latitude)) * cos(radians(s.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(s.latitude)))) < :radius
+""")
+    List<Store> findStoresByMenuKeywordAndCoordinates(String keyword, double latitude, double longitude, double radius);
+
 }
