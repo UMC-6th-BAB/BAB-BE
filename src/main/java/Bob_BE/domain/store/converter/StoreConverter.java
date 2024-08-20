@@ -20,17 +20,41 @@ import java.util.stream.Collectors;
 public class StoreConverter {
 
     public static StoreResponseDto.CertificateResultDto toCertificateResultDto(List<String> datas) {
+        String storeName;
+        String address;
+        String businessType;
+        String categories;
 
-        String businessType = datas.get(4);
-        businessType = businessType.replace(" ,", ",");
+        if (datas.size()<3) {
+            storeName = "";
+        } else {
+            storeName = datas.get(2);
+        }
 
-        String categories = datas.get(5);
-        categories = categories.replace(" ,", ",");
+        if (datas.size()<4) {
+            address = "";
+        } else {
+            address = datas.get(3);
+        }
+
+        if (datas.size()<5) {
+            businessType = "";
+        } else {
+            businessType = datas.get(4);
+            businessType = businessType.replace(" ,", ",");
+        }
+
+        if (datas.size()<6){
+            categories = "";
+        } else {
+            categories = datas.get(5);
+            categories = categories.replace(" ,", ",");
+        }
 
         return StoreResponseDto.CertificateResultDto.builder()
                 .registrationNumber(datas.get(1))
-                .storeName(datas.get(2))
-                .address(datas.get(3))
+                .storeName(storeName)
+                .address(address)
                 .businessTypes(businessType)
                 .categories(categories)
                 .build();
