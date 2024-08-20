@@ -90,6 +90,7 @@ public class StoreService {
     @Autowired
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private static final String DEFAULT_BANNER_URL = "https://bab-e-deuk-bucket.s3.ap-northeast-2.amazonaws.com/Default/default_banner.png";
 
     @Transactional
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
@@ -437,6 +438,8 @@ public class StoreService {
         if(store.getBanner() != null) {
             Banner storeBanner = bannerRepository.findByStore(store);
             bannerUrl = storeBanner.getBannerUrl();
+        } else {
+            bannerUrl = DEFAULT_BANNER_URL;
         }
 
 
