@@ -296,6 +296,7 @@ public class StoreConverter {
                 .bannerImageUrl(bannerUrl)
                 .storeUniversity(university.getUniversityName())
                 .storeAddress(store.getStreetAddress())
+                .storeLink(store.getStoreLink())
                 .build();
     }
 }
