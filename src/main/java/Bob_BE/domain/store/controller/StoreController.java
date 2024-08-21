@@ -23,6 +23,7 @@ import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.response.ApiResponse;
+import Bob_BE.global.util.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -50,6 +51,7 @@ public class StoreController {
     private final OperatingHoursService operatingHoursService;
     private final OwnerService ownerService;
     private final StudentService studentService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
@@ -244,20 +246,14 @@ public class StoreController {
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude
     ) {
-        Long studentId = studentService.getUserIdFromJwt(authorizationHeader);
         StoreParameterDto.GetSearchKeywordParamDto searchKeywordParamDto = StoreParameterDto.GetSearchKeywordParamDto.builder()
                 .keyword(keyword)
+                .authorizationHeader(authorizationHeader)
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
 
-        List<StoreResponseDto.GetStoreSearchDto> stores;
-
-        // 위도와 경도가 제공된 경우
-        if (latitude != null && longitude != null) {
-            stores = storeService.searchStoreWithMenusByCoordinates(searchKeywordParamDto, latitude, longitude);
-        } else {
-            // 위도와 경도가 없을 때 기존 로직 사용
-            stores = storeService.searchStoreWithMenus(searchKeywordParamDto, studentId);
-        }
+        List<StoreResponseDto.GetStoreSearchDto> stores = storeService.searchStores(searchKeywordParamDto);
 
         return ApiResponse.onSuccess(stores);
     }
