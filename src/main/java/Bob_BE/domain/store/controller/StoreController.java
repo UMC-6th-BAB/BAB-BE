@@ -149,7 +149,9 @@ public class StoreController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER401", description = "해당 학생을 찾지 못했습니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER404", description = "해당 사장님을 찾지 못했습니다.."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "UNIVERSITY405", description = "대학교 설정이 되어있지 않습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OWNER405", description = "사장님이 보유중인 가게가 없습니다.")
     })
     public ApiResponse<StoreResponseDto.GetOnSaleStoreListResponseDto> GetOnSaleStoreList(
             @RequestHeader(value = "Authorization",required = false) String authorizationHeader) {
