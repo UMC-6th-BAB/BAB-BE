@@ -48,7 +48,9 @@ public class StoreParameterDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GetSearchKeywordParamDto {
-
+        private String authorizationHeader;
         private String keyword;
+        private Double latitude;
+        private Double longitude;
     }
 }
