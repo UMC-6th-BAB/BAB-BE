@@ -34,6 +34,7 @@ import Bob_BE.domain.storeUniversity.service.StoreUniversityService;
 import Bob_BE.global.response.code.resultCode.ErrorStatus;
 import Bob_BE.global.response.exception.GeneralException;
 import Bob_BE.global.response.exception.handler.*;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -90,6 +91,7 @@ public class StoreService {
     @Autowired
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private static final String DEFAULT_BANNER_URL = "https://bab-e-deuk-bucket.s3.ap-northeast-2.amazonaws.com/Default/default_banner.png";
 
     @Transactional
     public List<MenuResponseDto.CreateMenuResponseDto> createMenus(Long storeId, MenuCreateRequestDto requestDto) {
@@ -342,15 +344,32 @@ public class StoreService {
 
         datas.add(data);
 
+        log.info("datas size: {}", datas.size());
+
+        if (datas.get(2).equals("")){
+            throw new StoreHandler(ErrorStatus.OCR_BAD_REQUEST);
+        }
+
         return StoreConverter.toCertificateResultDto(datas);
+    }
+
+    public List<StoreResponseDto.GetStoreSearchDto> searchStores(StoreParameterDto.GetSearchKeywordParamDto searchKeywordParamDto) {
+        Long userId = extractUserIdBasedOnRole(searchKeywordParamDto.getAuthorizationHeader());
+
+        if (searchKeywordParamDto.getLatitude() != null && searchKeywordParamDto.getLongitude() != null) {
+            return searchStoreWithMenusByCoordinates(searchKeywordParamDto, searchKeywordParamDto.getLatitude(), searchKeywordParamDto.getLongitude());
+        } else {
+            return searchStoreWithMenus(searchKeywordParamDto, userId);
+        }
     }
 
     @Cacheable(value = "storeSearch", key = "#param.keyword")
     public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(
             StoreParameterDto.GetSearchKeywordParamDto param,
-            Student student
+            Long studentId
     ) {
         String keyword = param.getKeyword();
+        Student student = studentService.findStudentById(studentId);
         Long universityId = student.getUniversity().getId();
 
         List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword, universityId);
@@ -375,29 +394,30 @@ public class StoreService {
                 .toList();
     }
 
-    @Cacheable(value = "storeSearch", key = "#param.keyword")
+    @Cacheable(value = "storeSearch", key = "#param.keyword + ':' + T(java.lang.Math).round(#latitude * 10) / 10 + ':' + T(java.lang.Math).round(#longitude * 10) / 10")
     public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenusByCoordinates(
             StoreParameterDto.GetSearchKeywordParamDto param,
             Double latitude,
             Double longitude
-    ) {
+    ){
         String keyword = param.getKeyword();
+        double radius = 5.0; // 반경 (km)
+
+        // 반경 내의 가게 검색
         List<Store> stores = storeRepository.findStoresByMenuKeywordAndCoordinates(keyword);
 
         return stores.stream()
                 .map(store -> {
-                    Double storeLatitude = store.getLatitude();
-                    Double storeLongitude = store.getLongitude();
+                    double distance = calculateDistance(latitude, longitude, store.getLatitude(), store.getLongitude());
 
-                    // Haversine 공식을 사용해 거리 계산
-                    double distance = calculateDistance(latitude, longitude, storeLatitude, storeLongitude);
-
-                    return StoreConverter.toStoreSearchResponseDto(
-                            store,
-                            keyword,
-                            distance
-                    );
+                    // 반경 내의 가게만 필터링
+                    if (distance <= radius) {
+                        return StoreConverter.toStoreSearchResponseDto(store, keyword, distance);
+                    } else {
+                        return null;
+                    }
                 })
+                .filter(Objects::nonNull) // null 값 필터링
                 .filter(dto -> !dto.getMenuList().isEmpty())
                 .sorted(Comparator.comparing(StoreResponseDto.GetStoreSearchDto::getDistanceFromUniversityKm))
                 .toList();
@@ -415,22 +435,13 @@ public class StoreService {
         return storeRepository.findById(storeId).orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
     }
 
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371;
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    }
-
     public String getStoreBannerUrl(Store store){
         String bannerUrl = null;
         if(store.getBanner() != null) {
             Banner storeBanner = bannerRepository.findByStore(store);
             bannerUrl = storeBanner.getBannerUrl();
+        } else {
+            bannerUrl = DEFAULT_BANNER_URL;
         }
 
 
@@ -458,5 +469,26 @@ public class StoreService {
         Store store = storeRepository.findById(storeId).orElseThrow(()->new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
 
         return store.getSignatureMenu();
+    }
+
+    private Long extractUserIdBasedOnRole(String authorizationHeader) {
+        String role = jwtTokenProvider.getRole(authorizationHeader.substring(7));
+
+        if ("student".equals(role)) {
+            return studentService.getUserIdFromJwt(authorizationHeader);
+        } else {
+            return ownerService.getOwnerIdFromJwt(authorizationHeader);
+        }
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371;
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 }

@@ -23,6 +23,7 @@ import Bob_BE.domain.student.entity.Student;
 import Bob_BE.domain.student.service.StudentService;
 import Bob_BE.domain.university.entity.University;
 import Bob_BE.global.response.ApiResponse;
+import Bob_BE.global.util.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -50,6 +51,7 @@ public class StoreController {
     private final OperatingHoursService operatingHoursService;
     private final OwnerService ownerService;
     private final StudentService studentService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/{storeId}/menus")
     @Operation(summary = "메뉴 추가 API", description = "가게에 새로운 메뉴들을 추가하는 API입니다.")
@@ -234,33 +236,29 @@ public class StoreController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON500", description = "서버 오류입니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON500", description = "서버 오류입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })
     public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(
+            @RequestHeader(value = "Authorization",required = false) String authorizationHeader,
             @RequestParam String keyword,
-            @RequestParam Long studentId,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude
     ) {
-        Student student = studentService.findStudentById(studentId);
         StoreParameterDto.GetSearchKeywordParamDto searchKeywordParamDto = StoreParameterDto.GetSearchKeywordParamDto.builder()
                 .keyword(keyword)
+                .authorizationHeader(authorizationHeader)
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
 
-        List<StoreResponseDto.GetStoreSearchDto> stores;
-
-        // 위도와 경도가 제공된 경우
-        if (latitude != null && longitude != null) {
-            stores = storeService.searchStoreWithMenusByCoordinates(searchKeywordParamDto, latitude, longitude);
-        } else {
-            // 위도와 경도가 없을 때 기존 로직 사용
-            stores = storeService.searchStoreWithMenus(searchKeywordParamDto, student);
-        }
+        List<StoreResponseDto.GetStoreSearchDto> stores = storeService.searchStores(searchKeywordParamDto);
 
         return ApiResponse.onSuccess(stores);
     }
     @GetMapping("/{storeId}/inform")
-    @Operation(summary = "가게정보 가져오기 API", description = "가게의 정보를 가져오며 배너가 없는 경우 null을 반환합니다.")
+    @Operation(summary = "가게정보 가져오기 API", description = "가게의 정보를 가져오며 배너가 없는 경우 기본 이미지를 반환합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다."),
