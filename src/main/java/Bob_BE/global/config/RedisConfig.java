@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Duration;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +27,7 @@ public class RedisConfig {
 
     @Value("${spring.redis.port}")
     private int redisPort;
+
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -69,4 +69,3 @@ public class RedisConfig {
                 .build();
     }
 }
-
