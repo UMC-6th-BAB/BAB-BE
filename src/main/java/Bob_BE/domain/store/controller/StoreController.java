@@ -258,7 +258,7 @@ public class StoreController {
         return ApiResponse.onSuccess(stores);
     }
     @GetMapping("/{storeId}/inform")
-    @Operation(summary = "가게정보 가져오기 API", description = "가게의 정보를 가져오며 배너가 없는 경우 null을 반환합니다.")
+    @Operation(summary = "가게정보 가져오기 API", description = "가게의 정보를 가져오며 배너가 없는 경우 기본 이미지를 반환합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE404", description = "해당 가게를 찾지 못했습니다."),
