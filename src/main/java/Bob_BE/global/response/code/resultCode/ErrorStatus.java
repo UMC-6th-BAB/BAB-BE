@@ -39,12 +39,14 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Owner
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "OWNER404", "사장님 정보가 등록되어 있지 않습니다."),
+    OWNER_NOT_HAVE_STORE(HttpStatus.BAD_REQUEST, "OWNER405", "사장님이 보유중인 가게가 없습니다."),
 
     //Student
     STUDENT_NOT_FOUND(HttpStatus.NOT_FOUND, "OWNER404", "학생 정보가 등록되어 있지 않습니다."),
 
     // University
     UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIVERSITY404", "등록되지 않은 학교입니다."),
+    UNIVERSITY_NOT_SETTING(HttpStatus.NOT_FOUND, "UNIVERSITY405", "대학교 설정이 되어있지 않습니다."),
 
     // S3 Storage
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3BUCKET500", "파일 업로드에 실패했습니다."),
