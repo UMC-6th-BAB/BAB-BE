@@ -354,9 +354,10 @@ public class StoreService {
     @Cacheable(value = "storeSearch", key = "#param.keyword")
     public List<StoreResponseDto.GetStoreSearchDto> searchStoreWithMenus(
             StoreParameterDto.GetSearchKeywordParamDto param,
-            Student student
+            Long studentId
     ) {
         String keyword = param.getKeyword();
+        Student student = studentService.findStudentById(studentId);
         Long universityId = student.getUniversity().getId();
 
         List<Store> stores = storeRepository.findStoresByMenuKeyword(keyword, universityId);

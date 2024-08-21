@@ -234,15 +234,17 @@ public class StoreController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON500", description = "서버 오류입니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON500", description = "서버 오류입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH401", description = "JWT 토큰 만료"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "OAUTH404", description = "JWT 토큰 없음")
     })
     public ApiResponse<List<StoreResponseDto.GetStoreSearchDto>> searchStores(
+            @RequestHeader(value = "Authorization",required = false) String authorizationHeader,
             @RequestParam String keyword,
-            @RequestParam Long studentId,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude
     ) {
-        Student student = studentService.findStudentById(studentId);
+        Long studentId = studentService.getUserIdFromJwt(authorizationHeader);
         StoreParameterDto.GetSearchKeywordParamDto searchKeywordParamDto = StoreParameterDto.GetSearchKeywordParamDto.builder()
                 .keyword(keyword)
                 .build();
@@ -254,7 +256,7 @@ public class StoreController {
             stores = storeService.searchStoreWithMenusByCoordinates(searchKeywordParamDto, latitude, longitude);
         } else {
             // 위도와 경도가 없을 때 기존 로직 사용
-            stores = storeService.searchStoreWithMenus(searchKeywordParamDto, student);
+            stores = storeService.searchStoreWithMenus(searchKeywordParamDto, studentId);
         }
 
         return ApiResponse.onSuccess(stores);
