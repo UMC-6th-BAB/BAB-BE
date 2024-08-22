@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UniversityRepository extends JpaRepository<University, Long> {
+
     Optional<University> findByUniversityName(String universityName);
 
     @Query("SELECT uni FROM University uni WHERE uni.universityName LIKE %:universityName%")
     List<University> findAllByUniversityName(String universityName);
-
 }

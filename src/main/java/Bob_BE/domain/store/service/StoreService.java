@@ -256,7 +256,7 @@ public class StoreService {
             findUniversity = findStudent.getUniversity();
             if (findUniversity == null) {
 
-                findUniversity = universityRepository.findById(2L)
+                findUniversity = universityRepository.findByUniversityName("숭실대학교")
                         .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
             }
         }
@@ -272,14 +272,22 @@ public class StoreService {
             if (ownerStore.isEmpty()) {
 
                 // 만약 사장님이 가게가 없을 경우 default 로 숭실대를 보여주는 것으로 설정했습니다.
-                findUniversity = universityRepository.findById(2L)
+                findUniversity = universityRepository.findByUniversityName("숭실대학교")
                         .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
             }
             else {
 
                 // 일단 가게마다 무조건 대학교가 하나 걸려있다고 가정하에 짠 코드라 후에 수정해야할 듯 합니다.
                 // 애초에 현재 erd 상으로는 대학 : 가게 가 n : n 인데 데모데이까지는 1 : n 으로 짜여져 있어 일단 이렇게 놔두었습니다.
-                findUniversity = ownerStore.get(0).getStoreUniversityList().get(0).getUniversity();
+                if (ownerStore.get(0).getStoreUniversityList().isEmpty()) {
+
+                    findUniversity = universityRepository.findByUniversityName("숭실대학교")
+                            .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
+                }
+                else {
+
+                    findUniversity = ownerStore.get(0).getStoreUniversityList().get(0).getUniversity();
+                }
             }
         }
 
