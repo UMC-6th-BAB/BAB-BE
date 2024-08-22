@@ -272,7 +272,7 @@ public class StoreService {
             if (ownerStore.isEmpty()) {
 
                 // 만약 사장님이 가게가 없을 경우 default 로 숭실대를 보여주는 것으로 설정했습니다.
-                findUniversity = universityRepository.findById(13L)
+                findUniversity = universityRepository.findById(2L)
                         .orElseThrow(() -> new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_FOUND));
             }
             else {
