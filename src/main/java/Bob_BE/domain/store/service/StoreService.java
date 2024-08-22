@@ -187,12 +187,45 @@ public class StoreService {
      */
     public List<StoreResponseDto.GetOnSaleStoreDataDto> GetOnSaleStoreListData(@Valid StoreParameterDto.GetOnSaleStoreListParamDto param) {
 
-        Long studentId = studentService.getUserIdFromJwt(param.getAuthorizationHeader());
+        University findUniversity;
 
-        Student findStudent = studentRepository.findById(studentId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+        String role = findStudentOrOwner(param.getAuthorizationHeader());
 
-        University findUniversity = findStudent.getUniversity();
+        if (role.equals("student")) {
+
+            Long studentId = studentService.getUserIdFromJwt(param.getAuthorizationHeader());
+
+            Student findStudent = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+
+            findUniversity = findStudent.getUniversity();
+
+            if (findUniversity == null) {
+
+                throw new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_SETTING);
+            }
+        }
+        else {
+
+            Long ownerId = ownerService.getOwnerIdFromJwt(param.getAuthorizationHeader());
+
+            Owner findOwner = ownerRepository.findById(ownerId)
+                    .orElseThrow(() -> new OwnerHandler(ErrorStatus.OWNER_NOT_FOUND));
+
+            if (findOwner.getStoreList().isEmpty()) {
+
+                throw new OwnerHandler(ErrorStatus.OWNER_NOT_HAVE_STORE);
+            }
+
+            Store ownerStore = findOwner.getStoreList().get(0);
+
+            if (ownerStore.getStoreUniversityList().isEmpty()) {
+
+                throw new UniversityHandler(ErrorStatus.UNIVERSITY_NOT_SETTING);
+            }
+
+            findUniversity = ownerStore.getStoreUniversityList().get(0).getUniversity();
+        }
 
         List<StoreResponseDto.StoreAndDiscountDataDto> storeAndDiscountDataDtoList = storeRepository.GetOnSaleStoreAndDiscount(findUniversity);
 
@@ -210,14 +243,8 @@ public class StoreService {
     public List<StoreResponseDto.StoreDataDto> GetStoreDataList(StoreParameterDto.GetDataForPingParamDto param) {
 
         University findUniversity;
-        String authorizationHeader = param.getAuthorizationHeader();
 
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new GeneralException(ErrorStatus.MISSING_JWT_EXCEPTION);
-        }
-        String jwtToken = authorizationHeader.substring(7);
-
-        String role = jwtTokenProvider.getRole(jwtToken);
+        String role = findStudentOrOwner(param.getAuthorizationHeader());
 
         if (role.equals("student")) {
 
@@ -490,5 +517,14 @@ public class StoreService {
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    private String findStudentOrOwner(String authorizationHeader) {
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new GeneralException(ErrorStatus.MISSING_JWT_EXCEPTION);
+        }
+
+        return jwtTokenProvider.getRole(authorizationHeader.substring(7));
     }
 }
