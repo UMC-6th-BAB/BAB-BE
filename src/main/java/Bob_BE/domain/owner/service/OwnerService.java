@@ -68,7 +68,7 @@ public class OwnerService {
 
             if (existingOwner.isPresent()) {
                 String jwt = jwtTokenProvider.createToken(existingOwner.get().getId(), ROLE);
-                Boolean isStoreExist = getOwnerStore(existingOwner.get()) != null;
+                Boolean isStoreExist = isOwnerStoreExist(existingOwner.get());
                 return OwnerResponseDto.LoginOrRegisterDto.builder()
                         .jwt(jwt)
                         .successStatus(SuccessStatus._OK)
@@ -137,5 +137,10 @@ public class OwnerService {
 
         return storeRepository.findFirstByOwnerId(owner.getId())
                 .orElse(new Store());
+    }
+
+    public Boolean isOwnerStoreExist(Owner owner) {
+
+        return storeRepository.findFirstByOwnerId(owner.getId()).orElse(null) != null;
     }
 }
