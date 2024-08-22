@@ -26,7 +26,9 @@ public class OwnerResponseDto {
 
         private Long ownerId;
         private String ownerNickname;
+        private Boolean isStoreExist;
         private Long storeId;
         private String storeName;
+        private Boolean isUniversitySetting;
     }
 }
