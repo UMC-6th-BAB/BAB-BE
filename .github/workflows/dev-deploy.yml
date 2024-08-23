@@ -105,5 +105,5 @@ jobs:
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk
             sudo docker run -dp 8080:8080 --name babedeuck \
               -e GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/gcs-key.json \
-              -v gcs-key.json:/usr/src/app/gcs-key.json \
+              -v gcs-key.json:/usr/src/app gcs-key.json \
               ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk:latest
