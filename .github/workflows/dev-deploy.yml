@@ -83,12 +83,16 @@ jobs:
           username: ${{ env.EC2_SSH_USER }}
           key: ${{ env.EC2_PRIVATE_KEY }}
           script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
+            CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080" --filter "name=babedeuck")
 
-            if [ ! -z "$CONTAINER_ID" ]; then
+            if [ -n "$CONTAINER_ID" ]; then
+              echo "기존 컨테이너를 중지하고 제거합니다.."
               sudo docker stop $CONTAINER_ID
               sudo docker rm $CONTAINER_ID
+            else
+              echo "기존 컨테이너가 없습니다."
             fi
 
+            echo "새 Docker 이미지를 풀하고 실행합니다."
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk
             sudo docker run -dp 8080:8080 --name babedeuck ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk:latest -e GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json -v /home/ubuntu/google/gcs-key.json:/app/gcs-key.json
