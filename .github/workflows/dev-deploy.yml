@@ -91,4 +91,4 @@ jobs:
             fi
 
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk
-            sudo docker run -dp 8080:8080 --name babedeuck ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk:latest
+            sudo docker run -dp 8080:8080 --name babedeuck ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk:latest -e GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json -v /home/ubuntu/google/gcs-key.json:/app/gcs-key.json
