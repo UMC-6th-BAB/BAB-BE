@@ -95,4 +95,7 @@ jobs:
 
             echo "새 Docker 이미지를 풀하고 실행합니다."
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk
-            sudo docker run -dp 8080:8080 --name babedeuck ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk:latest -e GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json -v /home/ubuntu/google/gcs-key.json:/app/gcs-key.json
+            sudo docker run -dp 8080:8080 --name babedeuck \
+              -e GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json \
+              -v $(pwd)/gcs-key.json:/app/gcs-key.json \
+              ${{ secrets.DOCKERHUB_USERNAME }}/bab-e-deuk:latest
